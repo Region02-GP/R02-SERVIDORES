@@ -113,3 +113,31 @@ document.getElementById('btnVolver').addEventListener('click', () => {
     document.getElementById('seccionCredencial').classList.add('hidden');
     document.getElementById('btnVolver').classList.add('hidden');
 });
+// LÓGICA PARA PROCESAR EL FORMULARIO DE REPORTES DIARIOS
+document.getElementById('reporteForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Obtenemos la CURP del buscador principal para saber a quién asociar el reporte
+    const idDoc = document.getElementById('identificacion').value.trim().toUpperCase();
+    if (!idDoc) return alert('Por favor, busque e identifíquese primero antes de enviar un reporte.');
+
+    const formData = new FormData();
+    formData.append('identificacion', idDoc);
+    formData.append('actividad', document.getElementById('repActividad').value);
+    formData.append('observaciones', document.getElementById('repObservaciones').value);
+
+    try {
+        const res = await fetch('http://127.0.0', {
+            method: 'POST',
+            body: formData
+        });
+        const resultado = await res.json();
+        
+        if (resultado.status === 'success') {
+            alert('🎉 ¡Reporte diario registrado correctamente en el sistema!');
+            document.getElementById('reporteForm').reset();
+        }
+    } catch (err) {
+        alert('💾 Modo Offline: El reporte se guardaría en local debido a la falta de conexión con el backend.');
+    }
+});
