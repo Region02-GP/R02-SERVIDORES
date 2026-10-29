@@ -63,3 +63,19 @@ async def guardar_perfil(
         identificacion, nombre, telefono, sangre, region, brigada, foto_url
     )
     return {"status": "success", "message": "Procesado correctamente", "foto_url": foto_url}
+# Asegurar que se cree la tabla de reportes al iniciar el backend
+database.init_db_reportes()
+
+@app.post("/api/reporte/guardar")
+async def guardar_reporte(
+    identificacion: str = Form(...),
+    actividad: str = Form(...),
+    observaciones: str = Form(None)
+):
+    # Validar primero si el brigadista existe en el sistema
+    row = database.buscar_brigadista(identificacion)
+    if not row:
+        raise HTTPException(status_code=404, detail="El brigadista no está registrado")
+        
+    database.guardar_reporte_campo(identificacion, actividad, observaciones)
+    return {"status": "success", "message": "Reporte de campo guardado exitosamente"}
