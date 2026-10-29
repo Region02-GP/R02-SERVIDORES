@@ -1,0 +1,107 @@
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import sqlite3
+import os
+import shutil
+
+app = FastAPI()
+
+# Permitir comunicación con el frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+DB_FILE = "brigadistas.db"
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+
+# Función para conectar a la base de datos y crear la tabla si no existe
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS brigadistas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT EXISTS,
+            identificacion TEXT UNIQUE,
+            telefono TEXT,
+            sangre TEXT,
+            region TEXT,
+            brigada TEXT,
+            foto_url TEXT
+        )
+    """)
+    # Insertar un brigadista por defecto (ID 1) si la tabla está vacía
+    cursor.execute("SELECT COUNT(*) FROM brigadistas")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("""
+            INSERT INTO brigadistas (id, nombre, identificacion, telefono, sangre, region, brigada, foto_url)
+            VALUES (1, 'Juan Pérez', 'CURP123456HDF', '5551234567', 'O+', 'Zona Centro', 'Brigada 12', 'https://placeholder.com')
+        """)
+    conn.commit()
+    conn.close()
+
+init_db()
+
+# 1. Obtener los datos del brigadista (Usaremos el ID 1 por ahora)
+@app.get("/api/perfil")
+def obtener_perfil():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("SELECT nombre, identificacion, telefono, sangre, region, brigada, foto_url FROM brigadistas WHERE id = 1")
+    row = cursor.fetchone()
+    conn.close()
+    
+    if not row:
+        raise HTTPException(status_code=404, detail="Brigadista no encontrado")
+        
+    return {
+        "nombre": row[0],
+        "identificacion": row[1],
+        "telefono": row[2],
+        "sangre": row[3],
+        "region": row[4],
+        "brigada": row[5],
+        "foto_url": row[6]
+    }
+
+# 2. Guardar los datos editados en la Base de Datos
+@app.post("/api/perfil/guardar")
+async def guardar_perfil(
+    nombre: str = Form(...),
+    identificacion: str = Form(...),
+    telefono: str = Form(...),
+    sangre: str = Form(...),
+    region: str = Form(...),
+    brigada: str = Form(...),
+    foto: UploadFile = File(None)
+):
+    # Obtener el perfil actual para mantener la foto si no se sube una nueva
+    perfil_actual = obtener_perfil()
+    foto_url = perfil_actual["foto_url"]
+    
+    if foto:
+        file_path = os.path.join(UPLOAD_DIR, foto.filename)
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(foto.file, buffer)
+        foto_url = f"http://127.0.0{foto.filename}"
+
+    # Actualizar los datos en SQLite para el usuario con ID 1
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE brigadistas 
+        SET nombre = ?, identificacion = ?, telefono = ?, sangre = ?, region = ?, brigada = ?, foto_url = ?
+        WHERE id = 1
+    """, (nombre, identificacion, telefono, sangre, region, brigada, foto_url))
+    conn.commit()
+    conn.close()
+
+    return {"status": "success", "message": "Perfil guardado en Base de Datos correctamente"}
