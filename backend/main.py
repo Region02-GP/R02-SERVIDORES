@@ -1,9 +1,9 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import sqlite3
 import os
 import shutil
+import database
 
 app = FastAPI()
 
@@ -15,47 +15,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DB_FILE = "brigadistas.db"
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
-def init_db():
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS brigadistas (
-            identificacion TEXT PRIMARY KEY,
-            nombre TEXT NOT NULL,
-            telefono TEXT,
-            sangre TEXT,
-            region TEXT,
-            brigada TEXT,
-            foto_url TEXT
-        )
-    """)
-    conn.commit()
-    conn.close()
+# Asegura que la tabla de SQLite se inicie en el arranque
+database.init_db()
 
-init_db()
-
-# 1. BUSCAR BRIGADISTA POR IDENTIFICACIÓN (Para saber si ya existe)
 @app.get("/api/perfil/{identificacion}")
 def obtener_perfil(identificacion: str):
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT nombre, telefono, sangre, region, brigada, foto_url 
-        FROM brigadistas WHERE identificacion = ?
-    """, (identificacion,))
-    row = cursor.fetchone()
-    conn.close()
-    
+    row = database.buscar_brigadista(identificacion)
     if not row:
-        # Si no existe, devolvemos un estado vacío para que el frontend sepa que es nuevo
         return {"existe": False}
-        
     return {
         "existe": True,
         "nombre": row[0],
@@ -66,7 +37,6 @@ def obtener_perfil(identificacion: str):
         "foto_url": row[5]
     }
 
-# 2. GUARDAR O ACTUALIZAR PERFIL (UPSERT)
 @app.post("/api/perfil/guardar")
 async def guardar_perfil(
     nombre: str = Form(...),
@@ -77,18 +47,11 @@ async def guardar_perfil(
     brigada: str = Form(...),
     foto: UploadFile = File(None)
 ):
-    # Verificar si ya existe para ver si mantenemos la foto anterior
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute("SELECT foto_url FROM brigadistas WHERE identificacion = ?", (identificacion,))
-    row = cursor.fetchone()
+    # Buscar foto previa por si no se actualiza
+    row = database.buscar_brigadista(identificacion)
+    foto_url = row[5] if row else "https://placeholder.com"
     
-    # Imagen por defecto si es completamente nuevo
-    foto_url = row[0] if row else "https://placeholder.com"
-    
-    # Si subió una foto nueva, la procesamos
     if foto:
-        # Renombramos el archivo con la identificación para evitar duplicados
         ext = os.path.splitext(foto.filename)[1]
         nombre_archivo = f"{identificacion}{ext}"
         file_path = os.path.join(UPLOAD_DIR, nombre_archivo)
@@ -97,20 +60,7 @@ async def guardar_perfil(
             shutil.copyfileobj(foto.file, buffer)
         foto_url = f"http://127.0.0{nombre_archivo}"
 
-    # Insertar o reemplazar si ya existe (Lógica UPSERT)
-    cursor.execute("""
-        INSERT INTO brigadistas (identificacion, nombre, telefono, sangre, region, brigada, foto_url)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(identificacion) DO UPDATE SET
-            nombre = excluded.nombre,
-            telefono = excluded.telefono,
-            sangre = excluded.sangre,
-            region = excluded.region,
-            brigada = excluded.brigada,
-            foto_url = ?
-    """, (identificacion, nombre, telefono, sangre, region, brigada, foto_url, foto_url))
-    
-    conn.commit()
-    conn.close()
-
-    return {"status": "success", "message": "Perfil procesado correctamente", "foto_url": foto_url}
+    database.guardar_o_actualizar_brigadista(
+        identificacion, nombre, telefono, sangre, region, brigada, foto_url
+    )
+    return {"status": "success", "message": "Procesado correctamente", "foto_url": foto_url}
