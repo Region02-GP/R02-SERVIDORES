@@ -143,3 +143,33 @@
     <script src="app.js"></script>
 </body>
 </html>
+<!-- CONTENEDOR: REPORTE DIARIO DE TRABAJO -->
+<div id="seccionReporte" class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden mt-6 transition-all duration-300">
+    <div class="bg-emerald-800 p-5 text-center text-white">
+        <h2 class="text-base font-bold tracking-wide">Reporte Diario de Trabajo</h2>
+        <p class="text-xs text-emerald-200 mt-0.5">Registro de Actividades en Campo</p>
+    </div>
+
+    <form id="reporteForm" class="p-5 space-y-4">
+        <div>
+            <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">Actividad Realizada</label>
+            <select id="repActividad" required class="w-full mt-1 p-2.5 border border-gray-300 rounded-xl outline-none text-gray-800 text-sm bg-white">
+                <option value="">-- Seleccione una actividad --</option>
+                <option value="Monitoreo">Monitoreo y Vigilancia</option>
+                <option value="Prevencion">Brechas Cortafuego / Prevención</option>
+                <option value="Combate">Combate Directo de Siniestros</option>
+                <option value="Rescate">Atención a Contingencias / Rescate</option>
+                <option value="Capacitacion">Capacitación / Prácticas</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">Detalles y Observaciones</label>
+            <textarea id="repObservaciones" rows="4" required class="w-full mt-1 p-2.5 border border-gray-300 rounded-xl outline-none text-gray-800 text-sm placeholder-gray-400" placeholder="Escriba los pormenores de la jornada, estado del equipo, novedades, etc..."></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-emerald-800 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-emerald-900 transition-all text-sm">
+            🚀 Enviar Reporte de Jornada
+        </button>
+    </form>
+</div>
