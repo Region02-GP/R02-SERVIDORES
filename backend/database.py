@@ -3,7 +3,6 @@ import sqlite3
 DB_FILE = "brigadistas.db"
 
 def init_db():
-    """Crea la tabla si no existe en el sistema"""
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     cursor.execute("""
@@ -21,7 +20,6 @@ def init_db():
     conn.close()
 
 def buscar_brigadista(identificacion: str):
-    """Busca un registro por su clave primaria"""
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     cursor.execute("""
@@ -33,7 +31,6 @@ def buscar_brigadista(identificacion: str):
     return row
 
 def guardar_o_actualizar_brigadista(identificacion, nombre, telefono, sangre, region, brigada, foto_url):
-    """Inserta datos nuevos o actualiza los existentes (UPSERT)"""
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     cursor.execute("""
