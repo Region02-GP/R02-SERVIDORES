@@ -3,152 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro y Edición de Brigadistas</title>
+    <title>Control de Brigadistas - Gafete Oficial</title>
+    <!-- Tailwind CSS para diseño responsivo -->
     <script src="https://tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans min-h-screen flex flex-col items-center p-4">
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col md:flex-row items-center md:items-start justify-center p-4 gap-6">
 
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden mt-4">
-        <div class="bg-orange-600 p-6 text-center text-white">
+    <!-- COLUMNA 1: FORMULARIO DE CAPTURA -->
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-red-800 p-6 text-center text-white">
             <h1 class="text-xl font-bold tracking-wide">Control de Brigadistas</h1>
-            <p class="text-sm opacity-90" id="estadoTitulo">Ingrese su ID para iniciar</p>
+            <p class="text-sm opacity-90" id="estadoTitulo">Ingrese ID para iniciar</p>
         </div>
 
-        <form id="perfilForm" class="p-6 space-y-5">
-            <!-- Buscador por Identificación (Punto de partida) -->
+        <form id="perfilForm" class="p-6 space-y-4">
             <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase">CURP / Identificación Oficial</label>
                 <div class="flex gap-2 mt-1">
-                    <input type="text" id="identificacion" required class="flex-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-800 font-mono uppercase" placeholder="EJ. CURP123456">
+                    <input type="text" id="identificacion" required class="flex-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-red-700 outline-none text-gray-800 font-mono uppercase" placeholder="EJ. CURP123456">
                     <button type="button" id="btnBuscar" class="bg-gray-800 text-white px-4 rounded-xl font-bold hover:bg-gray-900 transition">
                         🔍 Buscar
                     </button>
                 </div>
             </div>
 
-            <!-- Contenedor de Fotografía -->
             <div class="flex flex-col items-center space-y-2">
-                <div class="relative w-32 h-32 rounded-full overflow-hidden border-4 border-orange-500 shadow-md">
-                    <img id="fotoVista" src="https://placeholder.com" alt="Foto Perfil" class="w-full h-full object-cover">
-                </div>
-                <label class="cursor-pointer bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-gray-300 transition">
+                <label class="cursor-pointer bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-gray-300 transition">
                     📸 Subir/Cambiar Foto
                     <input type="file" id="inputFoto" accept="image/*" class="hidden">
                 </label>
             </div>
 
-            <!-- Resto de los campos (Bloqueados hasta que busque o sea nuevo) -->
-            <div class="space-y-4">
+            <div class="space-y-3">
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase">Nombre Completo</label>
-                    <input type="text" id="nombre" required class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-800">
+                    <label class="block text-xs font-bold text-gray-500 uppercase">Nombre(s)</label>
+                    <input type="text" id="nombre" required class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-red-700 outline-none text-gray-800">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase">Primer Apellido</label>
+                        <input type="text" id="apellido1" required class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-red-700 outline-none text-gray-800">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase">Segundo Apellido</label>
+                        <input type="text" id="apellido2" class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-red-700 outline-none text-gray-800">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase">Teléfono</label>
-                        <input type="tel" id="telefono" required class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-800">
+                        <input type="tel" id="telefono" required class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-red-700 outline-none text-gray-800">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase">Tipo de Sangre</label>
-                        <input type="text" id="sangre" required class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-800" placeholder="Ej. O+">
+                        <input type="text" id="sangre" required class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-red-700 outline-none text-gray-800" placeholder="Ej. O+">
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase">Región / Zona</label>
-                        <input type="text" id="region" required class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-800">
+                        <input type="text" id="region" required class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-red-700 outline-none text-gray-800">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase">No. Brigada</label>
-                        <input type="text" id="brigada" required class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-800">
+                        <input type="text" id="brigada" required class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-red-700 outline-none text-gray-800">
                     </div>
                 </div>
             </div>
 
-            <!-- Botón Guardar Dinámico -->
-            <button type="submit" id="btnGuardar" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-orange-700 active:scale-[0.98] transition-all mt-4">
+            <button type="submit" id="btnGuardar" class="w-full bg-red-800 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-red-900 active:scale-[0.98] transition-all mt-2">
                 💾 Guardar Brigadista
             </button>
         </form>
     </div>
 
-    <script>
-        const BASE_URL = 'http://127.0.0';
-        let fotoArchivo = null;
+    <!-- COLUMNA 2: CREDENCIAL TIPO GOBIERNO -->
+    <div class="w-full max-w-sm bg-[#f9f6f0] rounded-2xl shadow-xl overflow-hidden border border-gray-300 relative flex flex-col justify-between" style="min-height: 580px;">
+        <div class="bg-[#611232] p-4 text-center text-white relative">
+            <h2 class="text-base font-bold tracking-wider leading-tight">Servicio de Brigadas de Campo</h2>
+            <p class="text-xs text-[#ddc9a3] font-medium tracking-widest mt-0.5">ESTADOS UNIDOS MEXICANOS</p>
+        </div>
 
-        // BUSCAR BRIGADISTA
-        document.getElementById('btnBuscar').addEventListener('click', async () => {
-            const id = document.getElementById('identificacion').value.trim().toUpperCase();
-            if (!id) return alert('Por favor, ingresa una identificación');
+        <div class="p-6 flex flex-col items-center flex-1 justify-center space-y-4">
+            <div class="w-36 h-44 bg-gray-200 border-4 border-white shadow-md overflow-hidden relative rounded-sm">
+                <img id="credFoto" src="https://placeholder.com" class="w-full h-full object-cover">
+                <div class="absolute bottom-1 right-1 opacity-20 text-[8px] text-black font-bold">OFICIAL</div>
+            </div>
 
-            try {
-                const res = await fetch(`${BASE_URL}/${id}`);
-                const datos = await res.json();
+            <div class="w-full text-center space-y-3 mt-2">
+                <div>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Nombre(s)</p>
+                    <p id="credNombre" class="text-lg font-bold text-gray-800 leading-tight">-</p>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Primer Apellido</p>
+                        <p id="credApellido1" class="text-sm font-semibold text-gray-800">-</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Segundo Apellido</p>
+                        <p id="credApellido2" class="text-sm font-semibold text-gray-800">-</p>
+                    </div>
+                </div>
+                <div class="pt-2 border-t border-dashed border-gray-300">
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">CURP / Identificación</p>
+                    <p id="credIdentificacion" class="text-sm font-mono font-bold tracking-wider text-gray-900 uppercase">-</p>
+                </div>
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Brigada</p>
+                        <p id="credBrigada" class="text-xs font-medium text-gray-700">-</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Grupo Sanguíneo</p>
+                        <p id="credSangre" class="text-xs font-bold text-red-700">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                if (datos.existe) {
-                    document.getElementById('estadoTitulo').innerText = "📝 Editando Perfil Existente";
-                    document.getElementById('nombre').value = datos.nombre;
-                    document.getElementById('telefono').value = datos.telefono;
-                    document.getElementById('sangre').value = datos.sangre;
-                    document.getElementById('region').value = datos.region;
-                    document.getElementById('brigada').value = datos.brigada;
-                    document.getElementById('fotoVista').src = datos.foto_url;
-                    document.getElementById('btnGuardar').innerText = "💾 Actualizar Datos";
-                } else {
-                    document.getElementById('estadoTitulo').innerText = "✨ Nuevo Registro de Brigadista";
-                    // Limpiar campos excepto ID para nuevo registro
-                    document.getElementById('nombre').value = '';
-                    document.getElementById('telefono').value = '';
-                    document.getElementById('sangre').value = '';
-                    document.getElementById('region').value = '';
-                    document.getElementById('brigada').value = '';
-                    document.getElementById('fotoVista').src = 'https://placeholder.com';
-                    document.getElementById('btnGuardar').innerText = "💾 Registrar como Nuevo";
-                }
-            } catch (err) {
-                alert('Error al buscar en la base de datos');
-            }
-        });
+        <div class="bg-white border-t border-gray-200 px-4 py-3 flex justify-around items-center opacity-85">
+            <span class="text-[9px] font-bold text-[#611232]">BRIGADAS</span>
+            <span class="text-[9px] font-bold text-gray-400">|</span>
+            <span class="text-[9px] font-bold text-green-700">PROTECCIÓN CIVIL</span>
+            <span class="text-[9px] font-bold text-gray-400">|</span>
+            <span class="text-[9px] font-bold text-amber-600">MÉXICO</span>
+        </div>
+        <div class="h-1 w-full bg-gradient-to-r from-green-700 via-white to-red-700"></div>
+    </div>
 
-        // PREVISUALIZAR FOTO
-        document.getElementById('inputFoto').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                fotoArchivo = file;
-                document.getElementById('fotoVista').src = URL.createObjectURL(file);
-            }
-        });
-
-        // GUARDAR O ACTUALIZAR EN EL SERVIDOR
-        document.getElementById('perfilForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = new FormData();
-            formData.append('identificacion', document.getElementById('identificacion').value.trim().toUpperCase());
-            formData.append('nombre', document.getElementById('nombre').value);
-            formData.append('telefono', document.getElementById('telefono').value);
-            formData.append('sangre', document.getElementById('sangre').value);
-            formData.append('region', document.getElementById('region').value);
-            formData.append('brigada', document.getElementById('brigada').value);
-            if (fotoArchivo) {
-                formData.append('foto', fotoArchivo);
-            }
-
-            try {
-                const res = await fetch(`${BASE_URL}/guardar`, {
-                    method: 'POST',
-                    body: formData
-                });
-                const resultado = await res.json();
-                if (resultado.status === 'success') {
-                    alert('🎉 ¡Perfil procesado y guardado con éxito!');
-                    document.getElementById('fotoVista').src = resultado.foto_url;
-                    fotoArchivo = null; // Reset de archivo en memoria
-                }
-            } catch (err) {
-                alert('🔴 Error al conectar con el servidor');
-            }
-        });
-    </script>
+    <!-- Vinculación del script que maneja la lógica -->
+    <script src="app.js"></script>
 </body>
 </html>
+const BASE_URL = 'http://127.0.0';
+let fotoArchivo = null;
+
+// 1. Efecto espejo: Escribir en tiempo real dentro de la credencial
+function vincularCampos() {
+    const inputs = ['nombre', 'apellido1', 'apellido2', 'identificacion', 'brigada', 'sangre'];
+    inputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', (e) => {
+            let destinoId = 'cred' + id.charAt(0).toUpperCase() + id.slice(1);
+            if (document.getElementById(destinoId)) {
+                document.getElementById(destinoId).innerText = e.target.value || '-';
+            }
+        });
+    });
+}
+vincularCampos();
+
+// 2. Evento para previsualizar la fotografía seleccionada
+document.getElementById('inputFoto').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        fotoArchivo = file;
+        document.getElementById('credFoto').src = URL.createObjectURL(file);
+    }
+});
+
+// 3. Botón Buscar: Extrae datos existentes desde el servidor
+document.getElementById('btnBuscar').addEventListener('click', async () => {
+    const id = document.getElementById('identificacion').value.trim().toUpperCase();
+    if (!id) return alert('Por favor, ingresa una identificación');
+
+    try {
+        const res = await fetch(`${BASE_URL}/${id}`);
+        const datos = await res.json();
+
+        if (datos.existe) {
+            document.getElementById('estadoTitulo').innerText = "📝 Editando Perfil Existente";
+            const partes = datos.nombre.split(' ');
+            
+            document.getElementById('nombre').value = partes[0] || '';
+            document.getElementById('apellido1').value = partes[1] || '';
+            document.getElementById('apellido2').value = partes.slice(2).join(' ') || '';
+            document.getElementById('telefono').value = datos.telefono;
+            document.getElementById('sangre').value = datos.sangre;
+            document.getElementById('region').value = datos.region;
+            document.getElementById('brigada').value = datos.brigada;
+            
+            document.getElementById('credFoto').src = datos.foto_url;
+            document.getElementById('credNombre').innerText = partes[0] || '-';
+            document.getElementById('credApellido1').innerText = partes[1] || '-';
+            document.getElementById('credApellido2').innerText = partes.slice(2).join(' ') || '-';
+            document.getElementById('credIdentificacion').innerText = id;
+            document.getElementById('credBrigada').innerText = datos.brigada;
+            document.getElementById('credSangre').innerText = datos.sangre;
+            document.getElementById('btnGuardar').innerText = "💾 Actualizar Datos";
+        } else {
+            document.getElementById('estadoTitulo').innerText = "✨ Nuevo Registro";
+            document.getElementById('perfilForm').reset();
+            document.getElementById('identificacion').value = id;
+            document.getElementById('credFoto').src = 'https://placeholder.com';
+            document.getElementById('btnGuardar').innerText = "💾 Registrar como Nuevo";
+        }
+    } catch (err) {
+        alert('Error al conectar con la base de datos');
+    }
+});
+
+// 4. Formulario Submit: Construye el paquete y lo manda al Servidor
+document.getElementById('perfilForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const nombreCompleto = `${document.getElementById('nombre').value} ${document.getElementById('apellido1').value} ${document.getElementById('apellido2').value}`.trim();
+    const formData = new FormData();
+    formData.append('identificacion', document.getElementById('identificacion').value.trim().toUpperCase());
+    formData.append('nombre', nombreCompleto);
+    formData.append('telefono', document.getElementById('telefono').value);
+    formData.append('sangre', document.getElementById('sangre').value);
+    formData.append('region', document.getElementById('region').value);
+    formData.append('brigada', document.getElementById('brigada').value);
+    if (fotoArchivo) formData.append('foto', fotoArchivo);
+
+    try {
+        const res = await fetch(`${BASE_URL}/guardar`, { method: 'POST', body: formData });
+        const resultado = await res.json();
+        if (resultado.status === 'success') {
+            alert('🎉 ¡Perfil guardado con éxito!');
+            document.getElementById('credFoto').src = resultado.foto_url;
+            fotoArchivo = null;
+        }
+    } catch (err) {
+        alert('🔴 Error al conectar con el servidor');
+    }
+});
