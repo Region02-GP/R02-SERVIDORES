@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
@@ -19,7 +19,7 @@ UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
-# Asegura que la tabla de SQLite se inicie en el arranque
+# Arranca de forma automática la estructura SQLite
 database.init_db()
 
 @app.get("/api/perfil/{identificacion}")
@@ -47,7 +47,6 @@ async def guardar_perfil(
     brigada: str = Form(...),
     foto: UploadFile = File(None)
 ):
-    # Buscar foto previa por si no se actualiza
     row = database.buscar_brigadista(identificacion)
     foto_url = row[5] if row else "https://placeholder.com"
     
