@@ -1,5 +1,5 @@
 // CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
-const WEB_APP_URL = "URL_DE_TU_DEPLOY_DE_GOOGLE_APPS_SCRIPT_AQUÍ";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyA53cQSQQ3Pr9lz0O8GW9yl8-C3VsLISQUtQ6mTJ_F9QVyo08EEDQukeCgnW7I5Wn5XQ/exec";
 
 let fotoBase64 = "";
 let fotoContentType = "";
