@@ -4,251 +4,141 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Servicio de Brigadas de Campo</title>
-    <!-- Cargador alternativo de estilos para forzar el diseño de colores y recuadros -->
-    <link rel="stylesheet" href="https://cloudflare.com" integrity="sha512-wnea99cKBTXS736kwRJWxpFEVUNImg701CtjnQULRHzPQNPRRESoqoZMV9B8YE042Exg8HGoKYDxM6RfnKUW3A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Vinculación del CSS independiente -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-gray-200 font-sans min-h-screen flex flex-col items-center justify-center p-4" style="background-color: #f4f1ea;">
-    <div class="w-full max-w-sm space-y-6">
+<body style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem;">
+
+    <div style="width: 100%; max-w: 24rem; display: flex; flex-direction: column; gap: 1.5rem;">
+        
         <!-- PANTALLA A: FORMULARIO DE ACCESO Y CAPTURA -->
-        <div id="seccionFormulario" class="bg-white rounded-2xl shadow-xl border border-gray-300 overflow-hidden transition-all duration-300">
-            <div class="p-5 text-center text-white" style="background-color: #611232;">
-                <h1 class="text-lg font-bold tracking-wide">Identificación de Brigadistas</h1>
-                <p class="text-xs tracking-widest mt-0.5" style="color: #ddc9a3;">ESTADOS UNIDOS MEXICANOS</p>
+        <div id="seccionFormulario" class="tarjeta-control">
+            <div class="encabezado-institucional">
+                <h1 class="titulo-principal">Identificación de Brigadistas</h1>
+                <p class="subtitulo-patria">ESTADOS UNIDOS MEXICANOS</p>
             </div>
 
-            <form id="perfilForm" class="p-5 space-y-4">
+            <form id="perfilForm" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">CURP / Identificación Única</label>
-                    <div class="flex gap-2 mt-1">
-                        <input type="text" id="identificacion" required class="flex-1 p-2 border border-gray-300 rounded-xl outline-none text-gray-800 font-mono uppercase" placeholder="Ej. IAGE571015...">
-                        <button type="button" id="btnBuscar" class="bg-gray-800 text-white px-4 rounded-xl font-bold hover:bg-gray-900 transition text-sm">
-                            🔍 Buscar
-                        </button>
+                    <label class="campo-etiqueta">CURP / Identificación Única</label>
+                    <div class="flex-row-grid" style="margin-top: 0.25rem;">
+                        <input type="text" id="identificacion" required class="campo-input id-mono" placeholder="Ej. IAGE571015...">
+                        <button type="button" id="btnBuscar" class="btn-buscar">🔍 Buscar</button>
                     </div>
                 </div>
 
                 <!-- Campos de registro ocultos al inicio -->
-                <div id="camposRegistro" class="hidden space-y-3 pt-2 border-t border-gray-200">
+                <div id="camposRegistro" class="hidden" style="display: flex; flex-direction: column; gap: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #f3f4f6;">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Nombre(s)</label>
-                        <input type="text" id="nombre" required class="w-full mt-1 p-2 border border-gray-300 rounded-xl outline-none text-gray-800 text-sm">
+                        <label class="campo-etiqueta">Nombre(s)</label>
+                        <input type="text" id="nombre" required class="campo-input">
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid-2">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Primer Apellido</label>
-                            <input type="text" id="apellido1" required class="w-full mt-1 p-2 border border-gray-300 rounded-xl outline-none text-gray-800 text-sm">
+                            <label class="campo-etiqueta">Primer Apellido</label>
+                            <input type="text" id="apellido1" required class="campo-input">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Segundo Apellido</label>
-                            <input type="text" id="apellido2" class="w-full mt-1 p-2 border border-gray-300 rounded-xl outline-none text-gray-800 text-sm">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Teléfono</label>
-                            <input type="tel" id="telefono" required class="w-full mt-1 p-2 border border-gray-300 rounded-xl outline-none text-gray-800 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Tipo de Sangre</label>
-                            <input type="text" id="sangre" required class="w-full mt-1 p-2 border border-gray-300 rounded-xl outline-none text-gray-800 text-sm uppercase" placeholder="Ej. O+">
+                            <label class="campo-etiqueta">Segundo Apellido</label>
+                            <input type="text" id="apellido2" class="campo-input">
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid-2">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Región / Zona</label>
-                            <input type="text" id="region" required class="w-full mt-1 p-2 border border-gray-300 rounded-xl outline-none text-gray-800 text-sm">
+                            <label class="campo-etiqueta">Teléfono</label>
+                            <input type="tel" id="telefono" required class="campo-input">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">No. Brigada</label>
-                            <input type="text" id="brigada" required class="w-full mt-1 p-2 border border-gray-300 rounded-xl outline-none text-gray-800 text-sm">
+                            <label class="campo-etiqueta">Tipo de Sangre</label>
+                            <input type="text" id="sangre" required class="campo-input" placeholder="Ej. O+">
                         </div>
                     </div>
-                    <div class="flex flex-col items-center pt-2">
-                        <label class="cursor-pointer bg-gray-100 text-gray-700 border border-gray-300 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-gray-200 transition">
+                    <div class="grid-2">
+                        <div>
+                            <label class="campo-etiqueta">Región / Zona</label>
+                            <input type="text" id="region" required class="campo-input">
+                        </div>
+                        <div>
+                            <label class="campo-etiqueta">No. Brigada</label>
+                            <input type="text" id="brigada" required class="campo-input">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; padding-top: 0.5rem;">
+                        <label style="cursor: pointer; background-color: #f3f4f6; padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 0.75rem; font-size: 0.75rem; font-weight: 600;">
                             📸 Seleccionar Fotografía Oficial
-                            <input type="file" id="inputFoto" accept="image/*" class="hidden">
+                            <input type="file" id="inputFoto" accept="image/*" style="display: none;">
                         </label>
                     </div>
-                    <button type="submit" id="btnGuardar" class="w-full text-white py-3 rounded-xl font-bold shadow-lg transition-all mt-2 text-sm" style="background-color: #611232;">
-                        💾 Guardar Registro
-                    </button>
+                    <button type="submit" id="btnGuardar" class="btn-guardar">💾 Guardar Registro</button>
                 </div>
             </form>
         </div>
+
         <!-- PANTALLA B: CREDENCIAL OFICIAL GOBIERNO -->
-        <div id="seccionCredencial" class="hidden w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden border border-gray-300 relative flex flex-col justify-between" style="min-height: 560px; background-color: #fcfaf6;">
-            <div class="pt-6 pb-4 px-4 text-center text-white relative" style="background-color: #611232;">
-                <h2 class="text-base font-bold tracking-wider leading-tight">Servicio Universal de Salud</h2>
-                <p class="text-[10px] font-medium tracking-widest mt-0.5 uppercase" style="color: #ddc9a3;">Estados Unidos Mexicanos</p>
+        <div id="seccionCredencial" class="gafete-realista hidden">
+            <div class="encabezado-institucional" style="padding-top: 1.5rem; padding-bottom: 1rem;">
+                <h2 style="font-size: 1rem; font-weight: 700; letter-spacing: 0.025em;">Servicio Universal de Salud</h2>
+                <p class="subtitulo-patria uppercase">Estados Unidos Mexicanos</p>
             </div>
 
-            <div class="px-6 py-4 flex flex-col items-center flex-1 justify-center relative">
-                <div class="w-36 h-44 bg-gray-200 border-4 border-white shadow-md overflow-hidden relative rounded-md mb-4">
-                    <img id="credFoto" src="https://placeholder.com" class="w-full h-full object-cover">
-                    <div class="absolute top-2 right-2 w-8 h-8 rounded-full border flex items-center justify-center text-[5px] font-bold rotate-12" style="border-color: rgba(217, 119, 6, 0.2); color: rgba(217, 119, 6, 0.3);">MÉXICO</div>
+            <div style="padding: 1rem 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1;">
+                <div class="marco-fotografia">
+                    <img id="credFoto" src="https://placeholder.com" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
 
-                <div class="w-full text-center space-y-3">
-                    <div>
-                        <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Nombre(s)</p>
-                        <p id="credNombre" class="text-lg font-bold text-gray-800 leading-tight">-</p>
+                <div class="datos-gafete-contenedor">
+                    <div style="margin-bottom: 0.5rem;">
+                        <p class="cred-label">Nombre(s)</p>
+                        <p id="credNombre" class="cred-valor-principal">-</p>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid-2" style="margin-bottom: 0.5rem;">
                         <div>
-                            <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Primer apellido</p>
-                            <p id="credApellido1" class="text-base font-semibold text-gray-800">-</p>
+                            <p class="cred-label">Primer apellido</p>
+                            <p id="credApellido1" class="cred-valor-secondario">-</p>
                         </div>
                         <div>
-                            <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Segundo apellido</p>
-                            <p id="credApellido2" class="text-base font-semibold text-gray-800">-</p>
+                            <p class="cred-label">Segundo apellido</p>
+                            <p id="credApellido2" class="cred-valor-secondario">-</p>
                         </div>
                     </div>
-                    <div class="pt-2 border-t border-gray-200">
-                        <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">CURP</p>
-                        <p id="credIdentificacion" class="text-sm font-mono font-bold tracking-wider text-gray-900 uppercase">-</p>
+                    <div style="padding-top: 0.5rem; border-top: 1px solid #e5e7eb;">
+                        <p class="cred-label">CURP</p>
+                        <p id="credIdentificacion" class="cred-valor-mono">-</p>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 pt-1 text-left text-xs p-2 rounded-lg border border-gray-100" style="background-color: #f9f9f9;">
+                    <div class="grid-2 bloque-metadatos" style="text-align: left;">
                         <div>
-                            <span class="text-[9px] text-gray-400 block font-bold">BRIGADA:</span>
-                            <span id="credBrigada" class="font-medium text-gray-700">-</span>
+                            <span class="cred-label" style="font-size: 0.55rem; block">BRIGADA:</span>
+                            <span id="credBrigada" style="font-size: 0.8rem; font-weight: 500;">-</span>
                         </div>
                         <div>
-                            <span class="text-[9px] text-gray-400 block font-bold">SANGRE:</span>
-                            <span id="credSangre" class="font-bold text-red-700">-</span>
+                            <span class="cred-label" style="font-size: 0.55rem; block">SANGRE:</span>
+                            <span id="credSangre" style="font-size: 0.8rem; font-weight: 700; color: #b91c1c;">-</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white border-t border-gray-200 px-4 py-3 flex justify-between items-center gap-1 overflow-x-auto">
-                <span class="text-[8px] font-bold font-serif" style="color: #1e3a1e;">IMSS</span>
-                <span class="text-[8px] font-bold font-serif" style="color: #6b1d2f;">ISSSTE</span>
-                <span class="text-[8px] font-bold font-serif" style="color: #b91c1c;">PEMEX</span>
-                <span class="text-[8px] font-bold font-serif" style="color: #15803d;">PCIVIL</span>
-                <span class="text-[8px] font-bold font-sans tracking-tighter" style="color: #064e3b;">IMSS BIENESTAR</span>
+            <div class="logos-salud-barra">
+                <span style="color: #166534; font-family: serif;">IMSS</span>
+                <span style="color: #831843; font-family: serif;">ISSSTE</span>
+                <span style="color: #991b1b; font-family: serif;">PEMEX</span>
+                <span style="color: #15803d; font-family: serif;">PCIVIL</span>
+                <span style="color: #064e3b; font-family: sans-serif; letter-spacing: -0.05em;">IMSS BIENESTAR</span>
             </div>
             
-            <!-- Bandera Mexicana en el borde inferior -->
-            <div class="w-full flex h-1">
-                <div class="w-1/3 bg-green-700"></div>
-                <div class="w-1/3 bg-white"></div>
-                <div class="w-1/3 bg-red-700"></div>
+            <div style="display: flex; h: 4px; width: 100%;">
+                <div style="width: 33.33%; background-color: #15803d; height: 4px;"></div>
+                <div style="width: 33.33%; background-color: #ffffff; height: 4px;"></div>
+                <div style="width: 33.33%; background-color: #b91c1c; height: 4px;"></div>
             </div>
         </div>
 
-        <button id="btnVolver" class="hidden w-full text-center text-xs text-gray-500 font-semibold underline hover:text-red-800 transition">
+        <button id="btnVolver" class="hidden" style="background: none; border: none; text-align: center; font-size: 0.75rem; font-weight: 600; text-decoration: underline; color: #6b7280; cursor: pointer;">
             ◀ Volver al buscador
         </button>
     </div>
-    <script>
-        const BASE_URL = 'http://127.0.0';
-        let fotoArchivo = null;
 
-        document.getElementById('nombre').addEventListener('input', (e) => document.getElementById('credNombre').innerText = e.target.value || '-');
-        document.getElementById('apellido1').addEventListener('input', (e) => document.getElementById('credApellido1').innerText = e.target.value || '-');
-        document.getElementById('apellido2').addEventListener('input', (e) => document.getElementById('credApellido2').innerText = e.target.value || '-');
-        document.getElementById('identificacion').addEventListener('input', (e) => document.getElementById('credIdentificacion').innerText = e.target.value.toUpperCase() || '-');
-        document.getElementById('brigada').addEventListener('input', (e) => document.getElementById('credBrigada').innerText = e.target.value || '-');
-        document.getElementById('sangre').addEventListener('input', (e) => document.getElementById('credSangre').innerText = e.target.value.toUpperCase() || '-');
-
-        document.getElementById('inputFoto').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                fotoArchivo = file;
-                document.getElementById('credFoto').src = URL.createObjectURL(file);
-                document.getElementById('seccionCredencial').classList.remove('hidden');
-            }
-        });
-
-        document.getElementById('btnBuscar').addEventListener('click', async () => {
-            const id = document.getElementById('identificacion').value.trim().toUpperCase();
-            if (!id) return alert('Por favor, ingresa una identificación');
-
-            document.getElementById('camposRegistro').classList.remove('hidden');
-
-            try {
-                const res = await fetch(`${BASE_URL}/${id}`);
-                const datos = await res.json();
-
-                if (datos.existe) {
-                    const partes = datos.nombre.split(' ');
-                    document.getElementById('nombre').value = partes[0] || '';
-                    document.getElementById('apellido1').value = partes[1] || '';
-                    document.getElementById('apellido2').value = partes.slice(2).join(' ') || '';
-                    document.getElementById('telefono').value = datos.telefono;
-                    document.getElementById('sangre').value = datos.sangre;
-                    document.getElementById('region').value = datos.region;
-                    document.getElementById('brigada').value = datos.brigada;
-                    
-                    document.getElementById('credNombre').innerText = partes[0] || '-';
-                    document.getElementById('credApellido1').innerText = partes[1] || '-';
-                    document.getElementById('credApellido2').innerText = partes.slice(2).join(' ') || '-';
-                    document.getElementById('credIdentificacion').innerText = id;
-                    document.getElementById('credBrigada').innerText = datos.brigada;
-                    document.getElementById('credSangre').innerText = datos.sangre;
-                    document.getElementById('credFoto').src = datos.foto_url;
-
-                    document.getElementById('seccionCredencial').classList.remove('hidden');
-                    document.getElementById('seccionFormulario').classList.add('hidden');
-                    document.getElementById('btnVolver').classList.remove('hidden');
-                } else {
-                    document.getElementById('nombre').value = '';
-                    document.getElementById('apellido1').value = '';
-                    document.getElementById('apellido2').value = '';
-                    document.getElementById('telefono').value = '';
-                    document.getElementById('sangre').value = '';
-                    document.getElementById('region').value = '';
-                    document.getElementById('brigada').value = '';
-                    document.getElementById('seccionCredencial').classList.add('hidden');
-                    alert('✨ ID no encontrado en registros. Complete el formulario para darlo de alta.');
-                }
-            } catch (err) {
-                alert('Modo simulación activado localmente.');
-                document.getElementById('credIdentificacion').innerText = id;
-                document.getElementById('seccionCredencial').classList.remove('hidden');
-            }
-        });
-
-        document.getElementById('perfilForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const nombreCompleto = `${document.getElementById('nombre').value} ${document.getElementById('apellido1').value} ${document.getElementById('apellido2').value}`.trim();
-            const idDoc = document.getElementById('identificacion').value.trim().toUpperCase();
-            
-            const formData = new FormData();
-            formData.append('identificacion', idDoc);
-            formData.append('nombre', nombreCompleto);
-            formData.append('telefono', document.getElementById('telefono').value);
-            formData.append('sangre', document.getElementById('sangre').value);
-            formData.append('region', document.getElementById('region').value);
-            formData.append('brigada', document.getElementById('brigada').value);
-            if (fotoArchivo) formData.append('foto', fotoArchivo);
-
-            try {
-                const res = await fetch(`${BASE_URL}/guardar`, { method: 'POST', body: formData });
-                const resultado = await res.json();
-                if (resultado.status === 'success') {
-                    alert('🎉 ¡Registro guardado exitosamente!');
-                    document.getElementById('credFoto').src = resultado.foto_url;
-                    fotoArchivo = null;
-                    
-                    document.getElementById('seccionCredencial').classList.remove('hidden');
-                    document.getElementById('seccionFormulario').classList.add('hidden');
-                    document.getElementById('btnVolver').classList.remove('hidden');
-                }
-            } catch (err) {
-                alert('💾 Simulación: Datos reflejados localmente.');
-                document.getElementById('seccionCredencial').classList.remove('hidden');
-                document.getElementById('seccionFormulario').classList.add('hidden');
-                document.getElementById('btnVolver').classList.remove('hidden');
-            }
-        });
-
-        document.getElementById('btnVolver').addEventListener('click', () => {
-            document.getElementById('seccionFormulario').classList.remove('hidden');
-            document.getElementById('seccionCredencial').classList.add('hidden');
-            document.getElementById('btnVolver').classList.add('hidden');
-        });
-    </script>
+    <!-- Enlace al controlador JavaScript -->
+    <script src="app.js"></script>
 </body>
 </html>
