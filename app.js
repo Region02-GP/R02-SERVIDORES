@@ -1,5 +1,5 @@
 // CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyA53cQSQQ3Pr9lz0O8GW9yl8-C3VsLISQUtQ6mTJ_F9QVyo08EEDQukeCgnW7I5Wn5XQ/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxMTVcbU9wIgNK_e5laNut-CFKyyjUmDQclnVOmygxkOjwZkYisnAnX0scigm5tjdS81w/exec";
 
 let fotoBase64 = "";
 let fotoContentType = "";
@@ -71,24 +71,42 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
     }
 });
 
-// PANTALLA 2: ENVÍO ASÍNCRONO DEL REGISTRO (CON EXCLUSIÓN / UPSERT)
+// PANTALLA 2: ENVÍO ASÍNCRONO DEL REGISTRO (CORREGIDO)
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const curp = document.getElementById('nombre_curp').value;
-    const urlPayload = `${WEB_APP_URL}?action=guardar&curp=${curp}&nombre=${document.getElementById('nombre').value}&ap_paterno=${document.getElementById('ap_paterno').value}&ap_materno=${document.getElementById('ap_materno').value}&municipio=${document.getElementById('municipio').value}&puesto=${document.getElementById('puesto').value}&telefono=${document.getElementById('telefono').value}&zona=${document.getElementById('zona').value}&correo=${document.getElementById('correo').value}&foto_url=${fotoUrlActual}`;
+    
+    // Dejamos limpia la URL base llamando solo a la acción guardar
+    const urlPayload = `${WEB_APP_URL}?action=guardar`;
 
-    let bodyPayload = "{}";
-    if (fotoBase64) {
-        bodyPayload = JSON.stringify({ fotoBase64: fotoBase64, fotoContentType: fotoContentType });
-    }
+    // Empaquetamos absolutamente TODOS los datos en un solo objeto JSON hacia el Body
+    const datosFormulario = {
+        curp: curp,
+        nombre: document.getElementById('nombre').value,
+        ap_paterno: document.getElementById('ap_paterno').value,
+        ap_materno: document.getElementById('ap_materno').value,
+        municipio: document.getElementById('municipio').value,
+        puesto: document.getElementById('puesto').value,
+        telefono: document.getElementById('telefono').value,
+        zona: document.getElementById('zona').value,
+        correo: document.getElementById('correo').value,
+        foto_url: fotoUrlActual,
+        // Si hay foto en base64 se adjunta, si no va vacío
+        fotoBase64: fotoBase64 ? fotoBase64 : null,
+        fotoContentType: fotoBase64 ? fotoContentType : null
+    };
 
     try {
-        const res = await fetch(urlPayload, { method: 'POST', body: bodyPayload });
+        const res = await fetch(urlPayload, { 
+            method: 'POST', 
+            body: JSON.stringify(datosFormulario) 
+        });
         const resultado = await res.json();
         
         if (resultado.status === "success") {
             alert('🎉 Registro guardado en la nube exitosamente');
+            
             // Transferir a pantalla 3
             document.getElementById('credCompleto').innerText = `${document.getElementById('nombre').value} ${document.getElementById('ap_paterno').value} ${document.getElementById('ap_materno').value}`.toUpperCase();
             document.getElementById('credPuesto').innerText = document.getElementById('puesto').value.toUpperCase();
@@ -100,9 +118,12 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             fotoBase64 = "";
             document.getElementById('fotoAviso').classList.add('hidden');
             irAPantalla(3);
+        } else {
+            alert('Error: ' + resultado.message);
         }
     } catch (err) {
         alert('Error al sincronizar datos en la nube de Google.');
+        console.error(err);
     }
 });
 
