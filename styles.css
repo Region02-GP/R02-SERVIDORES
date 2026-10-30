@@ -1,0 +1,194 @@
+/* Paleta de colores oficiales y fuentes */
+:root {
+    --color-guinda: #611232;
+    --color-guinda-light: #7a1c43;
+    --color-dorado: #ddc9a3;
+    --color-fondo-app: #f4f1ea;
+    --color-fondo-gafete: #fcfaf6;
+    --color-texto-oscuro: #1f2937;
+    --color-texto-mutado: #6b7280;
+}
+
+body {
+    background-color: var(--color-fondo-app);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--color-texto-oscuro);
+}
+
+/* Tarjetas y Contenedores */
+.tarjeta-control {
+    background: #ffffff;
+    border-radius: 1rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.encabezado-institucional {
+    background-color: var(--color-guinda);
+    padding: 1.25rem;
+    text-align: center;
+    color: #ffffff;
+}
+
+.titulo-principal {
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: 0.025em;
+}
+
+.subtitulo-patria {
+    font-size: 0.70rem;
+    color: var(--color-dorado);
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin-top: 0.125rem;
+}
+
+/* Campos de Formulario */
+.campo-etiqueta {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--color-texto-mutado);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.campo-input {
+    width: 100%;
+    margin-top: 0.25rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.75rem;
+    outline: none;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.campo-input:focus {
+    border-color: var(--color-guinda);
+    box-shadow: 0 0 0 3px rgba(97, 18, 50, 0.15);
+}
+
+.campo-input.id-mono {
+    font-family: monospace;
+    text-transform: uppercase;
+}
+
+/* Botones */
+.btn-buscar {
+    background-color: #1f2937;
+    color: #ffffff;
+    padding: 0 1.25rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
+}
+
+.btn-buscar:hover {
+    background-color: #111827;
+}
+
+.btn-guardar {
+    width: 100%;
+    background-color: var(--color-guinda);
+    color: #ffffff;
+    padding: 0.85rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    box-shadow: 0 4px 12px rgba(97, 18, 50, 0.2);
+    transition: all 0.2s;
+}
+
+.btn-guardar:hover {
+    background-color: var(--color-guinda-light);
+}
+
+/* El Gafete / Credencial Oficial */
+.gafete-realista {
+    background-color: var(--color-fondo-gafete);
+    border-radius: 1.25rem;
+    border: 1px solid #d1d5db;
+    box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    position: relative;
+    min-height: 560px;
+    display: flex;
+    flex-content: space-between;
+    flex-direction: column;
+}
+
+.marco-fotografia {
+    width: 9rem;
+    height: 11rem;
+    background-color: #e5e7eb;
+    border: 4px solid #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.datos-gafete-contenedor {
+    width: 100%;
+    text-align: center;
+}
+
+.cred-label {
+    font-size: 0.625rem;
+    color: var(--color-texto-mutado);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.cred-valor-principal {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--color-texto-oscuro);
+    line-height: 1.2;
+}
+
+.cred-valor-secundario {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-texto-oscuro);
+}
+
+.cred-valor-mono {
+    font-size: 0.875rem;
+    font-family: monospace;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #111827;
+}
+
+.bloque-metadatos {
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+/* Franja de Logotipos Inferior */
+.logos-salud-barra {
+    background-color: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* Detalles de utilidad */
+.hidden { display: none !important; }
+.flex-row-grid { display: flex; gap: 0.75rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
