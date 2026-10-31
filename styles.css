@@ -36,8 +36,10 @@ body {
     box-sizing: border-box;
 }
 
+/* Optimización para que el Gafete ocupe la pantalla completa del móvil */
 .gafete-realista {
     background-color: var(--color-fondo-gafete);
+    justify-content: space-between;
 }
 
 .encabezado-institucional {
@@ -139,25 +141,27 @@ body {
     background-color: var(--color-guinda-light);
 }
 
+/* Ajustes proporcionales para la foto del brigadista en el móvil */
 .marco-fotografia {
-    width: 10rem;
-    height: 12rem;
+    width: 12rem;
+    height: 15rem;
     background-color: #e5e7eb;
     border: 4px solid #ffffff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     overflow: hidden;
     position: relative;
     border-radius: 0.5rem;
-    margin-bottom: 1.5rem;
 }
 
 .datos-gafete-contenedor {
     width: 100%;
     text-align: center;
+    padding: 0 0.5rem;
+    box-sizing: border-box;
 }
 
 .cred-label {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--color-texto-mutado);
     font-weight: 600;
     text-transform: uppercase;
@@ -166,27 +170,27 @@ body {
 }
 
 .cred-valor-principal {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 800;
     color: var(--color-texto-oscuro);
     line-height: 1.2;
-    margin: 0 0 0.5rem 0;
+    margin: 0.25rem 0 0.75rem 0;
 }
 
 .cred-valor-secundario {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--color-texto-oscuro);
-    margin: 0;
+    margin: 0.25rem 0 0;
 }
 
 .cred-valor-mono {
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-family: monospace;
     font-weight: 700;
     letter-spacing: 0.05em;
     color: #111827;
-    margin: 0;
+    margin: 0.25rem 0 0;
 }
 
 .logos-salud-barra {
@@ -196,7 +200,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     font-weight: 700;
     flex-shrink: 0;
 }
@@ -204,13 +208,14 @@ body {
 .hidden { display: none !important; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
 
+/* Vista adaptada para pantallas de escritorio (Mantiene la tarjeta flotante) */
 @media (min-width: 480px) {
     .contenedor-principal-flujo {
         padding: 2rem 1rem;
         justify-content: center;
     }
     .tarjeta-control, .gafete-realista {
-        min-height: auto;
+        min-height: 640px;
         border-radius: 1.25rem;
         border: 1px solid #d1d5db;
         box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15);
@@ -222,4 +227,9 @@ body {
     .btn-guardar {
         margin-top: 0.5rem;
     }
+    .marco-fotografia {
+        width: 10rem;
+        height: 12rem;
+    }
 }
+
