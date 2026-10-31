@@ -1,7 +1,6 @@
 // CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxK3U3YvEi4tt58VOFbMv72WeLT3xBOoHr1_-c71OtMrGGrRhS7YtWRCoS83TjyoaNk6A/exec";
 
-
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
 
@@ -10,7 +9,9 @@ function irAPantalla(num) {
     document.getElementById('pantalla2').classList.add('hidden');
     document.getElementById('pantalla3').classList.add('hidden');
     document.getElementById('pantalla' + num).classList.remove('hidden');
+    window.scrollTo(0, 0);
 }
+
 document.getElementById('btnAcceder').addEventListener('click', async () => {
     const curp = document.getElementById('p1_curp').value.trim().toUpperCase();
     if (!curp) return alert('Por favor, ingresa una CURP válida');
@@ -21,13 +22,14 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         const datos = await res.json();
 
         document.getElementById('nombre_curp').value = curp;
+        fotoCompletaBase64 = ""; 
 
         if (datos.existe) {
             document.getElementById('credCompleto').innerText = `${datos.nombre} ${datos.ap_paterno} ${datos.ap_materno}`.toUpperCase();
             document.getElementById('credPuesto').innerText = datos.puesto.toUpperCase();
             document.getElementById('credZona').innerText = datos.zona.toUpperCase();
             document.getElementById('credIdentificacion').innerText = datos.curp;
-            document.getElementById('credFoto').src = datos.foto_url; // Renderizado instantáneo sin bloqueos
+            document.getElementById('credFoto').src = datos.foto_url;
             fotoUrlActual = datos.foto_url;
 
             document.getElementById('nombre').value = datos.nombre;
@@ -44,6 +46,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('p2_titulo').innerText = "Nuevo Registro";
             document.getElementById('perfilForm').reset();
             document.getElementById('nombre_curp').value = curp;
+            document.getElementById('fotoAviso').classList.add('hidden');
             fotoUrlActual = "";
             irAPantalla(2);
         }
@@ -51,7 +54,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         alert('Error al consultar los registros del servidor.');
     }
 });
-// Conservar la cadena completa tipo DataURL para saltarnos el CORS de Google
+
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -117,4 +120,3 @@ document.getElementById('btnCerrar').addEventListener('click', () => {
     document.getElementById('p1_curp').value = "";
     irAPantalla(1);
 });
-
