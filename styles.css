@@ -1,4 +1,3 @@
-/* Paleta de colores oficiales y fuentes */
 :root {
     --color-guinda: #611232;
     --color-guinda-light: #7a1c43;
@@ -14,57 +13,69 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--color-texto-oscuro);
     margin: 0;
+    padding: 0;
+    min-height: 100vh;
 }
 
-/* Tarjetas y Contenedores */
 .contenedor-principal-flujo {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     min-height: 100vh;
     width: 100%;
-    padding: 1rem;
     box-sizing: border-box;
 }
 
-.tarjeta-control {
+.tarjeta-control, .gafete-realista {
     background: #ffffff;
-    border-radius: 1rem;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
     width: 100%;
-    max-w: 24rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.gafete-realista {
+    background-color: var(--color-fondo-gafete);
 }
 
 .encabezado-institucional {
     background-color: var(--color-guinda);
-    padding: 1.25rem;
+    padding: 1.5rem 1.25rem;
     text-align: center;
     color: #ffffff;
+    flex-shrink: 0;
 }
 
 .titulo-principal {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: 0.025em;
     margin: 0;
 }
 
 .subtitulo-patria {
-    font-size: 0.70rem;
+    font-size: 0.75rem;
     color: var(--color-dorado);
     letter-spacing: 0.1em;
     font-weight: 600;
-    margin-top: 0.125rem;
+    margin-top: 0.25rem;
     margin-bottom: 0;
 }
 
-/* Campos de Formulario */
+#perfilForm {
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
 .campo-etiqueta {
     display: block;
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: var(--color-texto-mutado);
     text-transform: uppercase;
@@ -73,12 +84,12 @@ body {
 
 .campo-input {
     width: 100%;
-    margin-top: 0.25rem;
-    padding: 0.65rem 0.85rem;
+    margin-top: 0.35rem;
+    padding: 0.8rem 1rem;
     border: 1px solid #d1d5db;
     border-radius: 0.75rem;
     outline: none;
-    font-size: 0.875rem;
+    font-size: 1rem;
     transition: all 0.2s ease;
     box-sizing: border-box;
 }
@@ -93,14 +104,13 @@ body {
     text-transform: uppercase;
 }
 
-/* Botones */
 .btn-buscar {
     background-color: #1f2937;
     color: #ffffff;
-    padding: 0.65rem 1.25rem;
+    padding: 0.8rem 1.25rem;
     border-radius: 0.75rem;
     font-weight: 700;
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     transition: background-color 0.2s;
     border: none;
     cursor: pointer;
@@ -114,46 +124,31 @@ body {
     width: 100%;
     background-color: var(--color-guinda);
     color: #ffffff;
-    padding: 0.85rem;
+    padding: 1rem;
     border-radius: 0.75rem;
     font-weight: 700;
-    font-size: 0.875rem;
+    font-size: 1rem;
     box-shadow: 0 4px 12px rgba(97, 18, 50, 0.2);
     transition: all 0.2s;
     border: none;
     cursor: pointer;
+    margin-top: auto;
 }
 
 .btn-guardar:hover {
     background-color: var(--color-guinda-light);
 }
 
-/* El Gafete / Credencial Oficial */
-.gafete-realista {
-    background-color: var(--color-fondo-gafete);
-    border-radius: 1.25rem;
-    border: 1px solid #d1d5db;
-    box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
-    position: relative;
-    min-height: 560px;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    width: 100%;
-    max-w: 24rem;
-}
-
 .marco-fotografia {
-    width: 9rem;
-    height: 11rem;
+    width: 10rem;
+    height: 12rem;
     background-color: #e5e7eb;
     border: 4px solid #ffffff;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     position: relative;
-    border-radius: 0.25rem;
-    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .datos-gafete-contenedor {
@@ -162,7 +157,7 @@ body {
 }
 
 .cred-label {
-    font-size: 0.625rem;
+    font-size: 0.7rem;
     color: var(--color-texto-mutado);
     font-weight: 600;
     text-transform: uppercase;
@@ -171,7 +166,7 @@ body {
 }
 
 .cred-valor-principal {
-    font-size: 1.25rem;
+    font-size: 1.4rem;
     font-weight: 800;
     color: var(--color-texto-oscuro);
     line-height: 1.2;
@@ -179,14 +174,14 @@ body {
 }
 
 .cred-valor-secundario {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--color-texto-oscuro);
     margin: 0;
 }
 
 .cred-valor-mono {
-    font-size: 0.875rem;
+    font-size: 0.95rem;
     font-family: monospace;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -194,28 +189,37 @@ body {
     margin: 0;
 }
 
-.bloque-metadatos {
-    background-color: #f3f4f6;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-}
-
-/* Franja de Logotipos Inferior */
 .logos-salud-barra {
     background-color: #ffffff;
     border-top: 1px solid #e5e7eb;
-    padding: 0.75rem 1rem;
+    padding: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.5rem;
+    font-size: 0.6rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    flex-shrink: 0;
 }
 
-/* Detalles de utilidad */
 .hidden { display: none !important; }
-.flex-row-grid { display: flex; gap: 0.75rem; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+
+@media (min-width: 480px) {
+    .contenedor-principal-flujo {
+        padding: 2rem 1rem;
+        justify-content: center;
+    }
+    .tarjeta-control, .gafete-realista {
+        min-height: auto;
+        border-radius: 1.25rem;
+        border: 1px solid #d1d5db;
+        box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15);
+        max-width: 26rem;
+    }
+    #perfilForm {
+        overflow-y: visible;
+    }
+    .btn-guardar {
+        margin-top: 0.5rem;
+    }
+}
