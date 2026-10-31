@@ -13,15 +13,29 @@ body {
     background-color: var(--color-fondo-app);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--color-texto-oscuro);
+    margin: 0;
 }
 
 /* Tarjetas y Contenedores */
+.contenedor-principal-flujo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
 .tarjeta-control {
     background: #ffffff;
     border-radius: 1rem;
     border: 1px solid #e5e7eb;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
     overflow: hidden;
+    width: 100%;
+    max-w: 24rem;
 }
 
 .encabezado-institucional {
@@ -35,6 +49,7 @@ body {
     font-size: 1.125rem;
     font-weight: 700;
     letter-spacing: 0.025em;
+    margin: 0;
 }
 
 .subtitulo-patria {
@@ -43,6 +58,7 @@ body {
     letter-spacing: 0.1em;
     font-weight: 600;
     margin-top: 0.125rem;
+    margin-bottom: 0;
 }
 
 /* Campos de Formulario */
@@ -64,6 +80,7 @@ body {
     outline: none;
     font-size: 0.875rem;
     transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
 .campo-input:focus {
@@ -80,11 +97,13 @@ body {
 .btn-buscar {
     background-color: #1f2937;
     color: #ffffff;
-    padding: 0 1.25rem;
+    padding: 0.65rem 1.25rem;
     border-radius: 0.75rem;
     font-weight: 700;
     font-size: 0.875rem;
     transition: background-color 0.2s;
+    border: none;
+    cursor: pointer;
 }
 
 .btn-buscar:hover {
@@ -101,6 +120,8 @@ body {
     font-size: 0.875rem;
     box-shadow: 0 4px 12px rgba(97, 18, 50, 0.2);
     transition: all 0.2s;
+    border: none;
+    cursor: pointer;
 }
 
 .btn-guardar:hover {
@@ -117,8 +138,10 @@ body {
     position: relative;
     min-height: 560px;
     display: flex;
-    flex-content: space-between;
+    justify-content: space-between;
     flex-direction: column;
+    width: 100%;
+    max-w: 24rem;
 }
 
 .marco-fotografia {
@@ -144,6 +167,7 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    margin: 0;
 }
 
 .cred-valor-principal {
@@ -151,12 +175,14 @@ body {
     font-weight: 800;
     color: var(--color-texto-oscuro);
     line-height: 1.2;
+    margin: 0 0 0.5rem 0;
 }
 
 .cred-valor-secundario {
     font-size: 1rem;
     font-weight: 600;
     color: var(--color-texto-oscuro);
+    margin: 0;
 }
 
 .cred-valor-mono {
@@ -165,6 +191,7 @@ body {
     font-weight: 700;
     letter-spacing: 0.05em;
     color: #111827;
+    margin: 0;
 }
 
 .bloque-metadatos {
