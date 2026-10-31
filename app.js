@@ -1,8 +1,18 @@
 // CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxK3U3YvEi4tt58VOFbMv72WeLT3xBOoHr1_-c71OtMrGGrRhS7YtWRCoS83TjyoaNk6A/exec";
 
+
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
+
+// Función auxiliar para forzar la correcta interpretación de imágenes cargadas de la base de datos
+function formatearBase64Src(stringBase64) {
+    if (!stringBase64) return "https://placeholder.com";
+    if (stringBase64.startsWith("data:") || stringBase64.startsWith("http")) {
+        return stringBase64;
+    }
+    return `data:image/jpeg;base64,${stringBase64}`;
+}
 
 function irAPantalla(num) {
     document.getElementById('pantalla1').classList.add('hidden');
@@ -29,8 +39,11 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('credPuesto').innerText = datos.puesto.toUpperCase();
             document.getElementById('credZona').innerText = datos.zona.toUpperCase();
             document.getElementById('credIdentificacion').innerText = datos.curp;
-            document.getElementById('credFoto').src = datos.foto_url;
-            fotoUrlActual = datos.foto_url;
+            
+            // Corrige la carga interpretando el Base64 directamente sin errores de acceso de navegador
+            const imagenProcesada = formatearBase64Src(datos.foto_url);
+            document.getElementById('credFoto').src = imagenProcesada;
+            fotoUrlActual = imagenProcesada;
 
             document.getElementById('nombre').value = datos.nombre;
             document.getElementById('ap_paterno').value = datos.ap_paterno;
@@ -100,7 +113,10 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             document.getElementById('credPuesto').innerText = document.getElementById('puesto').value.toUpperCase();
             document.getElementById('credZona').innerText = document.getElementById('zona').value.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
-            document.getElementById('credFoto').src = resultado.foto_url;
+            
+            const nuevaImagen = formatearBase64Src(resultado.foto_url);
+            document.getElementById('credFoto').src = nuevaImagen;
+            fotoUrlActual = nuevaImagen;
             
             fotoCompletaBase64 = "";
             document.getElementById('fotoAviso').classList.add('hidden');
