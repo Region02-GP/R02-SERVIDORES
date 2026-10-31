@@ -10,17 +10,17 @@
 
     <div class="contenedor-principal-flujo">
         
-        <!-- PANTALLA 1: ACCESO POR CURP (ESTILO CREDENCIAL) -->
+        <!-- PANTALLA 1: ACCESO POR CURP -->
         <div id="pantalla1" class="tarjeta-control">
             <div class="encabezado-institucional">
                 <h1 class="titulo-principal">Servicio Universal de Salud</h1>
                 <p class="subtitulo-patria">IDENTIFICACIÓN DE BRIGADISTAS</p>
             </div>
             
-            <div class="cuerpo-credencial" style="justify-content: center; gap: 2rem;">
-                <div style="text-align: center; margin-bottom: 1rem;">
-                    <div style="font-size: 4rem; margin-bottom: 0.5rem;">🪪</div>
-                    <p style="font-size: 0.9rem; color: var(--color-texto-mutado); font-weight: 500; margin: 0;">Módulo de Acceso Oficial</p>
+            <div class="cuerpo-credencial" style="justify-content: center; gap: 2rem; overflow: hidden;">
+                <div style="text-align: center;">
+                    <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">🪪</div>
+                    <p style="font-size: 0.85rem; color: var(--color-texto-mutado); font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Módulo de Acceso</p>
                 </div>
                 <div>
                     <label class="campo-etiqueta">Ingrese CURP para continuar</label>
@@ -29,7 +29,6 @@
                 <button type="button" id="btnAcceder" class="btn-guardar">🔍 Validar Identidad</button>
             </div>
 
-            <!-- Barra inferior unificada -->
             <div class="logos-salud-barra">
                 <span style="color: #166534; font-family: serif;">IMSS</span>
                 <span style="color: #831843; font-family: serif;">ISSSTE</span>
@@ -42,7 +41,7 @@
             </div>
         </div>
 
-        <!-- PANTALLA 2: FORMULARIO REGISTRO / MODIFICACIÓN (ESTILO CREDENCIAL) -->
+        <!-- PANTALLA 2: FORMULARIO REGISTRO -->
         <div id="pantalla2" class="tarjeta-control hidden">
             <div class="encabezado-institucional">
                 <h1 class="titulo-principal" id="p2_titulo">Registro de Datos</h1>
@@ -92,12 +91,12 @@
                     <label class="campo-etiqueta">Correo Electrónico</label>
                     <input type="email" id="correo" required class="campo-input" placeholder="ejemplo@correo.com">
                 </div>
-                <div style="display: flex; flex-direction: column; align-items: center; padding: 0.5rem 0;">
-                    <label style="cursor: pointer; background-color: #e5e7eb; padding: 0.8rem 1.25rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 700; width: 100%; text-align: center; box-sizing: border-box;">
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 0.25rem 0; flex-shrink: 0;">
+                    <label style="cursor: pointer; background-color: #e5e7eb; padding: 0.75rem 1.25rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 700; width: 100%; text-align: center; box-sizing: border-box;">
                         📸 Tomar / Capturar Fotografía
                         <input type="file" id="inputFoto" accept="image/*" capture="environment" style="display: none;">
                     </label>
-                    <span id="fotoAviso" style="font-size: 0.75rem; color: #059669; font-weight: 600; margin-top: 0.5rem;" class="hidden">✓ Imagen lista para guardar</span>
+                    <span id="fotoAviso" style="font-size: 0.75rem; color: #059669; font-weight: 600; margin-top: 0.4rem;" class="hidden">✓ Imagen lista para guardar</span>
                 </div>
                 <button type="submit" class="btn-guardar">💾 Guardar Registro</button>
             </form>
@@ -114,24 +113,24 @@
             </div>
         </div>
 
-        <!-- PANTALLA 3: CREDENCIAL FINAL GENERADA -->
+        <!-- PANTALLA 3: CREDENCIAL FINAL -->
         <div id="pantalla3" class="gafete-realista hidden">
             <div class="encabezado-institucional">
                 <h2 class="titulo-principal">Servicio Universal de Salud</h2>
                 <p class="subtitulo-patria">ESTADOS UNIDOS MEXICANOS</p>
             </div>
             
-            <div class="cuerpo-credencial" style="align-items: center; justify-content: space-evenly; gap: 1rem;">
+            <div class="cuerpo-credencial" style="align-items: center; justify-content: space-evenly; gap: 0.5rem; overflow: hidden;">
                 <div class="marco-fotografia">
                     <img id="credFoto" src="" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 
                 <div class="datos-gafete-contenedor">
-                    <div style="margin-bottom: 0.75rem;">
+                    <div style="margin-bottom: 0.5rem;">
                         <p class="cred-label">Nombre Completo</p>
                         <p id="credCompleto" class="cred-valor-principal">-</p>
                     </div>
-                    <div class="grid-2" style="margin-bottom: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #e5e7eb;">
+                    <div class="grid-2" style="margin-bottom: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #e5e7eb;">
                         <div>
                             <p class="cred-label">Puesto</p>
                             <p id="credPuesto" class="cred-valor-secundario">-</p>
@@ -141,16 +140,16 @@
                             <p id="credZona" class="cred-valor-secundario">-</p>
                         </div>
                     </div>
-                    <div style="padding-top: 0.75rem; border-top: 1px solid #e5e7eb;">
+                    <div style="padding-top: 0.5rem; border-top: 1px solid #e5e7eb;">
                         <p class="cred-label">CURP Oficial</p>
                         <p id="credIdentificacion" class="cred-valor-mono">-</p>
                     </div>
                 </div>
             </div>
             
-            <div style="padding: 0 1.25rem 1.5rem 1.25rem; display: flex; gap: 0.75rem; flex-shrink: 0;">
-                <button type="button" id="btnEditarPerfil" class="btn-buscar" style="flex: 1; padding: 0.8rem 0;">✏️ Modificar</button>
-                <button type="button" id="btnCerrar" class="btn-buscar" style="background-color: #6b7280; padding: 0.8rem 1rem;">◀ Salir</button>
+            <div style="padding: 0 1.25rem 1rem 1.25rem; display: flex; gap: 0.75rem; flex-shrink: 0;">
+                <button type="button" id="btnEditarPerfil" class="btn-buscar" style="flex: 1; padding: 0.75rem 0;">✏️ Modificar</button>
+                <button type="button" id="btnCerrar" class="btn-buscar" style="background-color: #6b7280; padding: 0.75rem 1rem;">◀ Salir</button>
             </div>
 
             <div class="logos-salud-barra">
