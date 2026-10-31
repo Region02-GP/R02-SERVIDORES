@@ -10,28 +10,46 @@
 
     <div class="contenedor-principal-flujo">
         
-        <!-- PANTALLA 1: ACCESO POR CURP -->
+        <!-- PANTALLA 1: ACCESO POR CURP (ESTILO CREDENCIAL) -->
         <div id="pantalla1" class="tarjeta-control">
             <div class="encabezado-institucional">
-                <h1 class="titulo-principal">Identificación de Brigadistas</h1>
-                <p class="subtitulo-patria">ESTADOS UNIDOS MEXICANOS</p>
+                <h1 class="titulo-principal">Servicio Universal de Salud</h1>
+                <p class="subtitulo-patria">IDENTIFICACIÓN DE BRIGADISTAS</p>
             </div>
-            <div style="padding: 2rem 1.25rem; display: flex; flex-direction: column; gap: 1.5rem; flex-grow: 1; justify-content: center;">
+            
+            <div class="cuerpo-credencial" style="justify-content: center; gap: 2rem;">
+                <div style="text-align: center; margin-bottom: 1rem;">
+                    <div style="font-size: 4rem; margin-bottom: 0.5rem;">🪪</div>
+                    <p style="font-size: 0.9rem; color: var(--color-texto-mutado); font-weight: 500; margin: 0;">Módulo de Acceso Oficial</p>
+                </div>
                 <div>
-                    <label class="campo-etiqueta">Ingrese su CURP para continuar</label>
-                    <input type="text" id="p1_curp" required class="campo-input id-mono" placeholder="Ej. IAGE571015...">
+                    <label class="campo-etiqueta">Ingrese CURP para continuar</label>
+                    <input type="text" id="p1_curp" required class="campo-input id-mono" placeholder="Ej. GOMJ560101...">
                 </div>
                 <button type="button" id="btnAcceder" class="btn-guardar">🔍 Validar Identidad</button>
             </div>
+
+            <!-- Barra inferior unificada -->
+            <div class="logos-salud-barra">
+                <span style="color: #166534; font-family: serif;">IMSS</span>
+                <span style="color: #831843; font-family: serif;">ISSSTE</span>
+                <span style="color: #064e3b; font-family: sans-serif;">IMSS BIENESTAR</span>
+            </div>
+            <div style="display: flex; height: 6px; width: 100%; flex-shrink: 0;">
+                <div style="width: 33.33%; background-color: #15803d;"></div>
+                <div style="width: 33.33%; background-color: #ffffff;"></div>
+                <div style="width: 33.33%; background-color: #b91c1c;"></div>
+            </div>
         </div>
 
-        <!-- PANTALLA 2: FORMULARIO REGISTRO / MODIFICACIÓN -->
+        <!-- PANTALLA 2: FORMULARIO REGISTRO / MODIFICACIÓN (ESTILO CREDENCIAL) -->
         <div id="pantalla2" class="tarjeta-control hidden">
             <div class="encabezado-institucional">
                 <h1 class="titulo-principal" id="p2_titulo">Registro de Datos</h1>
-                <p class="subtitulo-patria">DATOS COMPLEMENTARIOS DEL BRIGADISTA</p>
+                <p class="subtitulo-patria">DATOS COMPLEMENTARIOS</p>
             </div>
-            <form id="perfilForm">
+            
+            <form id="perfilForm" class="cuerpo-credencial">
                 <div>
                     <label class="campo-etiqueta">CURP (Invariable)</label>
                     <input type="text" id="nombre_curp" readonly class="campo-input id-mono" style="background-color: #f3f4f6;">
@@ -74,27 +92,40 @@
                     <label class="campo-etiqueta">Correo Electrónico</label>
                     <input type="email" id="correo" required class="campo-input" placeholder="ejemplo@correo.com">
                 </div>
-                <div style="display: flex; flex-direction: column; align-items: center; padding: 0.75rem 0;">
-                    <label style="cursor: pointer; background-color: #f3f4f6; padding: 0.75rem 1.25rem; border: 1px solid #d1d5db; border-radius: 0.75rem; font-size: 0.85rem; font-weight: 600; width: 100%; text-align: center; box-sizing: border-box;">
-                        📸 Tomar o Subir Foto
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 0.5rem 0;">
+                    <label style="cursor: pointer; background-color: #e5e7eb; padding: 0.8rem 1.25rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 700; width: 100%; text-align: center; box-sizing: border-box;">
+                        📸 Tomar / Capturar Fotografía
                         <input type="file" id="inputFoto" accept="image/*" capture="environment" style="display: none;">
                     </label>
-                    <span id="fotoAviso" style="font-size: 0.75rem; color: #059669; font-weight: 600; margin-top: 0.5rem;" class="hidden">✓ Foto integrada correctamente</span>
+                    <span id="fotoAviso" style="font-size: 0.75rem; color: #059669; font-weight: 600; margin-top: 0.5rem;" class="hidden">✓ Imagen lista para guardar</span>
                 </div>
-                <button type="submit" class="btn-guardar">💾 Enviar a Base de Datos</button>
+                <button type="submit" class="btn-guardar">💾 Guardar Registro</button>
             </form>
+
+            <div class="logos-salud-barra">
+                <span style="color: #166534; font-family: serif;">IMSS</span>
+                <span style="color: #831843; font-family: serif;">ISSSTE</span>
+                <span style="color: #064e3b; font-family: sans-serif;">IMSS BIENESTAR</span>
+            </div>
+            <div style="display: flex; height: 6px; width: 100%; flex-shrink: 0;">
+                <div style="width: 33.33%; background-color: #15803d;"></div>
+                <div style="width: 33.33%; background-color: #ffffff;"></div>
+                <div style="width: 33.33%; background-color: #b91c1c;"></div>
+            </div>
         </div>
 
-        <!-- PANTALLA 3: CREDENCIAL DE GOBIERNO -->
+        <!-- PANTALLA 3: CREDENCIAL FINAL GENERADA -->
         <div id="pantalla3" class="gafete-realista hidden">
             <div class="encabezado-institucional">
-                <h2 class="titulo-principal" style="font-size: 1.1rem;">Servicio Universal de Salud</h2>
-                <p class="subtitulo-patria" style="text-transform: uppercase;">Estados Unidos Mexicanos</p>
+                <h2 class="titulo-principal">Servicio Universal de Salud</h2>
+                <p class="subtitulo-patria">ESTADOS UNIDOS MEXICANOS</p>
             </div>
-            <div style="padding: 1.5rem 1.25rem; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1;">
+            
+            <div class="cuerpo-credencial" style="align-items: center; justify-content: space-evenly; gap: 1rem;">
                 <div class="marco-fotografia">
-                    <img id="credFoto" src="https://placeholder.com" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img id="credFoto" src="" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
+                
                 <div class="datos-gafete-contenedor">
                     <div style="margin-bottom: 0.75rem;">
                         <p class="cred-label">Nombre Completo</p>
@@ -125,9 +156,7 @@
             <div class="logos-salud-barra">
                 <span style="color: #166534; font-family: serif;">IMSS</span>
                 <span style="color: #831843; font-family: serif;">ISSSTE</span>
-                <span style="color: #991b1b; font-family: serif;">PEMEX</span>
-                <span style="color: #15803d; font-family: serif;">PCIVIL</span>
-                <span style="color: #064e3b; font-family: sans-serif; letter-spacing: -0.05em;">IMSS BIENESTAR</span>
+                <span style="color: #064e3b; font-family: sans-serif;">IMSS BIENESTAR</span>
             </div>
             <div style="display: flex; height: 6px; width: 100%; flex-shrink: 0;">
                 <div style="width: 33.33%; background-color: #15803d;"></div>
