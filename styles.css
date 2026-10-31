@@ -17,30 +17,43 @@ body {
     min-height: 100vh;
 }
 
+/* Contenedor gris/crema de fondo para simular una mesa de trabajo */
 .contenedor-principal-flujo {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     min-height: 100vh;
     width: 100%;
+    padding: 1rem;
     box-sizing: border-box;
 }
 
-/* Homologación estética: todas las pantallas heredan la estructura física del Gafete */
+/* Homologación Estricta: Todas las pantallas tienen bordes y contornos de credencial de PVC */
 .tarjeta-control, .gafete-realista {
     background-color: var(--color-fondo-gafete);
     width: 100%;
-    min-height: 100vh;
+    max-width: 25rem; /* Ancho estándar de un celular */
+    height: 80vh;     /* Altura fija controlada para que parezca tarjeta vertical */
+    min-height: 620px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     box-sizing: border-box;
+    
+    /* Contornos y Sombras estilo Credencial Física */
+    border: 1px solid #d1d5db;
+    border-radius: 1.25rem;
+    box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15), 
+                0 10px 15px -5px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    position: relative;
 }
 
+/* Cabecera institucional de la credencial */
 .encabezado-institucional {
     background-color: var(--color-guinda);
-    padding: 1.75rem 1.25rem;
+    padding: 1.5rem 1.25rem;
     text-align: center;
     color: #ffffff;
     flex-shrink: 0;
@@ -48,7 +61,7 @@ body {
 }
 
 .titulo-principal {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 700;
     letter-spacing: 0.025em;
     margin: 0;
@@ -56,7 +69,7 @@ body {
 }
 
 .subtitulo-patria {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--color-dorado);
     letter-spacing: 0.1em;
     font-weight: 600;
@@ -64,19 +77,28 @@ body {
     margin-bottom: 0;
 }
 
-/* Contenedor interno desplazable para el formulario */
+/* Cuerpo interno de la tarjeta con scroll si los campos exceden la altura */
 .cuerpo-credencial {
-    padding: 1.5rem 1.25rem;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 1.15rem;
+    gap: 1rem;
     flex-grow: 1;
     overflow-y: auto;
 }
 
+/* Personalización de barra de desplazamiento interna del formulario */
+.cuerpo-credencial::-webkit-scrollbar {
+    width: 5px;
+}
+.cuerpo-credencial::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+}
+
 .campo-etiqueta {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     color: var(--color-texto-mutado);
     text-transform: uppercase;
@@ -85,12 +107,12 @@ body {
 
 .campo-input {
     width: 100%;
-    margin-top: 0.35rem;
-    padding: 0.8rem 1rem;
+    margin-top: 0.25rem;
+    padding: 0.75rem 0.9rem;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
     outline: none;
-    font-size: 1rem;
+    font-size: 0.95rem;
     transition: all 0.2s ease;
     box-sizing: border-box;
     background-color: #ffffff;
@@ -109,10 +131,10 @@ body {
 .btn-buscar {
     background-color: #1f2937;
     color: #ffffff;
-    padding: 0.8rem 1.25rem;
+    padding: 0.75rem 1.25rem;
     border-radius: 0.5rem;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     border: none;
     cursor: pointer;
 }
@@ -121,14 +143,15 @@ body {
     width: 100%;
     background-color: var(--color-guinda);
     color: #ffffff;
-    padding: 1rem;
+    padding: 0.9rem;
     border-radius: 0.5rem;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.95rem;
     box-shadow: 0 4px 12px rgba(97, 18, 50, 0.2);
     border: none;
     cursor: pointer;
-    margin-top: auto;
+    margin-top: 0.5rem;
+    flex-shrink: 0;
 }
 
 .btn-guardar:hover {
@@ -136,8 +159,8 @@ body {
 }
 
 .marco-fotografia {
-    width: 11rem;
-    height: 13.5rem;
+    width: 10rem;
+    height: 12.5rem;
     background-color: #e5e7eb;
     border: 3px solid #ffffff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
@@ -153,7 +176,7 @@ body {
 }
 
 .cred-label {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     color: var(--color-texto-mutado);
     font-weight: 600;
     text-transform: uppercase;
@@ -162,38 +185,38 @@ body {
 }
 
 .cred-valor-principal {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     font-weight: 800;
     color: var(--color-texto-oscuro);
     line-height: 1.2;
-    margin: 0.25rem 0 0.85rem 0;
+    margin: 0.2rem 0 0.65rem 0;
 }
 
 .cred-valor-secundario {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: var(--color-texto-oscuro);
-    margin: 0.25rem 0 0;
+    margin: 0.2rem 0 0;
 }
 
 .cred-valor-mono {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-family: monospace;
     font-weight: 700;
     letter-spacing: 0.05em;
     color: #111827;
-    margin: 0.25rem 0 0;
+    margin: 0.2rem 0 0;
 }
 
-/* Franja inferior institucional con logotipos */
+/* Pie de la credencial con firmas y logotipos */
 .logos-salud-barra {
     background-color: #ffffff;
     border-top: 1px solid #e5e7eb;
-    padding: 1rem;
+    padding: 0.85rem 1.25rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 700;
     flex-shrink: 0;
 }
@@ -201,17 +224,11 @@ body {
 .hidden { display: none !important; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
 
-/* En pantallas de escritorio se visualiza con las proporciones exactas de un celular */
-@media (min-width: 480px) {
-    .contenedor-principal-flujo {
-        padding: 2rem 1rem;
-        justify-content: center;
-    }
+/* En pantallas excesivamente pequeñas (móviles antiguos) reduce el padding general */
+@media (max-height: 660px) {
     .tarjeta-control, .gafete-realista {
-        min-height: 720px;
-        border-radius: 1.25rem;
-        border: 1px solid #d1d5db;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        max-width: 26rem;
+        height: 95vh;
+        min-height: auto;
     }
 }
+
