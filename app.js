@@ -1,5 +1,5 @@
 // CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbylaqwb2Ay88MVLv8TWWDQfoAOEdwy_0sFOB0lYY8UFIwmdBA5CcpCeP24USP6270ih9w/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzFmIjPKVBn-RPIvqQCNKm23iZDcgkVjWqbqmF0hrIb8k9iEzg5hAplgEL8CfJzaaW4ng/exec";
 
 
 let fotoCompletaBase64 = "";
@@ -27,17 +27,16 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     if (!curp) return alert('Por favor, ingresa una CURP válida');
 
     try {
-        const payloadBusqueda = {
-            action: 'buscar',
-            curp: curp
-        };
+        // Usamos FormData para emular un envío nativo de formulario libre de restricciones CORS
+        const formData = new FormData();
+        formData.append('action', 'buscar');
+        formData.append('curp', curp);
 
+        // Al omitir los 'headers', el navegador asigna automáticamente la configuración segura
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
-            mode: 'cors',
             redirect: 'follow',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payloadBusqueda)
+            body: formData
         });
         
         const datos = await res.json();
@@ -56,7 +55,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('credFoto').src = imagenProcesada;
             fotoUrlActual = imagenProcesada;
 
-            // Rellenar los valores del formulario (Pantalla 2) en caso de posterior edición
+            // Rellenar preventivamente el formulario (Pantalla 2) en caso de posterior edición
             document.getElementById('nombre').value = datos.nombre;
             document.getElementById('ap_paterno').value = datos.ap_paterno;
             document.getElementById('ap_materno').value = datos.ap_materno;
@@ -66,10 +65,10 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('zona').value = datos.zona;
             document.getElementById('correo').value = datos.correo;
 
-            // Manda directo al Gafete Final
+            // Transición inmediata a la credencial armada
             irAPantalla(3);
         } else {
-            // Manda a nuevo registro
+            // Transición a nuevo registro
             document.getElementById('p2_titulo').innerText = "Nuevo Registro";
             document.getElementById('perfilForm').reset();
             document.getElementById('nombre_curp').value = curp;
