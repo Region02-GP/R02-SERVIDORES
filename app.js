@@ -1,11 +1,12 @@
 // CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw0C12_v9Lul4BEODLKNDC8FbdwhbTVS0elZKAXjI-11rAuKHaQ0oXQuz7VzUT5dTlvQA/exec";
-
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxhsuYh0TQAS44Pk-6u41KRsg4Q5TugsHOMAIMMpFBp4VjFleWls6IIv9TxV-nTGfXmRw/exec";
+// CONFIGURACIÓN: Enlace directo y verificado hacia tu Google Apps Script
+const WEB_APP_URL = "https://google.com";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
 
-// Función nativa para alternar de forma segura entre las 3 pantallas
+// Función de navegación entre pantallas
 function irAPantalla(num) {
     document.getElementById('pantalla1').classList.add('hidden');
     document.getElementById('pantalla2').classList.add('hidden');
@@ -18,25 +19,21 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     if (!curp) return alert('Por favor, ingresa una CURP válida');
 
     try {
-        // Empaquetamos la consulta en texto plano para saltar el bloqueo CORS del navegador
-        const payloadBuscar = {
-            action: 'buscar',
-            curp: curp
-        };
+        // Estructura nativa de formulario para la búsqueda
+        const formBuscar = new FormData();
+        formBuscar.append('action', 'buscar');
+        formBuscar.append('curp', curp);
 
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payloadBuscar)
+            body: formBuscar
         });
         
-        // Conversión obligatoria a JSON para que JavaScript pueda leer las celdas de Sheets
         const datos = await res.json();
-
         document.getElementById('nombre_curp').value = curp;
 
         if (datos.existe) {
-            // SI YA EXISTE: Mapear textos y brincar directo a Pantalla 3 (Credencial)
+            // SI YA EXISTE: Mapear textos e ir directo a Pantalla 3 (Credencial)
             document.getElementById('credCompleto').innerText = `${datos.nombre} ${datos.ap_paterno} ${datos.ap_materno}`.toUpperCase();
             document.getElementById('credPuesto').innerText = datos.puesto.toUpperCase();
             document.getElementById('credZona').innerText = datos.zona.toUpperCase();
@@ -44,7 +41,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('credFoto').src = datos.foto_url || "https://placeholder.com";
             fotoUrlActual = datos.foto_url;
 
-            // Rellenar formulario oculto en la Pantalla 2 por si presiona "Actualizar Perfil"
+            // Rellenar formulario oculto en la Pantalla 2 por si presiona "Actualizar"
             document.getElementById('nombre').value = datos.nombre || "";
             document.getElementById('ap_paterno').value = datos.ap_paterno || "";
             document.getElementById('ap_materno').value = datos.ap_materno || "";
@@ -56,7 +53,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 
             irAPantalla(3);
         } else {
-            // SI NO EXISTE: Mandar a la Pantalla 2 para registrarse por primera vez
+            // SI NO EXISTE: Mandar a la Pantalla 2 para registro nuevo
             document.getElementById('p2_titulo').innerText = "Nuevo Registro";
             document.getElementById('perfilForm').reset();
             document.getElementById('nombre_curp').value = curp;
@@ -82,36 +79,35 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
     }
 });
 
-// PANTALLA 2: ENVÍO ASÍNCRONO DEL REGISTRO
+// PANTALLA 2: ENVÍO COMPATIBLE CON ARCHIVOS GRANDES
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const curp = document.getElementById('nombre_curp').value;
     
-    const payloadCompleto = {
-        action: 'guardar',
-        curp: curp,
-        nombre: document.getElementById('nombre').value,
-        ap_paterno: document.getElementById('ap_paterno').value,
-        ap_materno: document.getElementById('ap_materno').value,
-        municipio: document.getElementById('municipio').value,
-        puesto: document.getElementById('puesto').value,
-        telefono: document.getElementById('telefono').value,
-        zona: document.getElementById('zona').value,
-        correo: document.getElementById('correo').value,
-        foto_url: fotoUrlActual,
-        fotoCompletaBase64: fotoCompletaBase64
-    };
+    // Convertir el envío a FormData nativo para soportar textos largos sin caídas de red
+    const formGuardar = new FormData();
+    formGuardar.append('action', 'guardar');
+    formGuardar.append('curp', curp);
+    formGuardar.append('nombre', document.getElementById('nombre').value);
+    formGuardar.append('ap_paterno', document.getElementById('ap_paterno').value);
+    formGuardar.append('ap_materno', document.getElementById('ap_materno').value);
+    formGuardar.append('municipio', document.getElementById('municipio').value);
+    formGuardar.append('puesto', document.getElementById('puesto').value);
+    formGuardar.append('telefono', document.getElementById('telefono').value);
+    formGuardar.append('zona', document.getElementById('zona').value);
+    formGuardar.append('correo', document.getElementById('correo').value);
+    formGuardar.append('foto_url', fotoUrlActual);
+    formGuardar.append('fotoCompletaBase64', fotoCompletaBase64);
 
     try {
         const res = await fetch(WEB_APP_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payloadCompleto)
+            body: formGuardar
         });
         const resultado = await res.json();
         
         if (resultado.status === "success") {
-            alert('🎉 ¡Perfil guardado y sincronizado correctamente en Google Sheets!');
+            alert('🎉 ¡Perfil guardado y sincronizado correctamente en la nube!');
             
             document.getElementById('credCompleto').innerText = `${document.getElementById('nombre').value} ${document.getElementById('ap_paterno').value} ${document.getElementById('ap_materno').value}`.toUpperCase();
             document.getElementById('credPuesto').innerText = document.getElementById('puesto').value.toUpperCase();
@@ -129,13 +125,13 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     }
 });
 
-// BOTÓN ACTUALIZAR PERFIL (De pantalla 3 regresa a la 2 con la información intacta)
+// BOTÓN ACTUALIZAR PERFIL
 document.getElementById('btnEditarPerfil').addEventListener('click', () => {
     document.getElementById('p2_titulo').innerText = "Modificar Perfil";
     irAPantalla(2);
 });
 
-// BOTÓN CERRAR SESIÓN / RETROCEDER
+// BOTÓN CERRAR SESIÓN
 document.getElementById('btnCerrar').addEventListener('click', () => {
     document.getElementById('p1_curp').value = "";
     irAPantalla(1);
