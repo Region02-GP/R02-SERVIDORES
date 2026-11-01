@@ -298,9 +298,4 @@ body {
 }
 
 
-    /* Ocultar la botonera inferior dentro del PDF final */
-    #pantalla3 div[style*="display: flex"] {
-        display: none !important;
-    }
-}
 
