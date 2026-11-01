@@ -1,5 +1,5 @@
 // CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxV7P54IHVjzjuSpT13Pto5_4lrQQpiGmrxSLN9cjCSuvwZfOsCPj2YTHAnUQ495MZV_Q/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxMwIq_jp68JrCExQCZccz0Q63a9woNyDtMU-gFD6mTzh7WmME7NocxGLyVI4btclSOvA/exec";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
@@ -10,6 +10,7 @@ function irAPantalla(num) {
     document.getElementById('pantalla3').classList.add('hidden');
     document.getElementById('pantalla' + num).classList.remove('hidden');
 }
+
 // PANTALLA 1: VALIDACIÓN AUTOMÁTICA DE REGISTROS
 document.getElementById('btnAcceder').addEventListener('click', async () => {
     const curp = document.getElementById('p1_curp').value.trim().toUpperCase();
@@ -18,8 +19,10 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     try {
         const payloadBuscar = { action: 'buscar', curp: curp };
 
+        // CORRECCIÓN: Agregado redirect: 'follow' para evitar cortes de red de Google
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
+            redirect: 'follow',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payloadBuscar)
         });
@@ -33,7 +36,10 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('credPuesto').innerText = datos.puesto.toUpperCase();
             document.getElementById('credZona').innerText = datos.zona.toUpperCase();
             document.getElementById('credIdentificacion').innerText = datos.curp;
-            document.getElementById('credFoto').src = datos.foto_url || "https://placeholder.com";
+            
+            // CORRECCIÓN: Evitar romper la interfaz si es un placeholder de texto plano
+            const fotoSrc = (datos.foto_url && datos.foto_url.startsWith('http') && !datos.foto_url.includes('placeholder')) ? datos.foto_url : "";
+            document.getElementById('credFoto').src = fotoSrc || "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='100' height='100' viewBox='0 0 24 24' fill='%236b7280'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 2 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z'/></svg>";
             fotoUrlActual = datos.foto_url;
 
             // Rellenar el formulario oculto por si pulsa "Actualizar Perfil"
@@ -58,9 +64,11 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             irAPantalla(2);
         }
     } catch (err) {
-        alert('Error de red: No se pudo conectar con los registros del servidor de Google.');
+        console.error(err);
+        alert('Error de red: No se pudo conectar con los registros del servidor de Google o la URL es inválida.');
     }
 });
+
 // REDUCCIÓN AUTOMÁTICA DE PESO DE IMAGEN EN TIEMPO REAL
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -69,9 +77,8 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
         reader.onload = function(evt) {
             const img = new Image();
             img.onload = function() {
-                // Crear un lienzo virtual para redimensionar la foto a un tamaño óptimo de credencial
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 400; // Resolución ideal y ligera para web y celdas
+                const MAX_WIDTH = 400; 
                 const scale = MAX_WIDTH / img.width;
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * scale;
@@ -79,7 +86,6 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                // Exportar como formato comprimido JPEG al 70% de peso
                 fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.7);
                 document.getElementById('fotoAviso').classList.remove('hidden');
             };
@@ -110,8 +116,10 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     };
 
     try {
+        // CORRECCIÓN: Agregado redirect: 'follow' aquí también
         const res = await fetch(WEB_APP_URL, {
             method: 'POST',
+            redirect: 'follow',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payloadCompleto)
         });
@@ -124,7 +132,9 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             document.getElementById('credPuesto').innerText = document.getElementById('puesto').value.toUpperCase();
             document.getElementById('credZona').innerText = document.getElementById('zona').value.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
-            document.getElementById('credFoto').src = resultado.foto_url;
+            
+            // CORRECCIÓN: Render seguro de la respuesta de imagen devuelta
+            document.getElementById('credFoto').src = resultado.foto_url.style ? "" : resultado.foto_url;
             fotoUrlActual = resultado.foto_url;
             
             fotoCompletaBase64 = "";
@@ -132,6 +142,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             irAPantalla(3);
         }
     } catch (err) {
+        console.error(err);
         alert('Error al sincronizar el envío de datos con Google.');
     }
 });
