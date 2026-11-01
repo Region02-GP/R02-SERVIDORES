@@ -1,5 +1,5 @@
 // CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwTBGDlhjPJPHDj4rzhEUJDJAcmp9DZ-z_sdmoLL6ydkCDeSr1KWUfSGgBx6_zlFR1uJg/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznLGYBYh4uj6HSHO8cJEUeMX0eqDiERAG4qOpxOycL6-6SDFUKC0_fQC1B_unebRU6ig/exec";
 
 
 let fotoCompletaBase64 = "";
@@ -27,16 +27,15 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     if (!curp) return alert('Por favor, ingresa una CURP válida');
 
     try {
-        // Enviamos la acción 'buscar' estructurada en el BODY del POST
-        const payloadBusqueda = {
-            action: 'buscar',
-            curp: curp
-        };
+        // Estructura segura compatible con el CORS de Google Apps Script
+        const datosBusqueda = new URLSearchParams();
+        datosBusqueda.append('action', 'buscar');
+        datosBusqueda.append('curp', curp);
 
         const res = await fetch(WEB_APP_URL, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payloadBusqueda)
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: datosBusqueda.toString()
         });
         
         const datos = await res.json();
@@ -45,7 +44,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         fotoCompletaBase64 = ""; 
 
         if (datos.existe) {
-            // Rellenar visualmente el Gafete (Pantalla 3)
             document.getElementById('credCompleto').innerText = `${datos.nombre} ${datos.ap_paterno} ${datos.ap_materno}`.toUpperCase();
             document.getElementById('credPuesto').innerText = datos.puesto.toUpperCase();
             document.getElementById('credZona').innerText = datos.zona.toUpperCase();
@@ -55,7 +53,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('credFoto').src = imagenProcesada;
             fotoUrlActual = imagenProcesada;
 
-            // Dejar el formulario de la Pantalla 2 listo por si deciden editar
             document.getElementById('nombre').value = datos.nombre;
             document.getElementById('ap_paterno').value = datos.ap_paterno;
             document.getElementById('ap_materno').value = datos.ap_materno;
@@ -65,10 +62,8 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('zona').value = datos.zona;
             document.getElementById('correo').value = datos.correo;
 
-            // ¡DIRECCIÓN DIRECTA A LA CREDENCIAL!
             irAPantalla(3);
         } else {
-            // Flujo para registro nuevo (Pantalla 2)
             document.getElementById('p2_titulo').innerText = "Nuevo Registro";
             document.getElementById('perfilForm').reset();
             document.getElementById('nombre_curp').value = curp;
@@ -78,8 +73,10 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         }
     } catch (err) {
         alert('Error al consultar los registros del servidor.');
+        console.error(err);
     }
 });
+
 
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const file = e.target.files[0];
