@@ -178,47 +178,59 @@ document.getElementById('btnCerrar').addEventListener('click', () => {
     irAPantalla(1);
 });
 
-// PANTALLA 3: CAPTURAR CREDENCIAL Y DESCARGAR COMO IMAGEN JPG
+// PANTALLA 3: CAPTURAR CREDENCIAL Y GUARDAR COMO IMAGEN (MÉTODO HÍBRIDO MÓVIL)
 document.getElementById('btnDescargarPDF').addEventListener('click', async () => {
     const elementoGafete = document.getElementById('pantalla3');
     const curpUsuario = document.getElementById('credIdentificacion').innerText || "BRIGADISTA";
-    
-    // Buscar la botonera inferior para ocultarla temporalmente de la foto
     const botonera = elementoGafete.querySelector('div[style*="padding"]');
     
     mostrarCarga("Generando imagen de la credencial...");
 
     try {
-        // 1. Ocultar los botones para que no salgan en la foto de la credencial
+        // 1. Ocultar la botonera para la captura limpia
         if (botonera) botonera.style.setProperty('display', 'none', 'important');
         elementoGafete.classList.add('captura-imagen-limpia');
 
-        // 2. Renderizar el contenedor de la credencial en un lienzo virtual
+        // 2. Renderizar el lienzo virtual
         const canvas = await html2canvas(elementoGafete, {
-            scale: 2.5, // Duplica la resolución para que los textos no salgan borrosos
-            useCORS: true, // Permite procesar la foto del brigadista de forma segura
+            scale: 2.5,
+            useCORS: true,
             logging: false,
-            backgroundColor: "#fcfaf6" // Asegura el color de fondo institucional de la tarjeta
+            backgroundColor: "#fcfaf6"
         });
 
-        // 3. Convertir el lienzo a formato JPG con 90% de calidad
-        const enlaceDescarga = document.createElement('a');
-        enlaceDescarga.href = canvas.toDataURL('image/jpeg', 0.9);
-        enlaceDescarga.download = `Gafete_${curpUsuario}.jpg`;
+        const urlImagen = canvas.toDataURL('image/jpeg', 0.9);
 
-        // 4. Ejecutar la descarga en el celular
-        document.body.appendChild(enlaceDescarga);
-        enlaceDescarga.click();
-        document.body.removeChild(enlaceDescarga);
+        // 3. Crear ventana flotante (Modal) para saltarse el bloqueo del celular
+        const modal = document.createElement('div');
+        modal.className = 'modal-foto-celular';
+        
+        // Elemento de imagen táctil
+        const img = document.createElement('img');
+        img.src = urlImagen;
+        img.className = 'imagen-renderizada';
+        
+        // Texto instructivo para el usuario en campo
+        const texto = document.createElement('p');
+        texto.className = 'instrucciones-foto';
+        texto.innerHTML = "☝️ MANTÉN PRESIONADA LA IMAGEN<br>para guardarla en tu galería o compartirla.<br><br><span style='font-weight:400; font-size:0.85rem; background:#6b7280; padding:0.5rem 1rem; border-radius:0.5rem; cursor:pointer;'>Toca aquí para cerrar</span>";
+        
+        modal.appendChild(img);
+        modal.appendChild(texto);
+        document.body.appendChild(modal);
+
+        // Cerrar la ventana flotante al hacer clic en las instrucciones
+        texto.addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
 
     } catch (error) {
         console.error("Error al exportar imagen:", error);
-        alert("No se pudo guardar la imagen automáticamente en este navegador.");
+        alert("Ocurrió un error al procesar el lienzo de la credencial.");
     } finally {
-        // 5. Restaurar la interfaz para que el usuario pueda seguir usando la app
+        // 4. Restaurar la interfaz del celular
         if (botonera) botonera.style.setProperty('display', 'flex', 'important');
         elementoGafete.classList.remove('captura-imagen-limpia');
         ocultarCarga();
     }
 });
-
