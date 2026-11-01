@@ -1,7 +1,5 @@
 // CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxV7P54IHVjzjuSpT13Pto5_4lrQQpiGmrxSLN9cjCSuvwZfOsCPj2YTHAnUQ495MZV_Q/exec";
-// CONFIGURACIÓN: Enlace directo verificado de tu Google Apps Script activo
-const WEB_APP_URL = "https://google.com";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
