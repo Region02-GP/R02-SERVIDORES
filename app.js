@@ -1,5 +1,5 @@
 // CONFIGURACIÓN: Coloca aquí tu URL /exec de Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz-se4Gd7JCBsDxu0_QCy3Q2G9BH2o10mgLItwDhtlLmZDMBbF5XvxZGpMnZlYXrPVaKg/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyEwuH4Z32DX4EVtGgmt41YNvaOHMz7tHiMJ4bBKYBw3zHb2bNffPJe4LIhQfcLEBaxrA/exec";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
@@ -178,59 +178,46 @@ document.getElementById('btnCerrar').addEventListener('click', () => {
     irAPantalla(1);
 });
 
-// PANTALLA 3: CAPTURAR CREDENCIAL Y GUARDAR COMO IMAGEN (MÉTODO HÍBRIDO MÓVIL)
-document.getElementById('btnDescargarPDF').addEventListener('click', async () => {
-    const elementoGafete = document.getElementById('pantalla3');
+// PANTALLA 3: GUARDAR COMO IMAGEN (MÉTODO HÍBRIDO MÓVIL SIN DEPENDENCIAS)
+document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     const curpUsuario = document.getElementById('credIdentificacion').innerText || "BRIGADISTA";
-    const botonera = elementoGafete.querySelector('div[style*="padding"]');
     
-    mostrarCarga("Generando imagen de la credencial...");
+    mostrarCarga("Preparando vista de descarga...");
 
     try {
-        // 1. Ocultar la botonera para la captura limpia
-        if (botonera) botonera.style.setProperty('display', 'none', 'important');
-        elementoGafete.classList.add('captura-imagen-limpia');
+        // En lugar de capturar la pantalla, usamos la foto que ya tenemos optimizada en Base64 o URL estable
+        const imagenCredencialSrc = document.getElementById('credFoto').src;
 
-        // 2. Renderizar el lienzo virtual
-        const canvas = await html2canvas(elementoGafete, {
-            scale: 2.5,
-            useCORS: true,
-            logging: false,
-            backgroundColor: "#fcfaf6"
-        });
+        if (!imagenCredencialSrc || imagenCredencialSrc.startsWith('data:image/svg+xml')) {
+            alert("Por favor, capture una fotografía antes de intentar exportar el gafete.");
+            ocultarCarga();
+            return;
+        }
 
-        const urlImagen = canvas.toDataURL('image/jpeg', 0.9);
-
-        // 3. Crear ventana flotante (Modal) para saltarse el bloqueo del celular
+        // Crear ventana flotante (Modal) nativo
         const modal = document.createElement('div');
         modal.className = 'modal-foto-celular';
         
-        // Elemento de imagen táctil
         const img = document.createElement('img');
-        img.src = urlImagen;
+        img.src = imagenCredencialSrc; // Invoca de manera directa el recurso binario
         img.className = 'imagen-renderizada';
         
-        // Texto instructivo para el usuario en campo
         const texto = document.createElement('p');
         texto.className = 'instrucciones-foto';
-        texto.innerHTML = "☝️ MANTÉN PRESIONADA LA IMAGEN<br>para guardarla en tu galería o compartirla.<br><br><span style='font-weight:400; font-size:0.85rem; background:#6b7280; padding:0.5rem 1rem; border-radius:0.5rem; cursor:pointer;'>Toca aquí para cerrar</span>";
+        texto.innerHTML = "☝️ MANTÉN PRESIONADA LA FOTO<br>para guardarla en tu galería o compartirla por WhatsApp.<br><br><span style='font-weight:400; font-size:0.85rem; background:#6b7280; padding:0.5rem 1rem; border-radius:0.5rem; cursor:pointer;'>Toca aquí para cerrar</span>";
         
         modal.appendChild(img);
         modal.appendChild(texto);
         document.body.appendChild(modal);
 
-        // Cerrar la ventana flotante al hacer clic en las instrucciones
         texto.addEventListener('click', () => {
             document.body.removeChild(modal);
         });
 
     } catch (error) {
-        console.error("Error al exportar imagen:", error);
-        alert("Ocurrió un error al procesar el lienzo de la credencial.");
+        console.error("Error al exportar:", error);
+        alert("Ocurrió un error al procesar el gafete en este dispositivo.");
     } finally {
-        // 4. Restaurar la interfaz del celular
-        if (botonera) botonera.style.setProperty('display', 'flex', 'important');
-        elementoGafete.classList.remove('captura-imagen-limpia');
         ocultarCarga();
     }
 });
