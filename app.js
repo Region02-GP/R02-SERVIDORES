@@ -1,5 +1,5 @@
 // CONFIGURACIÓN: Coloca aquí tu URL /exec de Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyEwuH4Z32DX4EVtGgmt41YNvaOHMz7tHiMJ4bBKYBw3zHb2bNffPJe4LIhQfcLEBaxrA/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEe1j71SLSeYDu8r6L_zuWxUUTggFKffDu1KqQFREo1FGITf_TWzVkXnQ4s1ofLd73wg/exec";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
@@ -178,45 +178,69 @@ document.getElementById('btnCerrar').addEventListener('click', () => {
     irAPantalla(1);
 });
 
-// PANTALLA 3: GUARDAR COMO IMAGEN (MÉTODO HÍBRIDO MÓVIL SIN DEPENDENCIAS)
-document.getElementById('btnDescargarPDF').addEventListener('click', () => {
+// PANTALLA 3: DESCARGAR LA CREDENCIAL COMPLETA (BAJADA NATIVA DESDE EL SERVIDOR)
+document.getElementById('btnDescargarPDF').addEventListener('click', async () => {
     const curpUsuario = document.getElementById('credIdentificacion').innerText || "BRIGADISTA";
-    
-    mostrarCarga("Preparando vista de descarga...");
+    const nombreCompleto = document.getElementById('credCompleto').innerText;
+    const puesto = document.getElementById('credPuesto').innerText;
+    const zona = document.getElementById('credZona').innerText;
+    const fotoUrl = document.getElementById('credFoto').src;
+
+    mostrarCarga("Compilando credencial institucional...");
+
+    const payloadRender = {
+        action: 'renderizar_credencial',
+        curp: curpUsuario,
+        nombreCompleto: nombreCompleto,
+        puesto: puesto,
+        zona: zona,
+        foto_url: fotoUrl
+    };
 
     try {
-        // En lugar de capturar la pantalla, usamos la foto que ya tenemos optimizada en Base64 o URL estable
-        const imagenCredencialSrc = document.getElementById('credFoto').src;
-
-        if (!imagenCredencialSrc || imagenCredencialSrc.startsWith('data:image/svg+xml')) {
-            alert("Por favor, capture una fotografía antes de intentar exportar el gafete.");
-            ocultarCarga();
-            return;
-        }
-
-        // Crear ventana flotante (Modal) nativo
-        const modal = document.createElement('div');
-        modal.className = 'modal-foto-celular';
-        
-        const img = document.createElement('img');
-        img.src = imagenCredencialSrc; // Invoca de manera directa el recurso binario
-        img.className = 'imagen-renderizada';
-        
-        const texto = document.createElement('p');
-        texto.className = 'instrucciones-foto';
-        texto.innerHTML = "☝️ MANTÉN PRESIONADA LA FOTO<br>para guardarla en tu galería o compartirla por WhatsApp.<br><br><span style='font-weight:400; font-size:0.85rem; background:#6b7280; padding:0.5rem 1rem; border-radius:0.5rem; cursor:pointer;'>Toca aquí para cerrar</span>";
-        
-        modal.appendChild(img);
-        modal.appendChild(texto);
-        document.body.appendChild(modal);
-
-        texto.addEventListener('click', () => {
-            document.body.removeChild(modal);
+        const res = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            redirect: 'follow',
+            body: JSON.stringify(payloadRender)
         });
+        const resultado = await res.json();
 
+        if (resultado.status === "success") {
+            // Creamos una ventana emergente limpia para que el celular maneje la credencial completa armada
+            const modal = document.createElement('div');
+            modal.className = 'modal-foto-celular';
+
+            const iframe = document.createElement('iframe');
+            iframe.style.width = "90%";
+            iframe.style.height = "70vh";
+            iframe.style.backgroundColor = "#ffffff";
+            iframe.style.border = "none";
+            iframe.style.borderRadius = "0.75rem";
+            
+            modal.appendChild(iframe);
+
+            const texto = document.createElement('p');
+            texto.className = 'instrucciones-foto';
+            texto.innerHTML = "🖨️ CREDENCIAL COMPLETA GENERADA<br><span style='font-size:0.85rem; font-weight:400;'>Utiliza las opciones de tu navegador móvil para Guardar o Compartir el Gafete.</span><br><br><span style='font-weight:400; font-size:0.85rem; background:#6b7280; padding:0.5rem 1rem; border-radius:0.5rem; cursor:pointer;'>Toca aquí para regresar</span>";
+            
+            modal.appendChild(texto);
+            document.body.appendChild(modal);
+
+            // Escribimos de forma binaria el documento completo estructurado dentro del visor móvil
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            doc.open();
+            doc.write(resultado.htmlTemplate);
+            doc.close();
+
+            texto.addEventListener('click', () => {
+                document.body.removeChild(modal);
+            });
+        } else {
+            alert("Error al compilar el gafete: " + resultado.message);
+        }
     } catch (error) {
-        console.error("Error al exportar:", error);
-        alert("Ocurrió un error al procesar el gafete en este dispositivo.");
+        console.error("Error al exportar credencial:", error);
+        alert("Ocurrió un error al procesar el gafete institucional.");
     } finally {
         ocultarCarga();
     }
