@@ -178,44 +178,8 @@ document.getElementById('btnCerrar').addEventListener('click', () => {
     irAPantalla(1);
 });
 
-// PANTALLA 3: GENERACIÓN Y DESCARGA DE CREDENCIAL EN PDF (OPTIMIZADO PARA MÓVILES)
-document.getElementById('btnDescargarPDF').addEventListener('click', async () => {
-    const elementoGafete = document.getElementById('pantalla3');
-    const curpUsuario = document.getElementById('credIdentificacion').innerText || "BRIGADISTA";
-    
-    // Buscar la botonera que está dentro de la pantalla 3 para ocultarla de la captura
-    const botonera = elementoGafete.querySelector('div[style*="display: flex"]');
-    
-    mostrarCarga("Generando documento PDF de alta calidad...");
-
-    const opcionesConfig = {
-        margin:       10,
-        filename:     `Gafete_${curpUsuario}.pdf`,
-        image:        { type: 'jpeg', quality: 0.95 },
-        html2canvas:  { 
-            scale: 2.5, // Balance ideal para celulares sin saturar la memoria RAM
-            useCORS: true, 
-            logging: false,
-            letterRendering: true
-        },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    try {
-        // OCULTAR BOTONES: Evita que interfieran con la renderización del lienzo
-        if (botonera) botonera.style.setProperty('display', 'none', 'important');
-        elementoGafete.classList.add('clase-impresion-pdf');
-
-        // Ejecutar proceso de descarga
-        await html2pdf().set(opcionesConfig).from(elementoGafete).save();
-
-    } catch (error) {
-        console.error("Error al exportar PDF:", error);
-        alert("No se pudo generar el PDF de la credencial de forma automática.");
-    } finally {
-        // RESTAURAR INTERFAZ: Regresar los botones y estilos a la normalidad en el celular
-        if (botonera) botonera.style.setProperty('display', 'flex', 'important');
-        elementoGafete.classList.remove('clase-impresion-pdf');
-        ocultarCarga();
-    }
+// PANTALLA 3: IMPRESIÓN NATIVA / GUARDAR COMO PDF DESDE EL CELULAR
+document.getElementById('btnDescargarPDF').addEventListener('click', () => {
+    // 1. Mandar llamar la ventana de impresión nativa del sistema operativo
+    window.print();
 });
