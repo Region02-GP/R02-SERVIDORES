@@ -290,4 +290,30 @@ body {
     box-shadow: none !important;
     border-radius: 0 !important;
 }
+/* REGLAS EXCLUSIVAS PARA GENERAR EL PDF NATIVO */
+@media print {
+    /* Ocultar absolutamente todo el entorno de la aplicación */
+    body, .contenedor-principal-flujo, .tarjeta-control, #pantalla1, #pantalla2, input, button {
+        display: none !important;
+    }
+    
+    /* Mostrar únicamente la credencial final en su tamaño real */
+    #pantalla3 {
+        display: flex !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 86mm !important;   /* Medida exacta PVC estándar */
+        height: 130mm !important; /* Proporción vertical de la tarjeta */
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        page-break-inside: avoid;
+    }
+
+    /* Ocultar la botonera inferior dentro del PDF final */
+    #pantalla3 div[style*="display: flex"] {
+        display: none !important;
+    }
+}
 
