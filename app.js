@@ -1,5 +1,5 @@
-// CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyvDQZWEVDxpMOlNFkUhCZTcMWtbKmtKcMc_AxwclGJ0v-6P44JSmcJou-AzHyYPZy9nQ/exec";
+// CONFIGURACIÓN: Coloca tu URL /exec aquí abajo
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwXayGhKWE15uJfDrLSulLNdlvDFQ1l-axKJTOtbzcgkMIF_9Hhbx0Eol5aDwjZDg6llw/exec";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
@@ -21,7 +21,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
-            mode: 'cors',
             redirect: 'follow',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payloadBuscar)
@@ -31,18 +30,15 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         document.getElementById('nombre_curp').value = curp;
 
         if (datos.existe) {
-            // SI YA EXISTE: Cargar elementos e ir a Credencial (Pantalla 3)
             document.getElementById('credCompleto').innerText = `${datos.nombre} ${datos.ap_paterno} ${datos.ap_materno}`.toUpperCase();
             document.getElementById('credPuesto').innerText = datos.puesto.toUpperCase();
             document.getElementById('credZona').innerText = datos.zona.toUpperCase();
             document.getElementById('credIdentificacion').innerText = datos.curp;
             
-            // Renderizado seguro de imagen
             const fotoSrc = (datos.foto_url && datos.foto_url.startsWith('data:image')) ? datos.foto_url : "";
             document.getElementById('credFoto').src = fotoSrc || "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='100' height='100' viewBox='0 0 24 24' fill='%236b7280'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 2 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z'/></svg>";
             fotoUrlActual = datos.foto_url || "";
 
-            // Rellenar el formulario por si pulsa "Modificar Perfil"
             document.getElementById('nombre').value = datos.nombre || "";
             document.getElementById('ap_paterno').value = datos.ap_paterno || "";
             document.getElementById('ap_materno').value = datos.ap_materno || "";
@@ -54,7 +50,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 
             irAPantalla(3);
         } else {
-            // SI NO EXISTE: Habilitar campos e ir a Registro (Pantalla 2)
             document.getElementById('p2_titulo').innerText = "Nuevo Registro";
             document.getElementById('perfilForm').reset();
             document.getElementById('nombre_curp').value = curp;
@@ -65,13 +60,13 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         }
     } catch (err) {
         console.error(err);
-        alert('Error de red: No se pudo conectar con el servidor. Revisa que la URL de Google Apps Script sea la de una nueva implementación configurada como pública.');
+        alert('Error de red: No se pudo conectar con el servidor. Verifica haber implementado el nuevo código en Apps Script de Google.');
     }
 });
 
 // REDUCCIÓN AUTOMÁTICA DE PESO DE IMAGEN EN TIEMPO REAL
 document.getElementById('inputFoto').addEventListener('change', (e) => {
-    const file = e.target.files[0]; // CORREGIDO: Añadido [0] para capturar el archivo correctamente
+    const file = e.target.files[0]; 
     if (file) {
         const reader = new FileReader();
         reader.onload = function(evt) {
@@ -118,10 +113,9 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     try {
         const res = await fetch(WEB_APP_URL, {
             method: 'POST',
-            
             redirect: 'follow',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payloadBuscar    )
+            body: JSON.stringify(payloadCompleto)
         });
         const resultado = await res.json();
         
@@ -140,7 +134,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             document.getElementById('fotoAviso').classList.add('hidden');
             irAPantalla(3);
         } else {
-            alert('Error del servidor: ' + resultado.message);
+            alert('Error: ' + resultado.message);
         }
     } catch (err) {
         console.error(err);
