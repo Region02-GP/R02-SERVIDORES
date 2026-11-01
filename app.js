@@ -1,5 +1,5 @@
 // CONFIGURACIÓN: Coloca aquí tu URL /exec de Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbybYRQAks-pjdjELLaIhJhVSM65j9V6gCBipytJbl4HKDwmIu2S1W7n_tnEqpAI2UkE7A/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz-se4Gd7JCBsDxu0_QCy3Q2G9BH2o10mgLItwDhtlLmZDMBbF5XvxZGpMnZlYXrPVaKg/exec";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
@@ -19,7 +19,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     try {
         const payloadBuscar = { action: 'buscar', curp: curp };
 
-        // SOLUCIÓN AL ERROR DE RED: quitamos cabeceras JSON que gatillan bloqueos CORS estrictos
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
             redirect: 'follow',
@@ -30,12 +29,19 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         document.getElementById('nombre_curp').value = curp;
 
         if (datos.existe) {
-            document.getElementById('credCompleto').innerText = `${datos.nombre} ${datos.ap_paterno} ${datos.ap_materno}`.toUpperCase();
-            document.getElementById('credPuesto').innerText = datos.puesto.toUpperCase();
-            document.getElementById('credZona').innerText = datos.zona.toUpperCase();
-            document.getElementById('credIdentificacion').innerText = datos.curp;
+            // Protección defensiva para transformar los valores a String antes de usar toUpperCase()
+            const nom = String(datos.nombre || "");
+            const pat = String(datos.ap_paterno || "");
+            const mat = String(datos.ap_materno || "");
+            const pue = String(datos.puesto || "");
+            const zon = String(datos.zona || "");
+
+            document.getElementById('credCompleto').innerText = `${nom} ${pat} ${mat}`.trim().toUpperCase();
+            document.getElementById('credPuesto').innerText = pue.toUpperCase();
+            document.getElementById('credZona').innerText = zon.toUpperCase();
+            document.getElementById('credIdentificacion').innerText = String(datos.curp || curp).toUpperCase();
             
-            const fotoSrc = (datos.foto_url && datos.foto_url.startsWith('data:image')) ? datos.foto_url : "";
+            const fotoSrc = (datos.foto_url && String(datos.foto_url).startsWith('data:image')) ? datos.foto_url : "";
             document.getElementById('credFoto').src = fotoSrc || "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='100' height='100' viewBox='0 0 24 24' fill='%236b7280'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 2 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z'/></svg>";
             fotoUrlActual = datos.foto_url || "";
 
@@ -60,14 +66,14 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         }
     } catch (err) {
         console.error(err);
-        alert('Error de red: No se pudo conectar con el servidor de Google Apps Script. Por favor revisa la consola (F12) para ver más detalles.');
+        alert('Error al procesar la respuesta del servidor de Google. Revisa la consola para más detalles.');
     }
 });
 
 // REDUCCIÓN AUTOMÁTICA DE PESO DE IMAGEN EN TIEMPO REAL
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const files = e.target.files; 
-    if (files && files[0]) { // CORREGIDO: Acceso seguro al elemento del array de archivos
+    if (files && files[0]) { // CORREGIDO: Acceso exacto al archivo binario capturado por la cámara
         const reader = new FileReader();
         reader.onload = function(evt) {
             const img = new Image();
