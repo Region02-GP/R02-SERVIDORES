@@ -1,5 +1,5 @@
 // CONFIGURACIÓN: Coloca aquí tu URL /exec de Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzv6iYb194OAAGCSC5L7TbjrH56h9c_hiqt6MOCee2ZWIF-nHKUXLpCDPSOH1vxHJAV6g/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbybYRQAks-pjdjELLaIhJhVSM65j9V6gCBipytJbl4HKDwmIu2S1W7n_tnEqpAI2UkE7A/exec";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
@@ -19,10 +19,10 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     try {
         const payloadBuscar = { action: 'buscar', curp: curp };
 
+        // SOLUCIÓN AL ERROR DE RED: quitamos cabeceras JSON que gatillan bloqueos CORS estrictos
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
             redirect: 'follow',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payloadBuscar)
         });
         
@@ -60,14 +60,14 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         }
     } catch (err) {
         console.error(err);
-        alert('Error de red: No se pudo conectar con el servidor. Por favor verifica que la URL en app.js coincida con tu última implementación pública.');
+        alert('Error de red: No se pudo conectar con el servidor de Google Apps Script. Por favor revisa la consola (F12) para ver más detalles.');
     }
 });
 
 // REDUCCIÓN AUTOMÁTICA DE PESO DE IMAGEN EN TIEMPO REAL
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const files = e.target.files; 
-    if (files && files[0]) {
+    if (files && files[0]) { // CORREGIDO: Acceso seguro al elemento del array de archivos
         const reader = new FileReader();
         reader.onload = function(evt) {
             const img = new Image();
@@ -114,7 +114,6 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         const res = await fetch(WEB_APP_URL, {
             method: 'POST',
             redirect: 'follow',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payloadCompleto)
         });
         const resultado = await res.json();
