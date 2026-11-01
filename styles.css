@@ -281,4 +281,13 @@ body {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+/* Ajustes específicos para la captura de impresión limpia */
+.clase-impresion-pdf {
+    width: 320px !important;
+    height: 504px !important;
+    max-width: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
 
