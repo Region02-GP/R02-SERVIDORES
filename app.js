@@ -118,10 +118,10 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     try {
         const res = await fetch(WEB_APP_URL, {
             method: 'POST',
-            mode: 'cors',
+            
             redirect: 'follow',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payloadCompleto)
+            body: JSON.stringify(payloadBuscar    )
         });
         const resultado = await res.json();
         
