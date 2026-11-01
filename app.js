@@ -1,5 +1,5 @@
-// CONFIGURACIÓN: Coloca tu URL /exec aquí abajo
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwXayGhKWE15uJfDrLSulLNdlvDFQ1l-axKJTOtbzcgkMIF_9Hhbx0Eol5aDwjZDg6llw/exec";
+// CONFIGURACIÓN: Coloca aquí la URL /exec de tu IMPLEMENTACIÓN NUEVA
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzNfsRkQ-M0ue56kZrVE-eWIDoruEe26o3tasz2v--Frs8kRqVj7adKlXHB_cdYDjljwQ/exec";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
@@ -60,13 +60,13 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         }
     } catch (err) {
         console.error(err);
-        alert('Error de red: No se pudo conectar con el servidor. Verifica haber implementado el nuevo código en Apps Script de Google.');
+        alert('Error de red: No se pudo conectar con el servidor. Asegúrate de actualizar el archivo de Google Apps Script con los índices corregidos.');
     }
 });
 
 // REDUCCIÓN AUTOMÁTICA DE PESO DE IMAGEN EN TIEMPO REAL
 document.getElementById('inputFoto').addEventListener('change', (e) => {
-    const file = e.target.files[0]; 
+    const file = e.target.files[0]; // CORREGIDO: Uso de índice [0] para capturar el archivo binario
     if (file) {
         const reader = new FileReader();
         reader.onload = function(evt) {
