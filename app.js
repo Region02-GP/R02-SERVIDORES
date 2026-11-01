@@ -185,3 +185,41 @@ document.getElementById('btnCerrar').addEventListener('click', () => {
     document.getElementById('p1_curp').value = "";
     irAPantalla(1);
 });
+// PANTALLA 3: GENERACIÓN Y DESCARGA DE CREDENCIAL EN PDF
+document.getElementById('btnDescargarPDF').addEventListener('click', async () => {
+    const elementoGafete = document.getElementById('pantalla3');
+    const curpUsuario = document.getElementById('credIdentificacion').innerText || "BRIGADISTA";
+    
+    // Activar el spinner visual indicando el proceso
+    mostrarCarga("Generando documento PDF de alta calidad...");
+
+    // Configuraciones de renderizado para html2pdf
+    const opcionesConfig = {
+        margin:       0,
+        filename:     `Gafete_${curpUsuario}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { 
+            scale: 3, // Multiplica la resolución para evitar que las letras se vean borrosas
+            useCORS: true, // Permite procesar la imagen de manera segura
+            logging: false 
+        },
+        jsPDF:        { unit: 'mm', format:, orientation: 'portrait' } // Dimensiones exactas tarjeta de PVC
+    };
+
+    try {
+        // Modificación estética temporal exclusiva para la foto-captura del PDF
+        elementoGafete.classList.add('clase-impresion-pdf');
+
+        // Ejecutar conversión nativa de la librería
+        await html2pdf().set(opcionesConfig).from(elementoGafete).save();
+
+    } catch (error) {
+        console.error("Error al exportar PDF:", error);
+        alert("No se pudo generar el PDF de la credencial de forma automática.");
+    } finally {
+        // Reestablecer los estilos de la pantalla para el dispositivo móvil
+        elementoGafete.classList.remove('clase-impresion-pdf');
+        // Apagar el overlay del spinner
+        ocultarCarga();
+    }
+});
