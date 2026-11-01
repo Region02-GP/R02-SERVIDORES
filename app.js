@@ -178,8 +178,47 @@ document.getElementById('btnCerrar').addEventListener('click', () => {
     irAPantalla(1);
 });
 
-// PANTALLA 3: IMPRESIÓN NATIVA / GUARDAR COMO PDF DESDE EL CELULAR
-document.getElementById('btnDescargarPDF').addEventListener('click', () => {
-    // 1. Mandar llamar la ventana de impresión nativa del sistema operativo
-    window.print();
+// PANTALLA 3: CAPTURAR CREDENCIAL Y DESCARGAR COMO IMAGEN JPG
+document.getElementById('btnDescargarPDF').addEventListener('click', async () => {
+    const elementoGafete = document.getElementById('pantalla3');
+    const curpUsuario = document.getElementById('credIdentificacion').innerText || "BRIGADISTA";
+    
+    // Buscar la botonera inferior para ocultarla temporalmente de la foto
+    const botonera = elementoGafete.querySelector('div[style*="padding"]');
+    
+    mostrarCarga("Generando imagen de la credencial...");
+
+    try {
+        // 1. Ocultar los botones para que no salgan en la foto de la credencial
+        if (botonera) botonera.style.setProperty('display', 'none', 'important');
+        elementoGafete.classList.add('captura-imagen-limpia');
+
+        // 2. Renderizar el contenedor de la credencial en un lienzo virtual
+        const canvas = await html2canvas(elementoGafete, {
+            scale: 2.5, // Duplica la resolución para que los textos no salgan borrosos
+            useCORS: true, // Permite procesar la foto del brigadista de forma segura
+            logging: false,
+            backgroundColor: "#fcfaf6" // Asegura el color de fondo institucional de la tarjeta
+        });
+
+        // 3. Convertir el lienzo a formato JPG con 90% de calidad
+        const enlaceDescarga = document.createElement('a');
+        enlaceDescarga.href = canvas.toDataURL('image/jpeg', 0.9);
+        enlaceDescarga.download = `Gafete_${curpUsuario}.jpg`;
+
+        // 4. Ejecutar la descarga en el celular
+        document.body.appendChild(enlaceDescarga);
+        enlaceDescarga.click();
+        document.body.removeChild(enlaceDescarga);
+
+    } catch (error) {
+        console.error("Error al exportar imagen:", error);
+        alert("No se pudo guardar la imagen automáticamente en este navegador.");
+    } finally {
+        // 5. Restaurar la interfaz para que el usuario pueda seguir usando la app
+        if (botonera) botonera.style.setProperty('display', 'flex', 'important');
+        elementoGafete.classList.remove('captura-imagen-limpia');
+        ocultarCarga();
+    }
 });
+
