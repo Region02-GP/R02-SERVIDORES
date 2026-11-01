@@ -1,88 +1,75 @@
 // CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby2uCjL7xNoe7btfu8NRw2s8r2lgzhB-62b41d_K6HVg6F-sTCn4bpvzMYBSc4cr5xicg/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw0C12_v9Lul4BEODLKNDC8FbdwhbTVS0elZKAXjI-11rAuKHaQ0oXQuz7VzUT5dTlvQA/exec";
 
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
 
-// Función auxiliar para forzar la correcta interpretación de imágenes cargadas de la base de datos
-function formatearBase64Src(stringBase64) {
-    if (!stringBase64) return "https://placeholder.com";
-    if (stringBase64.startsWith("data:") || stringBase64.startsWith("http")) {
-        return stringBase64;
-    }
-    return `data:image/jpeg;base64,${stringBase64}`;
-}
-
+// Función nativa para alternar de forma segura entre las 3 pantallas
 function irAPantalla(num) {
     document.getElementById('pantalla1').classList.add('hidden');
     document.getElementById('pantalla2').classList.add('hidden');
     document.getElementById('pantalla3').classList.add('hidden');
     document.getElementById('pantalla' + num).classList.remove('hidden');
-    window.scrollTo(0, 0);
 }
-
+// PANTALLA 1: VALIDACIÓN AUTOMÁTICA DE REGISTROS EXISTENTES
 document.getElementById('btnAcceder').addEventListener('click', async () => {
     const curp = document.getElementById('p1_curp').value.trim().toUpperCase();
     if (!curp) return alert('Por favor, ingresa una CURP válida');
 
     try {
-        // Usamos FormData para emular un envío nativo de formulario libre de restricciones CORS
-        const formData = new FormData();
-        formData.append('action', 'buscar');
-        formData.append('curp', curp);
+        // Empaquetamos la consulta en texto plano para saltar el bloqueo CORS del navegador
+        const payloadBuscar = {
+            action: 'buscar',
+            curp: curp
+        };
 
-        // Al omitir los 'headers', el navegador asigna automáticamente la configuración segura
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
-            redirect: 'follow',
-            body: formData
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payloadBuscar)
         });
         
+        // Conversión obligatoria a JSON para que JavaScript pueda leer las celdas de Sheets
         const datos = await res.json();
 
         document.getElementById('nombre_curp').value = curp;
-        fotoCompletaBase64 = ""; 
 
         if (datos.existe) {
-            // Rellenar visualmente el Gafete (Pantalla 3)
+            // SI YA EXISTE: Mapear textos y brincar directo a Pantalla 3 (Credencial)
             document.getElementById('credCompleto').innerText = `${datos.nombre} ${datos.ap_paterno} ${datos.ap_materno}`.toUpperCase();
             document.getElementById('credPuesto').innerText = datos.puesto.toUpperCase();
             document.getElementById('credZona').innerText = datos.zona.toUpperCase();
             document.getElementById('credIdentificacion').innerText = datos.curp;
-            
-            const imagenProcesada = formatearBase64Src(datos.foto_url);
-            document.getElementById('credFoto').src = imagenProcesada;
-            fotoUrlActual = imagenProcesada;
+            document.getElementById('credFoto').src = datos.foto_url || "https://placeholder.com";
+            fotoUrlActual = datos.foto_url;
 
-            // Rellenar preventivamente el formulario (Pantalla 2) en caso de posterior edición
-            document.getElementById('nombre').value = datos.nombre;
-            document.getElementById('ap_paterno').value = datos.ap_paterno;
-            document.getElementById('ap_materno').value = datos.ap_materno;
-            document.getElementById('municipio').value = datos.municipio;
-            document.getElementById('puesto').value = datos.puesto;
-            document.getElementById('telefono').value = datos.telefono;
-            document.getElementById('zona').value = datos.zona;
-            document.getElementById('correo').value = datos.correo;
+            // Rellenar formulario oculto en la Pantalla 2 por si presiona "Actualizar Perfil"
+            document.getElementById('nombre').value = datos.nombre || "";
+            document.getElementById('ap_paterno').value = datos.ap_paterno || "";
+            document.getElementById('ap_materno').value = datos.ap_materno || "";
+            document.getElementById('municipio').value = datos.municipio || "";
+            document.getElementById('puesto').value = datos.puesto || "";
+            document.getElementById('telefono').value = datos.telefono || "";
+            document.getElementById('zona').value = datos.zona || "";
+            document.getElementById('correo').value = datos.correo || "";
 
-            // Transición inmediata a la credencial armada
             irAPantalla(3);
         } else {
-            // Transición a nuevo registro
+            // SI NO EXISTE: Mandar a la Pantalla 2 para registrarse por primera vez
             document.getElementById('p2_titulo').innerText = "Nuevo Registro";
             document.getElementById('perfilForm').reset();
             document.getElementById('nombre_curp').value = curp;
-            document.getElementById('fotoAviso').classList.add('hidden');
             fotoUrlActual = "";
+            fotoCompletaBase64 = "";
+            document.getElementById('fotoAviso').classList.add('hidden');
             irAPantalla(2);
         }
     } catch (err) {
-        alert('Error al consultar los registros del servidor.');
-        console.error(err);
+        alert('Error físico de conexión con los registros de Google Sheets.');
     }
 });
-
-
+// Conversión de la fotografía seleccionada a texto Base64
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -95,6 +82,7 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
     }
 });
 
+// PANTALLA 2: ENVÍO ASÍNCRONO DEL REGISTRO
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const curp = document.getElementById('nombre_curp').value;
@@ -123,30 +111,31 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         const resultado = await res.json();
         
         if (resultado.status === "success") {
-            alert('🎉 ¡Perfil actualizado y guardado correctamente!');
+            alert('🎉 ¡Perfil guardado y sincronizado correctamente en Google Sheets!');
+            
             document.getElementById('credCompleto').innerText = `${document.getElementById('nombre').value} ${document.getElementById('ap_paterno').value} ${document.getElementById('ap_materno').value}`.toUpperCase();
             document.getElementById('credPuesto').innerText = document.getElementById('puesto').value.toUpperCase();
             document.getElementById('credZona').innerText = document.getElementById('zona').value.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
-            
-            const nuevaImagen = formatearBase64Src(resultado.foto_url);
-            document.getElementById('credFoto').src = nuevaImagen;
-            fotoUrlActual = nuevaImagen;
+            document.getElementById('credFoto').src = resultado.foto_url;
+            fotoUrlActual = resultado.foto_url;
             
             fotoCompletaBase64 = "";
             document.getElementById('fotoAviso').classList.add('hidden');
             irAPantalla(3);
         }
     } catch (err) {
-        alert('Error al sincronizar el envío de datos.');
+        alert('Error al sincronizar el envío de datos con Google.');
     }
 });
 
+// BOTÓN ACTUALIZAR PERFIL (De pantalla 3 regresa a la 2 con la información intacta)
 document.getElementById('btnEditarPerfil').addEventListener('click', () => {
     document.getElementById('p2_titulo').innerText = "Modificar Perfil";
     irAPantalla(2);
 });
 
+// BOTÓN CERRAR SESIÓN / RETROCEDER
 document.getElementById('btnCerrar').addEventListener('click', () => {
     document.getElementById('p1_curp').value = "";
     irAPantalla(1);
