@@ -27,24 +27,35 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     if (!curp) return alert('Por favor, ingresa una CURP válida');
 
     try {
-        const queryParams = new URLSearchParams({ action: 'buscar', curp: curp });
-        const res = await fetch(`${WEB_APP_URL}?${queryParams.toString()}`, { method: 'POST' });
+        // Enviamos la acción 'buscar' estructurada en el BODY del POST
+        const payloadBusqueda = {
+            action: 'buscar',
+            curp: curp
+        };
+
+        const res = await fetch(WEB_APP_URL, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payloadBusqueda)
+        });
+        
         const datos = await res.json();
 
         document.getElementById('nombre_curp').value = curp;
         fotoCompletaBase64 = ""; 
 
         if (datos.existe) {
+            // Rellenar visualmente el Gafete (Pantalla 3)
             document.getElementById('credCompleto').innerText = `${datos.nombre} ${datos.ap_paterno} ${datos.ap_materno}`.toUpperCase();
             document.getElementById('credPuesto').innerText = datos.puesto.toUpperCase();
             document.getElementById('credZona').innerText = datos.zona.toUpperCase();
             document.getElementById('credIdentificacion').innerText = datos.curp;
             
-            // Corrige la carga interpretando el Base64 directamente sin errores de acceso de navegador
             const imagenProcesada = formatearBase64Src(datos.foto_url);
             document.getElementById('credFoto').src = imagenProcesada;
             fotoUrlActual = imagenProcesada;
 
+            // Dejar el formulario de la Pantalla 2 listo por si deciden editar
             document.getElementById('nombre').value = datos.nombre;
             document.getElementById('ap_paterno').value = datos.ap_paterno;
             document.getElementById('ap_materno').value = datos.ap_materno;
@@ -54,8 +65,10 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('zona').value = datos.zona;
             document.getElementById('correo').value = datos.correo;
 
+            // ¡DIRECCIÓN DIRECTA A LA CREDENCIAL!
             irAPantalla(3);
         } else {
+            // Flujo para registro nuevo (Pantalla 2)
             document.getElementById('p2_titulo').innerText = "Nuevo Registro";
             document.getElementById('perfilForm').reset();
             document.getElementById('nombre_curp').value = curp;
