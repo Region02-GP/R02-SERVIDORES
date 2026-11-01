@@ -1,7 +1,6 @@
 // CONFIGURACIÓN: Coloca aquí tu URL /exec de Google Apps Script
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz-se4Gd7JCBsDxu0_QCy3Q2G9BH2o10mgLItwDhtlLmZDMBbF5XvxZGpMnZlYXrPVaKg/exec";
 
-
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
 
@@ -27,7 +26,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     const curp = document.getElementById('p1_curp').value.trim().toUpperCase();
     if (!curp) return alert('Por favor, ingresa una CURP válida');
 
-    // ACTIVAR CARGA AL BUSCAR
     mostrarCarga("Validando identidad con el servidor...");
 
     try {
@@ -81,7 +79,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         console.error(err);
         alert('Error al procesar la respuesta del servidor de Google.');
     } finally {
-        // QUITAR CARGA SIEMPRE AL TERMINAR (ÉXITO O ERROR)
         ocultarCarga();
     }
 });
@@ -90,7 +87,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const files = e.target.files; 
     if (files && files[0]) {
-        // ACTIVAR CARGA AL COMPRIMIR LA IMAGEN
         mostrarCarga("Optimizando y procesando fotografía...");
 
         const reader = new FileReader();
@@ -108,8 +104,6 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
 
                 fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.7);
                 document.getElementById('fotoAviso').classList.remove('hidden');
-                
-                // QUITAR CARGA CUANDO LA IMAGEN ESTÁ LISTA
                 ocultarCarga();
             };
             img.src = evt.target.result;
@@ -123,7 +117,6 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const curp = document.getElementById('nombre_curp').value;
     
-    // ACTIVAR CARGA AL SUBIR REGISTRO
     mostrarCarga("Sincronizando y guardando en la nube...");
 
     const payloadCompleto = {
@@ -150,7 +143,6 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         const resultado = await res.json();
         
         if (resultado.status === "success") {
-            // OCULTAR CARGA JUSTO ANTES DEL ALERT PARA NO TRABAR LA INTERFAZ
             ocultarCarga();
             alert('🎉 ¡Perfil guardado y sincronizado correctamente en la nube!');
             
@@ -185,41 +177,35 @@ document.getElementById('btnCerrar').addEventListener('click', () => {
     document.getElementById('p1_curp').value = "";
     irAPantalla(1);
 });
+
 // PANTALLA 3: GENERACIÓN Y DESCARGA DE CREDENCIAL EN PDF
 document.getElementById('btnDescargarPDF').addEventListener('click', async () => {
     const elementoGafete = document.getElementById('pantalla3');
     const curpUsuario = document.getElementById('credIdentificacion').innerText || "BRIGADISTA";
     
-    // Activar el spinner visual indicando el proceso
     mostrarCarga("Generando documento PDF de alta calidad...");
 
-    // Configuraciones de renderizado para html2pdf
+    // CORREGIDO: Sintaxis limpia para la exportación en tamaño A4 proporcional
     const opcionesConfig = {
-        margin:       0,
+        margin:       10,
         filename:     `Gafete_${curpUsuario}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { 
-            scale: 3, // Multiplica la resolución para evitar que las letras se vean borrosas
-            useCORS: true, // Permite procesar la imagen de manera segura
+            scale: 3, 
+            useCORS: true, 
             logging: false 
         },
-        jsPDF:        { unit: 'mm', format:, orientation: 'portrait' } // Dimensiones exactas tarjeta de PVC
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
-        // Modificación estética temporal exclusiva para la foto-captura del PDF
         elementoGafete.classList.add('clase-impresion-pdf');
-
-        // Ejecutar conversión nativa de la librería
         await html2pdf().set(opcionesConfig).from(elementoGafete).save();
-
     } catch (error) {
         console.error("Error al exportar PDF:", error);
         alert("No se pudo generar el PDF de la credencial de forma automática.");
     } finally {
-        // Reestablecer los estilos de la pantalla para el dispositivo móvil
         elementoGafete.classList.remove('clase-impresion-pdf');
-        // Apagar el overlay del spinner
         ocultarCarga();
     }
 });
