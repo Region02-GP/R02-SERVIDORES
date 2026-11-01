@@ -1,5 +1,5 @@
 // CONFIGURACIÓN: Coloca aquí tu URL /exec de Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEe1j71SLSeYDu8r6L_zuWxUUTggFKffDu1KqQFREo1FGITf_TWzVkXnQ4s1ofLd73wg/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwuSXr8ZVoAlZn3mn22JK3FgQlG0MUOx90JazLpdS5f9XgH14U77mPoK5DwH6gijxFbJA/exec";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
@@ -178,7 +178,7 @@ document.getElementById('btnCerrar').addEventListener('click', () => {
     irAPantalla(1);
 });
 
-// PANTALLA 3: DESCARGAR LA CREDENCIAL COMPLETA (BAJADA NATIVA DESDE EL SERVIDOR)
+// PANTALLA 3: DESCARGA DE PDF DIRECTA DESDE GOOGLE DRIVE (SIN COMPLICACIONES)
 document.getElementById('btnDescargarPDF').addEventListener('click', async () => {
     const curpUsuario = document.getElementById('credIdentificacion').innerText || "BRIGADISTA";
     const nombreCompleto = document.getElementById('credCompleto').innerText;
@@ -186,7 +186,8 @@ document.getElementById('btnDescargarPDF').addEventListener('click', async () =>
     const zona = document.getElementById('credZona').innerText;
     const fotoUrl = document.getElementById('credFoto').src;
 
-    mostrarCarga("Compilando credencial institucional...");
+    // Mostrar barra de carga mientras Google Sheets fabrica el PDF
+    mostrarCarga("Generando archivo PDF oficial...");
 
     const payloadRender = {
         action: 'renderizar_credencial',
@@ -206,41 +207,15 @@ document.getElementById('btnDescargarPDF').addEventListener('click', async () =>
         const resultado = await res.json();
 
         if (resultado.status === "success") {
-            // Creamos una ventana emergente limpia para que el celular maneje la credencial completa armada
-            const modal = document.createElement('div');
-            modal.className = 'modal-foto-celular';
-
-            const iframe = document.createElement('iframe');
-            iframe.style.width = "90%";
-            iframe.style.height = "70vh";
-            iframe.style.backgroundColor = "#ffffff";
-            iframe.style.border = "none";
-            iframe.style.borderRadius = "0.75rem";
-            
-            modal.appendChild(iframe);
-
-            const texto = document.createElement('p');
-            texto.className = 'instrucciones-foto';
-            texto.innerHTML = "🖨️ CREDENCIAL COMPLETA GENERADA<br><span style='font-size:0.85rem; font-weight:400;'>Utiliza las opciones de tu navegador móvil para Guardar o Compartir el Gafete.</span><br><br><span style='font-weight:400; font-size:0.85rem; background:#6b7280; padding:0.5rem 1rem; border-radius:0.5rem; cursor:pointer;'>Toca aquí para regresar</span>";
-            
-            modal.appendChild(texto);
-            document.body.appendChild(modal);
-
-            // Escribimos de forma binaria el documento completo estructurado dentro del visor móvil
-            const doc = iframe.contentDocument || iframe.contentWindow.document;
-            doc.open();
-            doc.write(resultado.htmlTemplate);
-            doc.close();
-
-            texto.addEventListener('click', () => {
-                document.body.removeChild(modal);
-            });
+            // El paso más sencillo: Mandar al celular directamente al enlace de descarga
+            // Esto abre el visor de PDF nativo de Android o iOS de inmediato
+            window.location.href = resultado.pdfUrl;
         } else {
-            alert("Error al compilar el gafete: " + resultado.message);
+            alert("Error del servidor: " + resultado.message);
         }
     } catch (error) {
         console.error("Error al exportar credencial:", error);
-        alert("Ocurrió un error al procesar el gafete institucional.");
+        alert("Ocurrió un error al procesar el archivo en la nube.");
     } finally {
         ocultarCarga();
     }
