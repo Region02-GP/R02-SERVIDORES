@@ -1,5 +1,5 @@
 // CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxK3U3YvEi4tt58VOFbMv72WeLT3xBOoHr1_-c71OtMrGGrRhS7YtWRCoS83TjyoaNk6A/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzJwXFz_0qB3cwwcGzocN2QHm12yH5_Y4ogd2jwusCflaM_BAjdyxS2yMBXvu7HCrf_Hg/exec";
 
 
 let fotoCompletaBase64 = "";
