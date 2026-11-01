@@ -1,5 +1,5 @@
 // CONFIGURACIÓN: Pega aquí la URL de la aplicación web que te dio Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/library/d/1P7L4rhgCkq09ZTJeTQsUb4CsOzwzAhVXFAY3dPx_GSNMzY4kiwllyEMl/14";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbylaqwb2Ay88MVLv8TWWDQfoAOEdwy_0sFOB0lYY8UFIwmdBA5CcpCeP24USP6270ih9w/exec";
 
 
 let fotoCompletaBase64 = "";
@@ -27,7 +27,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     if (!curp) return alert('Por favor, ingresa una CURP válida');
 
     try {
-        // Formato JSON puro pero enviado como texto plano para burlar restricciones CORS
         const payloadBusqueda = {
             action: 'buscar',
             curp: curp
@@ -36,7 +35,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
             mode: 'cors',
-            redirect: 'follow', // Crucial para la infraestructura de redirecciones de Google
+            redirect: 'follow',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payloadBusqueda)
         });
@@ -47,7 +46,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         fotoCompletaBase64 = ""; 
 
         if (datos.existe) {
-            // Asigna los textos al Gafete (Pantalla 3)
+            // Rellenar visualmente el Gafete (Pantalla 3)
             document.getElementById('credCompleto').innerText = `${datos.nombre} ${datos.ap_paterno} ${datos.ap_materno}`.toUpperCase();
             document.getElementById('credPuesto').innerText = datos.puesto.toUpperCase();
             document.getElementById('credZona').innerText = datos.zona.toUpperCase();
@@ -57,7 +56,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('credFoto').src = imagenProcesada;
             fotoUrlActual = imagenProcesada;
 
-            // Rellena preventivamente el formulario (Pantalla 2) por si el usuario decide editar
+            // Rellenar los valores del formulario (Pantalla 2) en caso de posterior edición
             document.getElementById('nombre').value = datos.nombre;
             document.getElementById('ap_paterno').value = datos.ap_paterno;
             document.getElementById('ap_materno').value = datos.ap_materno;
@@ -67,10 +66,10 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('zona').value = datos.zona;
             document.getElementById('correo').value = datos.correo;
 
-            // Redirección inmediata a la pantalla del gafete finalizado
+            // Manda directo al Gafete Final
             irAPantalla(3);
         } else {
-            // Configuración para registro nuevo
+            // Manda a nuevo registro
             document.getElementById('p2_titulo').innerText = "Nuevo Registro";
             document.getElementById('perfilForm').reset();
             document.getElementById('nombre_curp').value = curp;
@@ -83,6 +82,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         console.error(err);
     }
 });
+
 
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const file = e.target.files[0];
