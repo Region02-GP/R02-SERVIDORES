@@ -157,7 +157,7 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
     }
 });
 // ==========================================
-// BLOQUE 4: ENVÍO DE DATOS Y SINCRONIZACIÓN (CORREGIDO)
+// BLOQUE 4: ENVÍO DE DATOS Y SINCRONIZACIÓN (CORRECCIÓN DE FOTO ACTUALIZADA)
 // ==========================================
 
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
@@ -165,8 +165,15 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     const curp = document.getElementById('nombre_curp').value;
     mostrarCarga("Sincronizando y guardando en la nube...");
 
+    // ALGORITMO DE DETECCIÓN: Si el brigadista capturó una foto nueva, esa será la foto activa.
+    // Si no capturó ninguna nueva, mantenemos la que ya estaba registrada en la base de datos.
+    let fotoParaEnviar = fotoUrlActual;
+    if (fotoCompletaBase64) {
+        fotoParaEnviar = fotoCompletaBase64;
+    }
+
     const payloadCompleto = {
-        action: 'guardar', // CORREGIDO: Se añadió la 'r' para que Google reciba la acción exacta
+        action: 'guardar',
         curp: curp,
         nombre: document.getElementById('nombre').value,
         ap_paterno: document.getElementById('ap_paterno').value,
@@ -176,7 +183,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         telefono: document.getElementById('telefono').value,
         zona: document.getElementById('zona').value,
         correo: document.getElementById('correo').value,
-        foto_url: fotoUrlActual,
+        foto_url: fotoParaEnviar, // CORREGIDO: Enviamos la foto correcta (sea la nueva o la anterior)
         fotoCompletaBase64: fotoCompletaBase64
     };
 
@@ -192,15 +199,17 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             ocultarCarga();
             alert('🎉 ¡Perfil guardado y sincronizado correctamente en la nube!');
             
-            // Actualizar interfaz final de la tarjeta
+            // Actualizar interfaz final de la tarjeta con los nuevos datos
             document.getElementById('credCompleto').innerText = `${document.getElementById('nombre').value} ${document.getElementById('ap_paterno').value} ${document.getElementById('ap_materno').value}`.toUpperCase();
             document.getElementById('credPuesto').innerText = document.getElementById('puesto').value.toUpperCase();
             document.getElementById('credZona').innerText = document.getElementById('zona').value.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
             
-            fotoUrlActual = resultado.foto_url || fotoCompletaBase64;
+            // Guardar en memoria la foto devuelta por el servidor
+            fotoUrlActual = resultado.foto_url || fotoParaEnviar;
             document.getElementById('credFoto').src = fotoUrlActual;
             
+            // Limpiar la memoria temporal de la foto cargada
             fotoCompletaBase64 = "";
             document.getElementById('fotoAviso').classList.add('hidden');
             irAPantalla(3);
