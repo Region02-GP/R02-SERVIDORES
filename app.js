@@ -182,11 +182,11 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     }
 });
 // ==========================================
-// BLOQUE 5: DIBUJO MATEMÁTICO CANVAS Y COMPARTICIÓN TÁCTIL
+// BLOQUE 5: DIBUJO MATEMÁTICO CANVAS (HD VERTICAL Y FOTO PROPORCIONAL)
 // ==========================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
-    mostrarCarga("Estructurando imagen de la credencial...");
+    mostrarCarga("Estructurando imagen institucional en HD...");
 
     const curp = document.getElementById('credIdentificacion').innerText;
     const nombre = document.getElementById('credCompleto').innerText;
@@ -194,114 +194,146 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     const zona = document.getElementById('credZona').innerText;
     const fotoSrc = document.getElementById('credFoto').src;
 
-    // Inicialización del lienzo virtual con proporciones físicas exactas ID-1
+    // 1. Inicialización del lienzo en Alta Definición con proporción exacta de PVC (ID-1)
     const canvas = document.createElement('canvas');
-    canvas.width = 400;
-    canvas.height = 620;
+    canvas.width = 638;   // Ancho estándar HD
+    canvas.height = 1010; // Altura estándar HD (Proporción vertical perfecta)
     const ctx = canvas.getContext('2d');
 
-    // 1. Fondo de la tarjeta PVC
+    // Fondo base de la tarjeta
     ctx.fillStyle = "#fcfaf6";
-    ctx.fillRect(0, 0, 400, 620);
+    ctx.fillRect(0, 0, 638, 1010);
 
-    // 2. Encabezado Institucional Guinda
+    // 2. Encabezado Institucional Guinda Alto
     ctx.fillStyle = "#611232";
-    ctx.fillRect(0, 0, 400, 95);
+    ctx.fillRect(0, 0, 638, 160);
 
-    // 3. Franja Divisoria Dorada
+    // Franja Divisoria Dorada
     ctx.fillStyle = "#ddc9a3";
-    ctx.fillRect(0, 95, 400, 5);
+    ctx.fillRect(0, 160, 638, 8);
 
-    // 4. Inyección de Leyendas del Encabezado
+    // Textos del Encabezado
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
-    ctx.font = "bold 17px sans-serif";
-    ctx.fillText("SERVICIO UNIVERSAL DE SALUD", 200, 42);
+    ctx.font = "bold 26px sans-serif";
+    ctx.fillText("SERVICIO UNIVERSAL DE SALUD", 319, 70);
     
     ctx.fillStyle = "#ddc9a3";
-    ctx.font = "600 11px sans-serif";
-    ctx.fillText("ESTADOS UNIDOS MEXICANOS", 200, 70);
+    ctx.font = "600 16px sans-serif";
+    ctx.fillText("ESTADOS UNIDOS MEXICANOS", 319, 115);
 
-    // 5. Cargar e Integrar la Fotografía del Brigadista
+    // 3. Cargar la Fotografía con Algoritmo de Proporción (Evita fotos chatas)
     const imgFoto = new Image();
     imgFoto.onload = function() {
-        // Marco contenedor blanco
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(116, 126, 168, 208);
-        
-        // Estampado de fotografía real
-        ctx.drawImage(imgFoto, 120, 130, 160, 200);
+        // Coordenadas del marco contenedor de la foto
+        const marcoX = 179;
+        const marcoY = 210;
+        const marcoAncho = 280;
+        const marcoAlto = 350;
 
+        // Dibujar el fondo y contorno blanco del marco de la fotografía
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(marcoX - 10, marcoY - 10, marcoAncho + 20, marcoAlto + 20);
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(marcoX - 10, marcoY - 10, marcoAncho + 20, marcoAlto + 20);
+        
+        // ALGORITMO INTEGRADO: "Object-fit: cover" para Canvas
+        let fuenteX = 0;
+        let fuenteY = 0;
+        let fuenteAncho = imgFoto.width;
+        let fuenteAlto = imgFoto.height;
+        
+        const relacionAspectoImagen = imgFoto.width / imgFoto.height;
+        const relacionAspectoMarco = marcoAncho / marcoAlto;
+        
+        if (relacionAspectoImagen > relacionAspectoMarco) {
+            fuenteAncho = imgFoto.height * relacionAspectoMarco;
+            fuenteX = (imgFoto.width - fuenteAncho) / 2;
+        } else {
+            fuenteAlto = imgFoto.width / relacionAspectoMarco;
+            fuenteY = (imgFoto.height - fuenteAlto) / 2;
+        }
+
+        // Estampar la foto recortada proporcionalmente (Nunca más se verá aplastada)
+        ctx.drawImage(imgFoto, fuenteX, fuenteY, fuenteAncho, fuenteAlto, marcoX, marcoY, marcoAncho, marcoAlto);
+
+        // 4. Renderizado de Datos del Gafete (Tipografías y espacios ampliados)
         ctx.textAlign = "center";
         
-        // Renderizado del Nombre Completo
+        // Nombre Completo
         ctx.fillStyle = "#6b7280";
-        ctx.font = "bold 10px sans-serif";
-        ctx.fillText("NOMBRE COMPLETO", 200, 365);
+        ctx.font = "bold 15px sans-serif";
+        ctx.fillText("NOMBRE COMPLETO", 319, 625);
         ctx.fillStyle = "#1f2937";
-        ctx.font = "bold 18px sans-serif";
-        ctx.fillText(nombre, 200, 392);
+        ctx.font = "bold 26px sans-serif";
+        // Ajuste sutil si el nombre es extremadamente largo
+        if (nombre.length > 25) ctx.font = "bold 20px sans-serif";
+        ctx.fillText(nombre, 319, 665);
 
-        // Renderizado del Puesto
+        // Puesto
         ctx.fillStyle = "#6b7280";
-        ctx.font = "bold 10px sans-serif";
-        ctx.fillText("PUESTO", 110, 435);
+        ctx.font = "bold 15px sans-serif";
+        ctx.fillText("PUESTO", 170, 735);
         ctx.fillStyle = "#1f2937";
-        ctx.font = "600 15px sans-serif";
-        ctx.fillText(puesto, 110, 460);
+        ctx.font = "600 22px sans-serif";
+        ctx.fillText(puesto, 170, 775);
 
-        // Renderizado de la Zona
+        // Zona
         ctx.fillStyle = "#6b7280";
-        ctx.font = "bold 10px sans-serif";
-        ctx.fillText("ZONA", 290, 435);
+        ctx.font = "bold 15px sans-serif";
+        ctx.fillText("ZONA", 468, 735);
         ctx.fillStyle = "#1f2937";
-        ctx.font = "600 15px sans-serif";
-        ctx.fillText(zona, 290, 460);
+        ctx.font = "600 22px sans-serif";
+        ctx.fillText(zona, 468, 775);
 
-        // Renderizado de la Identificación CURP Monoespaciada
+        // CURP Oficial
         ctx.fillStyle = "#6b7280";
-        ctx.font = "bold 10px sans-serif";
-        ctx.fillText("CURP OFICIAL", 200, 505);
+        ctx.font = "bold 15px sans-serif";
+        ctx.fillText("CURP OFICIAL", 319, 845);
         ctx.fillStyle = "#111827";
-        ctx.font = "bold 15px monospace";
-        ctx.fillText(curp, 200, 530);
+        ctx.font = "bold 24px monospace";
+        ctx.fillText(curp, 319, 885);
 
-        // 6. Pie de Gafete: Franja de Logotipos
+        // 5. Pie de Gafete: Bloque Blanco de Logotipos
         ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 555, 400, 50);
+        ctx.fillRect(0, 920, 638, 75);
         ctx.fillStyle = "#e5e7eb";
-        ctx.fillRect(0, 555, 400, 1); // Línea sutil de contorno
+        ctx.fillRect(0, 920, 638, 2); // Línea divisoria superior
 
         ctx.fillStyle = "#166534";
-        ctx.font = "bold 11px serif";
-        ctx.fillText("IMSS", 50, 585);
+        ctx.font = "bold 18px serif";
+        ctx.fillText("IMSS", 90, 965);
 
         ctx.fillStyle = "#831843";
-        ctx.font = "bold 11px serif";
-        ctx.fillText("ISSSTE", 160, 585);
+        ctx.font = "bold 18px serif";
+        ctx.fillText("ISSSTE", 270, 965);
 
         ctx.fillStyle = "#064e3b";
-        ctx.font = "bold 10px sans-serif";
-        ctx.fillText("IMSS BIENESTAR", 300, 585);
+        ctx.font = "bold 16px sans-serif";
+        ctx.fillText("IMSS BIENESTAR", 490, 965);
 
-        // 7. Listón de la Bandera Nacional Inferior
-        ctx.fillStyle = "#15803d"; // Tramo Verde
-        ctx.fillRect(0, 610, 133, 10);
-        ctx.fillStyle = "#ffffff"; // Tramo Blanco
-        ctx.fillRect(133, 610, 134, 10);
-        ctx.fillStyle = "#b91c1c"; // Tramo Rojo
-        ctx.fillRect(267, 610, 133, 10);
+        // 6. Barra Trinitaria de la Bandera Nacional Inferior
+        ctx.fillStyle = "#15803d"; // Verde
+        ctx.fillRect(0, 995, 213, 15);
+        ctx.fillStyle = "#ffffff"; // Blanco
+        ctx.fillRect(213, 995, 212, 15);
+        ctx.fillStyle = "#b91c1c"; // Rojo
+        ctx.fillRect(425, 995, 213, 15);
 
-        // 8. Conversión Final del Lienzo a Imagen JPEG Líquida
-        const urlImagenFinal = canvas.toDataURL('image/jpeg', 0.9);
+        // 7. Conversión a Imagen Ultra Clara y Despliegue en Modal Táctil
+        const urlImagenFinal = canvas.toDataURL('image/jpeg', 0.95);
 
-        // 9. Levantar Modal de Retención Táctil Inmune a Bloqueos
         const modal = document.createElement('div');
         modal.className = 'modal-foto-celular';
         
         const img = document.createElement('img');
         img.src = urlImagenFinal;
         img.className = 'imagen-renderizada';
+        // Le damos una proporción de credencial estilizada en la vista flotante
+        img.style.width = "auto";
+        img.style.height = "75vh";
+        img.style.aspectRatio = "638 / 1010";
         
         const texto = document.createElement('p');
         texto.className = 'instrucciones-foto';
@@ -311,7 +343,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         modal.appendChild(texto);
         document.body.appendChild(modal);
 
-        // Listener para remover la vista flotante
         texto.addEventListener('click', () => {
             document.body.removeChild(modal);
         });
@@ -321,7 +352,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFoto.src = fotoSrc;
 });
 
-// Controladores de botones auxiliares de Navegación de Flujo
+// Controladores auxiliares de navegación de flujo
 document.getElementById('btnEditarPerfil').addEventListener('click', () => {
     document.getElementById('p2_titulo').innerText = "Modificar Perfil";
     irAPantalla(2);
