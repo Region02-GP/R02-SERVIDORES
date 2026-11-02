@@ -26,7 +26,7 @@ function ocultarCarga() {
     document.getElementById('pantallaCarga').classList.add('hidden');
 }
 // ==========================================
-// BLOQUE 2: CONTROLADOR DE ACCESO Y BÚSQUEDA
+// BLOQUE 2: CONTROLADOR DE ACCESO, BÚSQUEDA Y AUDITORÍA DE CAMPOS
 // ==========================================
 
 document.getElementById('btnAcceder').addEventListener('click', async () => {
@@ -47,36 +47,68 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         document.getElementById('nombre_curp').value = curp;
 
         if (datos.existe) {
-            // Aseguramos el casteo de variables string para prevenir fallas de toUpperCase()
-            const nom = String(datos.nombre || "");
-            const pat = String(datos.ap_paterno || "");
-            const mat = String(datos.ap_materno || "");
-            const pue = String(datos.puesto || "");
-            const zon = String(datos.zona || "");
+            // 1. Castear de forma segura los valores a String limpios
+            const nom = String(datos.nombre || "").trim();
+            const pat = String(datos.ap_paterno || "").trim();
+            const mat = String(datos.ap_materno || "").trim(); // El segundo apellido es el único opcional
+            const mun = String(datos.municipio || "").trim();
+            const pue = String(datos.puesto || "").trim();
+            const tel = String(datos.telefono || "").trim();
+            const zon = String(datos.zona || "").trim();
+            const cor = String(datos.correo || "").trim();
+            const fot = String(datos.foto_url || "").trim();
 
-            // Inyectar datos en la vista visual de la tarjeta
+            // 2. Prellenar el formulario de la Pantalla 2 de forma inmediata
+            document.getElementById('nombre').value = nom;
+            document.getElementById('ap_paterno').value = pat;
+            document.getElementById('ap_materno').value = mat;
+            document.getElementById('municipio').value = mun;
+            document.getElementById('puesto').value = pue;
+            document.getElementById('telefono').value = tel;
+            document.getElementById('zona').value = zon;
+            document.getElementById('correo').value = cor;
+            fotoUrlActual = fot;
+
+            // 3. AUDITORÍA CLAVE: Verificar si falta algún dato obligatorio en la base de datos
+            let camposFaltantes = [];
+            if (!nom) camposFaltantes.push("Nombre");
+            if (!pat) camposFaltantes.push("Primer Apellido");
+            if (!mun) camposFaltantes.push("Municipio");
+            if (!pue) camposFaltantes.push("Puesto");
+            if (!tel) camposFaltantes.push("Teléfono");
+            if (!zon) camposFaltantes.push("Zona / Región");
+            if (!cor) camposFaltantes.push("Correo Electrónico");
+            if (!fot || fot.startsWith('data:image/svg+xml') || fot.includes('placeholder')) {
+                camposFaltantes.push("Fotografía del Brigadista");
+            }
+
+            // 4. Evaluar el resultado de la auditoría de campos
+            if (camposFaltantes.length > 0) {
+                // Si faltan datos: Informar al usuario y enviarlo a corregir el formulario
+                ocultarCarga();
+                alert(`⚠️ Registro Incompleto.\n\nPara visualizar tu credencial, es necesario completar los siguientes datos faltantes:\n• ${camposFaltantes.join('\n• ')}`);
+                
+                document.getElementById('p2_titulo').innerText = "Completar Registro";
+                if (fot && !camposFaltantes.includes("Fotografía del Brigadista")) {
+                    document.getElementById('fotoAviso').classList.remove('hidden');
+                } else {
+                    document.getElementById('fotoAviso').classList.add('hidden');
+                }
+                
+                irAPantalla(2); // Redirección forzada a la Pantalla del Formulario
+                return; // Detener el flujo para que no pase a la pantalla 3
+            }
+
+            // 5. SI TODO ESTÁ COMPLETO: Cargar e ir directamente al Gafete Final (Pantalla 3)
             document.getElementById('credCompleto').innerText = `${nom} ${pat} ${mat}`.trim().toUpperCase();
             document.getElementById('credPuesto').innerText = pue.toUpperCase();
             document.getElementById('credZona').innerText = zon.toUpperCase();
             document.getElementById('credIdentificacion').innerText = String(datos.curp || curp).toUpperCase();
-            
-            // Renderizado seguro de imagen
-            fotoUrlActual = datos.foto_url || "";
-            document.getElementById('credFoto').src = (fotoUrlActual.startsWith('data:image') || fotoUrlActual.startsWith('http')) ? fotoUrlActual : "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='100' height='100' viewBox='0 0 24 24' fill='%236b7280'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 2 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z'/></svg>";
-
-            // Pre-llenar el formulario de registro oculto por si pulsa modificar perfil
-            document.getElementById('nombre').value = datos.nombre || "";
-            document.getElementById('ap_paterno').value = datos.ap_paterno || "";
-            document.getElementById('ap_materno').value = datos.ap_materno || "";
-            document.getElementById('municipio').value = datos.municipio || "";
-            document.getElementById('puesto').value = datos.puesto || "";
-            document.getElementById('telefono').value = datos.telefono || "";
-            document.getElementById('zona').value = datos.zona || "";
-            document.getElementById('correo').value = datos.correo || "";
+            document.getElementById('credFoto').src = fot;
 
             irAPantalla(3);
         } else {
-            // Brigadista nuevo: Limpiar formulario y forzar re-llenado
+            // Brigadista totalmente nuevo (No existe en la base de datos)
             document.getElementById('p2_titulo').innerText = "Nuevo Registro";
             document.getElementById('perfilForm').reset();
             document.getElementById('nombre_curp').value = curp;
@@ -87,11 +119,12 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         }
     } catch (err) {
         console.error(err);
-        alert('Error al procesar la respuesta del servidor.');
+        alert('Error al procesar la respuesta del servidor de registros.');
     } finally {
         ocultarCarga();
     }
 });
+
 // ==========================================
 // BLOQUE 3: COMPRESIÓN DE IMAGEN EN TIEMPO REAL
 // ==========================================
