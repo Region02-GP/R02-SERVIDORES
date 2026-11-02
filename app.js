@@ -126,12 +126,13 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 });
 
 // ==========================================
-// BLOQUE 3: COMPRESIÓN DE IMAGEN EN TIEMPO REAL
+// BLOQUE 3: COMPRESIÓN DE IMAGEN EN TIEMPO REAL (CORREGIDO)
 // ==========================================
 
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const files = e.target.files; 
-    if (files && files[0]) {
+    // CORREGIDO: Comprobar que realmente exista al menos un archivo capturado
+    if (files && files.length > 0) {
         mostrarCarga("Optimizando fotografía...");
         const reader = new FileReader();
         reader.onload = function(evt) {
@@ -146,16 +147,18 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                // Exportar como string Base64 ligero
+                // Exportar como string Base64 ligero y limpio
                 fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.85);
                 document.getElementById('fotoAviso').classList.remove('hidden');
                 ocultarCarga();
             };
             img.src = evt.target.result;
         };
+        // CORREGIDO: Pasamos de forma obligatoria el primer archivo indexado [0]
         reader.readAsDataURL(files[0]);
     }
 });
+
 // ==========================================
 // BLOQUE 4: ENVÍO DE DATOS Y SINCRONIZACIÓN (CORRECCIÓN DE FOTO ACTUALIZADA)
 // ==========================================
