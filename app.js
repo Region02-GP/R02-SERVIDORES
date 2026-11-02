@@ -24,7 +24,7 @@ function ocultarCarga() {
     document.getElementById('pantallaCarga').classList.add('hidden');
 }
 // ========================================================
-// BLOQUE 2: VALIDADOR DE IDENTIDAD (PADRÓN DE BRIGADISTAS)
+// BLOQUE 2: VALIDADOR DE IDENTIDAD (CORREGIDO)
 // ========================================================
 
 document.getElementById('btnAcceder').addEventListener('click', async () => {
@@ -62,6 +62,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             const tel = String(datos.telefono || "").trim();
             const zon = String(datos.zona || "").trim();
             const cor = String(datos.correo || "").trim();
+            
             fotoUrlActual = String(datos.foto_url || "").trim();
 
             document.getElementById('nombre').value = nom;
@@ -101,6 +102,8 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('credZona').innerText = zon.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
             document.getElementById('credFoto').src = fotoUrlActual;
+            
+            ocultarCarga();
             irAPantalla(3);
 
         } else {
@@ -124,9 +127,10 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     } catch (err) {
         console.error(err);
         ocultarCarga();
-        alert('Error en el enlace de red con el módulo de acceso.');
+        alert('Error en el enlace de red con el módulo de acceso. Verifica que la URL del servidor sea correcta.');
     }
 });
+
 // ========================================================
 // BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO A LA NUBE
 // ========================================================
