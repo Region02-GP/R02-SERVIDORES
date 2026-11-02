@@ -1,14 +1,13 @@
-// ==========================================
-// BLOQUE 1: CONFIGURACIÓN Y CONTROL DE VISTAS
-// ==========================================
+// ========================================================
+// BLOQUE 1: NAUFRAGIO DE VISTAS Y CONFIGURACIÓN INICIAL
+// ========================================================
 
-// CONFIGURACIÓN: Coloca aquí tu URL /exec de Google Apps Script pública
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyuMs73jjMm82NHMeoKpFIkGND2309TIh0YPTq_NYZHIoFkGSBfg-GlqgCr_w2kbPrqbQ/exec";
+// Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx9bXkcEXdyIGoIhjvfRaUa7TME7dvpkoqIlcSdLbkwyDXrxc_FqQtG5fol5TvF7rpQwg/exec";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
 
-// Función para cambiar de pantalla de forma fluida
 function irAPantalla(num) {
     document.getElementById('pantalla1').classList.add('hidden');
     document.getElementById('pantalla2').classList.add('hidden');
@@ -16,7 +15,6 @@ function irAPantalla(num) {
     document.getElementById('pantalla' + num).classList.remove('hidden');
 }
 
-// Funciones de control para activar y desactivar la pantalla de carga flotante
 function mostrarCarga(texto) {
     document.getElementById('textoCarga').innerText = texto || "Procesando...";
     document.getElementById('pantallaCarga').classList.remove('hidden');
@@ -25,15 +23,15 @@ function mostrarCarga(texto) {
 function ocultarCarga() {
     document.getElementById('pantallaCarga').classList.add('hidden');
 }
-// ==========================================
-// BLOQUE 2: CONTROLADOR DE ACCESO, BÚSQUEDA Y AUDITORÍA DE CAMPOS
-// ==========================================
+// ========================================================
+// BLOQUE 2: VALIDADOR DE IDENTIDAD (PADRÓN DE BRIGADISTAS)
+// ========================================================
 
 document.getElementById('btnAcceder').addEventListener('click', async () => {
     const curp = document.getElementById('p1_curp').value.trim().toUpperCase();
     if (!curp) return alert('Por favor, ingresa una CURP válida');
 
-    mostrarCarga("Validando identidad con el servidor...");
+    mostrarCarga("Verificando identidad en el padrón autorizado...");
 
     try {
         const payloadBuscar = { action: 'buscar', curp: curp };
@@ -44,21 +42,28 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         });
         
         const datos = await res.json();
+
+        // CONTROL DE RECHAZO AUTOMÁTICO
+        if (datos.status === "denied") {
+            ocultarCarga();
+            alert(`⛔ ACCESO DENEGADO\n\n${datos.message}`);
+            return;
+        }
+
         document.getElementById('nombre_curp').value = curp;
 
+        // BRIGADISTA EXISTENTE EN LA HOJA DE EXCEL
         if (datos.existe) {
-            // 1. Castear de forma segura los valores a String limpios
             const nom = String(datos.nombre || "").trim();
             const pat = String(datos.ap_paterno || "").trim();
-            const mat = String(datos.ap_materno || "").trim(); // El segundo apellido es el único opcional
+            const mat = String(datos.ap_materno || "").trim(); 
             const mun = String(datos.municipio || "").trim();
             const pue = String(datos.puesto || "").trim();
             const tel = String(datos.telefono || "").trim();
             const zon = String(datos.zona || "").trim();
             const cor = String(datos.correo || "").trim();
-            const fot = String(datos.foto_url || "").trim();
+            fotoUrlActual = String(datos.foto_url || "").trim();
 
-            // 2. Prellenar el formulario de la Pantalla 2 de forma inmediata
             document.getElementById('nombre').value = nom;
             document.getElementById('ap_paterno').value = pat;
             document.getElementById('ap_materno').value = mat;
@@ -67,51 +72,50 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('telefono').value = tel;
             document.getElementById('zona').value = zon;
             document.getElementById('correo').value = cor;
-            fotoUrlActual = fot;
 
-            // 3. AUDITORÍA CLAVE: Verificar si falta algún dato obligatorio en la base de datos
+            // AUDITORÍA INTERNA DE CAMPOS OBLIGATORIOS
             let camposFaltantes = [];
             if (!nom) camposFaltantes.push("Nombre");
             if (!pat) camposFaltantes.push("Primer Apellido");
             if (!mun) camposFaltantes.push("Municipio");
             if (!pue) camposFaltantes.push("Puesto");
             if (!tel) camposFaltantes.push("Teléfono");
-            if (!zon) camposFaltantes.push("Zona / Región");
-            if (!cor) camposFaltantes.push("Correo Electrónico");
-            if (!fot || fot.startsWith('data:image/svg+xml') || fot.includes('placeholder')) {
-                camposFaltantes.push("Fotografía del Brigadista");
+            if (!zon) camposFaltantes.push("Zona");
+            if (!cor) camposFaltantes.push("Correo");
+            if (!fotoUrlActual || fotoUrlActual.startsWith('data:image/svg+xml') || fotoUrlActual.includes('placeholder')) {
+                camposFaltantes.push("Fotografía Oficial");
             }
 
-            // 4. Evaluar el resultado de la auditoría de campos
             if (camposFaltantes.length > 0) {
-                // Si faltan datos: Informar al usuario y enviarlo a corregir el formulario
                 ocultarCarga();
-                alert(`⚠️ Registro Incompleto.\n\nPara visualizar tu credencial, es necesario completar los siguientes datos faltantes:\n• ${camposFaltantes.join('\n• ')}`);
-                
+                alert(`⚠️ PERFIL INCOMPLETO.\n\nCompleta los campos pendientes para desbloquear tu credencial:\n• ${camposFaltantes.join('\n• ')}`);
                 document.getElementById('p2_titulo').innerText = "Completar Registro";
-                if (fot && !camposFaltantes.includes("Fotografía del Brigadista")) {
-                    document.getElementById('fotoAviso').classList.remove('hidden');
-                } else {
-                    document.getElementById('fotoAviso').classList.add('hidden');
-                }
-                
-                irAPantalla(2); // Redirección forzada a la Pantalla del Formulario
-                return; // Detener el flujo para que no pase a la pantalla 3
+                document.getElementById('fotoAviso').classList.add('hidden');
+                irAPantalla(2); 
+                return; 
             }
 
-            // 5. SI TODO ESTÁ COMPLETO: Cargar e ir directamente al Gafete Final (Pantalla 3)
+            // PERFIL LISTO: ENVIAR AL GAFETE
             document.getElementById('credCompleto').innerText = `${nom} ${pat} ${mat}`.trim().toUpperCase();
             document.getElementById('credPuesto').innerText = pue.toUpperCase();
             document.getElementById('credZona').innerText = zon.toUpperCase();
-            document.getElementById('credIdentificacion').innerText = String(datos.curp || curp).toUpperCase();
-            document.getElementById('credFoto').src = fot;
-
+            document.getElementById('credIdentificacion').innerText = curp;
+            document.getElementById('credFoto').src = fotoUrlActual;
             irAPantalla(3);
+
         } else {
-            // Brigadista totalmente nuevo (No existe en la base de datos)
+            // BRIGADISTA AUTORIZADO - PRIMER REGISTRO EN EL SISTEMA
+            ocultarCarga();
+            alert(`🎉 ¡Validación Exitosa!\n\nCURP localizada en el padrón oficial de Brigadistas de Campo. Complementa tu perfil para emitir tu credencial.`);
+            
             document.getElementById('p2_titulo').innerText = "Nuevo Registro";
             document.getElementById('perfilForm').reset();
             document.getElementById('nombre_curp').value = curp;
+            
+            // Inyectar de manera segura la información oficial inalterable desde el backend
+            document.getElementById('nombre').value = String(datos.nombre_oficial || "").toUpperCase();
+            document.getElementById('municipio').value = String(datos.municipio_oficial || "").toUpperCase();
+            
             fotoUrlActual = "";
             fotoCompletaBase64 = "";
             document.getElementById('fotoAviso').classList.add('hidden');
@@ -119,34 +123,27 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         }
     } catch (err) {
         console.error(err);
-        alert('Error al procesar la respuesta del servidor de registros.');
-    } finally {
         ocultarCarga();
+        alert('Error en el enlace de red con el módulo de acceso.');
     }
 });
-
-// ==========================================
-// BLOQUE 3: COMPRESIÓN ULTRA LIGERA DE IMAGEN PARA GOOGLE SHEETS
-// ==========================================
+// ========================================================
+// BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO A LA NUBE
+// ========================================================
 
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const files = e.target.files; 
     if (files && files.length > 0) {
-        mostrarCarga("Optimizando fotografía para la base de datos...");
+        mostrarCarga("Comprimiendo fotografía a escala celular...");
         const reader = new FileReader();
         reader.onload = function(evt) {
             const img = new Image();
             img.onload = function() {
-                // Creamos un lienzo minúsculo y ligero exclusivo para almacenar en Excel
                 const canvas = document.createElement('canvas');
-                
-                // Medidas estándar optimizadas para almacenar texto rápido en celdas de Sheets
                 canvas.width = 180; 
                 canvas.height = 240;
-
                 const ctx = canvas.getContext('2d');
                 
-                // Algoritmo integrado para encuadrar la previsualización de la foto sin deformarla
                 let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
                 const aspectImg = img.width / img.height;
                 const aspectCanv = 180 / 240;
@@ -160,9 +157,6 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
                 }
 
                 ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 180, 240);
-
-                // Exportar como formato comprimido al 60% de peso
-                // Esto genera un texto Base64 muy corto que Google Sheets acepta al instante sin bloquearlo
                 fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.6);
                 
                 document.getElementById('fotoAviso').classList.remove('hidden');
@@ -174,17 +168,11 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
     }
 });
 
-// ==========================================
-// BLOQUE 4: ENVÍO DE DATOS Y SINCRONIZACIÓN (CORRECCIÓN DE FOTO ACTUALIZADA)
-// ==========================================
-
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const curp = document.getElementById('nombre_curp').value;
-    mostrarCarga("Sincronizando y guardando en la nube...");
+    mostrarCarga("Sincronizando información de brigadista...");
 
-    // ALGORITMO DE DETECCIÓN: Si el brigadista capturó una foto nueva, esa será la foto activa.
-    // Si no capturó ninguna nueva, mantenemos la que ya estaba registrada en la base de datos.
     let fotoParaEnviar = fotoUrlActual;
     if (fotoCompletaBase64) {
         fotoParaEnviar = fotoCompletaBase64;
@@ -201,7 +189,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         telefono: document.getElementById('telefono').value,
         zona: document.getElementById('zona').value,
         correo: document.getElementById('correo').value,
-        foto_url: fotoParaEnviar, // CORREGIDO: Enviamos la foto correcta (sea la nueva o la anterior)
+        foto_url: fotoParaEnviar,
         fotoCompletaBase64: fotoCompletaBase64
     };
 
@@ -215,19 +203,16 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         
         if (resultado.status === "success") {
             ocultarCarga();
-            alert('🎉 ¡Perfil guardado y sincronizado correctamente en la nube!');
+            alert('🎉 ¡Perfil sincronizado correctamente!');
             
-            // Actualizar interfaz final de la tarjeta con los nuevos datos
             document.getElementById('credCompleto').innerText = `${document.getElementById('nombre').value} ${document.getElementById('ap_paterno').value} ${document.getElementById('ap_materno').value}`.toUpperCase();
             document.getElementById('credPuesto').innerText = document.getElementById('puesto').value.toUpperCase();
             document.getElementById('credZona').innerText = document.getElementById('zona').value.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
             
-            // Guardar en memoria la foto devuelta por el servidor
             fotoUrlActual = resultado.foto_url || fotoParaEnviar;
             document.getElementById('credFoto').src = fotoUrlActual;
             
-            // Limpiar la memoria temporal de la foto cargada
             fotoCompletaBase64 = "";
             document.getElementById('fotoAviso').classList.add('hidden');
             irAPantalla(3);
@@ -238,16 +223,15 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     } catch (err) {
         console.error(err);
         ocultarCarga();
-        alert('Error al sincronizar el envío de datos con Google.');
+        alert('Fallo de sincronización con la base de datos central.');
     }
 });
-
-// ==========================================
-// BLOQUE 5: DIBUJO MATEMÁTICO CANVAS (RESOLUCIÓN 2K ULTRA HD)
-// ==========================================
+// ========================================================
+// BLOQUE 4: MOTOR DE RENDERIZADO HD E INTERFAZ DE USUARIO
+// ========================================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
-    mostrarCarga("Generando credencial en Ultra HD (Calidad de Impresión)...");
+    mostrarCarga("Dibujando credencial en alta densidad gráfica...");
 
     const curp = document.getElementById('credIdentificacion').innerText;
     const nombre = document.getElementById('credCompleto').innerText;
@@ -255,29 +239,23 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     const zona = document.getElementById('credZona').innerText;
     const fotoSrc = document.getElementById('credFoto').src;
 
-    // 1. Inicialización del lienzo en resolución 2K (Doble de densidad de píxeles)
     const canvas = document.createElement('canvas');
-    canvas.width = 1276;   // Resolución duplicada para nitidez absoluta
-    canvas.height = 2020;  // Proporción vertical ID-1 Perfecta
+    canvas.width = 1276;   
+    canvas.height = 2020;  
     const ctx = canvas.getContext('2d');
 
-    // Forzar al navegador a usar los mejores algoritmos de suavizado de imagen
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // Fondo base de la tarjeta
     ctx.fillStyle = "#fcfaf6";
     ctx.fillRect(0, 0, 1276, 2020);
 
-    // 2. Encabezado Institucional Guinda
     ctx.fillStyle = "#611232";
     ctx.fillRect(0, 0, 1276, 320);
 
-    // Franja Divisoria Dorada
     ctx.fillStyle = "#ddc9a3";
     ctx.fillRect(0, 320, 1276, 16);
 
-    // Textos del Encabezado (Tamaños duplicados para acompañar la resolución)
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.font = "bold 52px sans-serif";
@@ -287,28 +265,20 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.font = "600 32px sans-serif";
     ctx.fillText("ESTADOS UNIDOS MEXICANOS", 638, 230);
 
-    // 3. Cargar la Fotografía con Algoritmo de Proporción HD
     const imgFoto = new Image();
     imgFoto.onload = function() {
-        // Coordenadas proporcionales escaladas
         const marcoX = 358;
         const marcoY = 420;
         const marcoAncho = 560;
         const marcoAlto = 700;
 
-        // Dibujar el fondo y contorno blanco del marco de la fotografía
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(marcoX - 20, marcoY - 20, marcoAncho + 40, marcoAlto + 40);
         ctx.strokeStyle = "#cbd5e1";
         ctx.lineWidth = 4;
         ctx.strokeRect(marcoX - 20, marcoY - 20, marcoAncho + 40, marcoAlto + 40);
         
-        // Algoritmo de encuadre proporcional ("Object-fit: cover")
-        let fuenteX = 0;
-        let fuenteY = 0;
-        let fuenteAncho = imgFoto.width;
-        let fuenteAlto = imgFoto.height;
-        
+        let fuenteX = 0, fuenteY = 0, fuenteAncho = imgFoto.width, fuenteAlto = imgFoto.height;
         const relacionAspectoImagen = imgFoto.width / imgFoto.height;
         const relacionAspectoMarco = marcoAncho / marcoAlto;
         
@@ -320,13 +290,9 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             fuenteY = (imgFoto.height - fuenteAlto) / 2;
         }
 
-        // Estampar la fotografía con el suavizado de alta calidad activo
         ctx.drawImage(imgFoto, fuenteX, fuenteY, fuenteAncho, fuenteAlto, marcoX, marcoY, marcoAncho, marcoAlto);
-
-        // 4. Renderizado de Datos del Gafete en Alta Densidad
         ctx.textAlign = "center";
         
-        // Nombre Completo
         ctx.fillStyle = "#6b7280";
         ctx.font = "bold 30px sans-serif";
         ctx.fillText("NOMBRE COMPLETO", 638, 1250);
@@ -335,7 +301,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         if (nombre.length > 25) ctx.font = "bold 40px sans-serif";
         ctx.fillText(nombre, 638, 1330);
 
-        // Puesto
         ctx.fillStyle = "#6b7280";
         ctx.font = "bold 30px sans-serif";
         ctx.fillText("PUESTO", 340, 1470);
@@ -343,7 +308,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.font = "600 44px sans-serif";
         ctx.fillText(puesto, 340, 1550);
 
-        // Zona
         ctx.fillStyle = "#6b7280";
         ctx.font = "bold 30px sans-serif";
         ctx.fillText("ZONA", 936, 1470);
@@ -351,7 +315,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.font = "600 44px sans-serif";
         ctx.fillText(zona, 936, 1550);
 
-        // CURP Oficial
         ctx.fillStyle = "#6b7280";
         ctx.font = "bold 30px sans-serif";
         ctx.fillText("CURP OFICIAL", 638, 1690);
@@ -359,11 +322,10 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.font = "bold 48px monospace";
         ctx.fillText(curp, 638, 1770);
 
-        // 5. Pie de Gafete: Bloque Blanco de Logotipos
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 1840, 1276, 150);
         ctx.fillStyle = "#e5e7eb";
-        ctx.fillRect(0, 1840, 1276, 4); // Línea divisoria
+        ctx.fillRect(0, 1840, 1276, 4); 
 
         ctx.fillStyle = "#166534";
         ctx.font = "bold 36px serif";
@@ -377,17 +339,14 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.font = "bold 32px sans-serif";
         ctx.fillText("IMSS BIENESTAR", 980, 1930);
 
-        // 6. Barra de la Bandera Nacional Inferior
-        ctx.fillStyle = "#15803d"; // Verde
+        ctx.fillStyle = "#15803d"; 
         ctx.fillRect(0, 1990, 425, 30);
-        ctx.fillStyle = "#ffffff"; // Blanco
+        ctx.fillStyle = "#ffffff"; 
         ctx.fillRect(425, 1990, 426, 30);
-        ctx.fillStyle = "#b91c1c"; // Rojo
+        ctx.fillStyle = "#b91c1c"; 
         ctx.fillRect(851, 1990, 425, 30);
 
-        // 7. Conversión a JPG al 100% de calidad sin compresión destructiva
         const urlImagenFinal = canvas.toDataURL('image/jpeg', 1.0);
-
         const modal = document.createElement('div');
         modal.className = 'modal-foto-celular';
         
@@ -396,26 +355,21 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         img.className = 'imagen-renderizada';
         img.style.width = "auto";
         img.style.height = "75vh";
-        img.style.aspectRatio = "1276 / 2020";
         
         const texto = document.createElement('p');
         texto.className = 'instrucciones-foto';
-        texto.innerHTML = "☝️ MANTÉN PRESIONADA LA CREDENCIAL<br>para guardarla en tu galería o compartirla por WhatsApp.<br><br><span style='font-weight:400; font-size:0.85rem; background:#6b7280; padding:0.5rem 1rem; border-radius:0.5rem; cursor:pointer;'>Toca aquí para regresar</span>";
+        texto.innerHTML = "☝️ MANTÉN PRESIONADA LA CREDENCIAL<br>para guardarla o compartirla.<br><br><span style='font-weight:400; font-size:0.85rem; background:#6b7280; padding:0.5rem 1rem; border-radius:0.5rem; cursor:pointer;'>Regresar</span>";
         
         modal.appendChild(img);
         modal.appendChild(texto);
         document.body.appendChild(modal);
 
-        texto.addEventListener('click', () => {
-            document.body.removeChild(modal);
-        });
-
+        texto.addEventListener('click', () => { document.body.removeChild(modal); });
         ocultarCarga();
     };
     imgFoto.src = fotoSrc;
 });
 
-// Controladores auxiliares de navegación de flujo
 document.getElementById('btnEditarPerfil').addEventListener('click', () => {
     document.getElementById('p2_titulo').innerText = "Modificar Perfil";
     irAPantalla(2);
@@ -425,4 +379,3 @@ document.getElementById('btnCerrar').addEventListener('click', () => {
     document.getElementById('p1_curp').value = "";
     irAPantalla(1);
 });
-
