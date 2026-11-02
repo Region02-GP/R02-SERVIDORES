@@ -3,7 +3,7 @@
 // ========================================================
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby4bDE4f03tl3k-Jl85smiIoVyBJtaRTcXilQT8LlMl96YGhrs82fl4Zq-bYj9ONfR_Xw/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwiOzF49tzrSeFZaB0AjpH_uXFNsrBuCfx-3vgJ2cj341VhwH2MvHemeb96e9f_plOW1A/exec";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
