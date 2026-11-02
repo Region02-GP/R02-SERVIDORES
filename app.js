@@ -3,7 +3,7 @@
 // ==========================================
 
 // CONFIGURACIÓN: Coloca aquí tu URL /exec de Google Apps Script pública
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw71Jk6eChY3hQlNRpqEBfCJyyji7Y5j1BkhHov8akRtSKaAmy6b-mRypqmcGoxGtn35A/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyuMs73jjMm82NHMeoKpFIkGND2309TIh0YPTq_NYZHIoFkGSBfg-GlqgCr_w2kbPrqbQ/exec";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
