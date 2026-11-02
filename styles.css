@@ -17,7 +17,6 @@ body {
     min-height: 100vh;
 }
 
-/* Contenedor gris/crema de fondo para simular una mesa de trabajo */
 .contenedor-principal-flujo {
     display: flex;
     flex-direction: column;
@@ -29,28 +28,23 @@ body {
     box-sizing: border-box;
 }
 
-/* Homologación Estricta: Todas las pantallas tienen bordes y contornos de credencial de PVC */
 .tarjeta-control, .gafete-realista {
     background-color: var(--color-fondo-gafete);
     width: 100%;
-    max-width: 25rem; /* Ancho estándar de un celular */
-    height: 80vh;     /* Altura fija controlada para que parezca tarjeta vertical */
+    max-width: 25rem;
+    height: 80vh;
     min-height: 620px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     box-sizing: border-box;
-    
-    /* Contornos y Sombras estilo Credencial Física */
     border: 1px solid #d1d5db;
     border-radius: 1.25rem;
-    box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15), 
-                0 10px 15px -5px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15), 0 10px 15px -5px rgba(0, 0, 0, 0.05);
     overflow: hidden;
     position: relative;
 }
 
-/* Cabecera institucional de la credencial */
 .encabezado-institucional {
     background-color: var(--color-guinda);
     padding: 1.5rem 1.25rem;
@@ -77,7 +71,6 @@ body {
     margin-bottom: 0;
 }
 
-/* Cuerpo interno de la tarjeta con scroll si los campos exceden la altura */
 .cuerpo-credencial {
     padding: 1.25rem;
     display: flex;
@@ -87,7 +80,6 @@ body {
     overflow-y: auto;
 }
 
-/* Personalización de barra de desplazamiento interna del formulario */
 .cuerpo-credencial::-webkit-scrollbar {
     width: 5px;
 }
@@ -208,7 +200,6 @@ body {
     margin: 0.2rem 0 0;
 }
 
-/* Pie de la credencial con firmas y logotipos */
 .logos-salud-barra {
     background-color: #ffffff;
     border-top: 1px solid #e5e7eb;
@@ -224,26 +215,26 @@ body {
 .hidden { display: none !important; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
 
-/* En pantallas excesivamente pequeñas (móviles antiguos) reduce el padding general */
 @media (max-height: 660px) {
     .tarjeta-control, .gafete-realista {
         height: 95vh;
         min-height: auto;
     }
 }
-/* Pantalla de carga flotante */
+
+/* PANTALLA DE CARGA FLOTANTE OVERLAY */
 .overlay-carga {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(31, 41, 55, 0.7); /* Gris oscuro con transparencia */
+    background-color: rgba(31, 41, 55, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999; /* Por encima de todo */
-    backdrop-filter: blur(4px); /* Efecto difuminado de fondo */
+    z-index: 9999;
+    backdrop-filter: blur(4px);
 }
 
 .caja-carga {
@@ -259,7 +250,6 @@ body {
     gap: 1rem;
 }
 
-/* Spinner Animado Guinda */
 .spinner-guinda {
     width: 3rem;
     height: 3rem;
@@ -281,23 +271,8 @@ body {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-/* Ajustes específicos para la captura de impresión limpia */
-.clase-impresion-pdf {
-    width: 320px !important;
-    height: 504px !important;
-    max-width: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-}
-/* Ajuste para la captura de imagen limpia */
-.captura-imagen-limpia {
-    max-width: none !important;
-    border: none !important;
-    box-shadow: none !important;
-}
 
-/* Ventana flotante para guardar imagen en el celular */
+/* VENTANA FLOTANTE PARA GUARDAR IMAGEN EN EL CELULAR */
 .modal-foto-celular {
     position: fixed;
     top: 0;
@@ -318,7 +293,7 @@ body {
     max-width: 90%;
     max-height: 70vh;
     border-radius: 0.75rem;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 .instrucciones-foto {
@@ -329,5 +304,4 @@ body {
     font-weight: 700;
     line-height: 1.4;
 }
-
 
