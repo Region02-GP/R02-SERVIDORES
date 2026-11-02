@@ -124,7 +124,7 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
     }
 });
 // ==========================================
-// BLOQUE 4: ENVÍO DE DATOS Y SINCRONIZACIÓN
+// BLOQUE 4: ENVÍO DE DATOS Y SINCRONIZACIÓN (CORREGIDO)
 // ==========================================
 
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
@@ -133,7 +133,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     mostrarCarga("Sincronizando y guardando en la nube...");
 
     const payloadCompleto = {
-        action: 'guarda',
+        action: 'guardar', // CORREGIDO: Se añadió la 'r' para que Google reciba la acción exacta
         curp: curp,
         nombre: document.getElementById('nombre').value,
         ap_paterno: document.getElementById('ap_paterno').value,
@@ -159,7 +159,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             ocultarCarga();
             alert('🎉 ¡Perfil guardado y sincronizado correctamente en la nube!');
             
-            // Actualizar interfaz final
+            // Actualizar interfaz final de la tarjeta
             document.getElementById('credCompleto').innerText = `${document.getElementById('nombre').value} ${document.getElementById('ap_paterno').value} ${document.getElementById('ap_materno').value}`.toUpperCase();
             document.getElementById('credPuesto').innerText = document.getElementById('puesto').value.toUpperCase();
             document.getElementById('credZona').innerText = document.getElementById('zona').value.toUpperCase();
@@ -181,6 +181,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         alert('Error al sincronizar el envío de datos con Google.');
     }
 });
+
 // ==========================================
 // BLOQUE 5: DIBUJO MATEMÁTICO CANVAS (RESOLUCIÓN 2K ULTRA HD)
 // ==========================================
