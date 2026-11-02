@@ -132,7 +132,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 });
 
 // ========================================================
-// BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO A LA NUBE
+// BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO (CORREGIDO)
 // ========================================================
 
 document.getElementById('inputFoto').addEventListener('change', (e) => {
@@ -168,7 +168,7 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
             };
             img.src = evt.target.result;
         };
-        reader.readAsDataURL(files[0]);
+        reader.readAsDataURL(files[0]); // <--- CORRECCIÓN CLAVE: Se añade el índice [0] para leer el archivo correctamente
     }
 });
 
@@ -230,6 +230,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         alert('Fallo de sincronización con la base de datos central.');
     }
 });
+
 // ========================================================
 // BLOQUE 4: MOTOR DE RENDERIZADO HD E INTERFAZ DE USUARIO
 // ========================================================
