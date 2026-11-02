@@ -126,35 +126,50 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 });
 
 // ==========================================
-// BLOQUE 3: COMPRESIÓN DE IMAGEN EN TIEMPO REAL (CORREGIDO)
+// BLOQUE 3: COMPRESIÓN ULTRA LIGERA DE IMAGEN PARA GOOGLE SHEETS
 // ==========================================
 
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const files = e.target.files; 
-    // CORREGIDO: Comprobar que realmente exista al menos un archivo capturado
     if (files && files.length > 0) {
-        mostrarCarga("Optimizando fotografía...");
+        mostrarCarga("Optimizando fotografía para la base de datos...");
         const reader = new FileReader();
         reader.onload = function(evt) {
             const img = new Image();
             img.onload = function() {
+                // Creamos un lienzo minúsculo y ligero exclusivo para almacenar en Excel
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 400; 
-                const scale = MAX_WIDTH / img.width;
-                canvas.width = MAX_WIDTH;
-                canvas.height = img.height * scale;
+                
+                // Medidas estándar optimizadas para almacenar texto rápido en celdas de Sheets
+                canvas.width = 180; 
+                canvas.height = 240;
 
                 const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // Algoritmo integrado para encuadrar la previsualización de la foto sin deformarla
+                let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
+                const aspectImg = img.width / img.height;
+                const aspectCanv = 180 / 240;
+                
+                if (aspectImg > aspectCanv) {
+                    srcW = img.height * aspectCanv;
+                    srcX = (img.width - srcW) / 2;
+                } else {
+                    srcH = img.width / aspectCanv;
+                    srcY = (img.height - srcH) / 2;
+                }
 
-                // Exportar como string Base64 ligero y limpio
-                fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.85);
+                ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 180, 240);
+
+                // Exportar como formato comprimido al 60% de peso
+                // Esto genera un texto Base64 muy corto que Google Sheets acepta al instante sin bloquearlo
+                fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                
                 document.getElementById('fotoAviso').classList.remove('hidden');
                 ocultarCarga();
             };
             img.src = evt.target.result;
         };
-        // CORREGIDO: Pasamos de forma obligatoria el primer archivo indexado [0]
         reader.readAsDataURL(files[0]);
     }
 });
