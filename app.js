@@ -3,7 +3,7 @@
 // ========================================================
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxz1_dlruy6WJP7raiLa-nDu8aJi3gy1QRGsHNRwUuDKnr_RU1Deb7N0PFiKDFLbxQnFA/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxcjx7KyIqmhHed5RYJdDhURW-7G6n4UIw9SDf1DzQWg3KAN0kA0peITghQuqAcTc_GbA/exec";
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
@@ -232,7 +232,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
 });
 
 // ========================================================
-// BLOQUE 4: MOTOR DE RENDERIZADO HD E INTERFAZ DE USUARIO
+// BLOQUE 4: MOTOR DE RENDERIZADO HD CON CORRECCIÓN CORS
 // ========================================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
@@ -271,6 +271,10 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.fillText("ESTADOS UNIDOS MEXICANOS", 638, 230);
 
     const imgFoto = new Image();
+    
+    // 🛡️ CLAÚSULA DE SEGURIDAD ANTIBLOQUEO: Permite leer píxeles externos de Drive sin ensuciar el Canvas
+    imgFoto.crossOrigin = "anonymous";
+
     imgFoto.onload = function() {
         const marcoX = 358;
         const marcoY = 420;
@@ -351,6 +355,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.fillStyle = "#b91c1c"; 
         ctx.fillRect(851, 1990, 425, 30);
 
+        // Conversión limpia sin bloqueos de seguridad activos
         const urlImagenFinal = canvas.toDataURL('image/jpeg', 1.0);
         const modal = document.createElement('div');
         modal.className = 'modal-foto-celular';
@@ -372,6 +377,13 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         texto.addEventListener('click', () => { document.body.removeChild(modal); });
         ocultarCarga();
     };
+    
+    // Control de error por si el enlace de Drive tarda en resolver en la red celular
+    imgFoto.onerror = function() {
+        ocultarCarga();
+        alert("⚠️ Error de procesamiento: Google Drive denegó la transmisión temporal de la imagen o el enlace expiró. Intenta de nuevo.");
+    };
+
     imgFoto.src = fotoSrc;
 });
 
