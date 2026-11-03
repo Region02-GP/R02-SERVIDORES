@@ -3,7 +3,7 @@
 // ========================================================
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzHPIDpz4wN6usc-8pvM0WZDV5q6t-dSj7xGUaktRqe0EXuQ2cYASJJjgU6RLmCi10VFg/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyOLbeArHmXnhBibO8PA6NQm18tmdNWB1rlKTQpDHPJ_tveqshK_OH1ZkW9AlZc-Y0XsQ/exec";
 let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 
 let fotoCompletaBase64 = "";
@@ -64,7 +64,19 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             const zon = String(datos.zona || "").trim();
             const cor = String(datos.correo || "").trim();
             
+                       // ... (Abajo de donde asignas fotoUrlActual)
             fotoUrlActual = String(datos.foto_url || "").trim();
+            firmaBase64 = String(datos.firma_url || "").trim(); // 🖋️ Recupera firma de Sheets
+
+            // Si el brigadista ya tiene una firma guardada, la pintamos de fondo en el lienzo
+            if (firmaBase64) {
+                const imgFirmaPrevia = new Image();
+                imgFirmaPrevia.onload = function() {
+                    ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
+                    ctxFirma.drawImage(imgFirmaPrevia, 0, 0);
+                };
+                imgFirmaPrevia.src = firmaBase64;
+            }
 
             document.getElementById('nombre').value = nom;
             document.getElementById('ap_paterno').value = pat;
