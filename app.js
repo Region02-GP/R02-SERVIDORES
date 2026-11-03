@@ -93,33 +93,31 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
                 }
             }, 150);
 
-           // ====================================================================
-// MODIFICACIÓN EN EL BLOQUE 2: AGREGAR A LA AUDITORÍA DE CAMPOS
-// ====================================================================
-// ... (dentro de datos.existe, abajo de los otros camposFaltantes.push)
-if (!nom) camposFaltantes.push("Nombre");
-if (!pat) camposFaltantes.push("Primer Apellido");
-if (!mun) camposFaltantes.push("Municipio");
-if (!pue) camposFaltantes.push("Puesto");
-if (!tel) camposFaltantes.push("Teléfono");
-if (!zon) camposFaltantes.push("Zona");
-if (!cor) camposFaltantes.push("Correo");
-if (!fotoUrlActual || fotoUrlActual.startsWith('data:image/svg+xml') || fotoUrlActual.includes('placeholder')) {
-    camposFaltantes.push("Fotografía Oficial");
-}
-// 🖋️ NUEVA VALIDACIÓN: Si no hay firma previa guardada en Sheets, frena el acceso directo
-if (!firmaBase64 || firmaBase64 === "" || firmaBase64 === "null") {
-    camposFaltantes.push("Firma Digital Obligatoria");
-}
+            // Validación interna de datos requeridos
+            let camposFaltantes = [];
+            if (!nom) camposFaltantes.push("Nombre");
+            if (!pat) camposFaltantes.push("Primer Apellido");
+            if (!mun) camposFaltantes.push("Municipio");
+            if (!pue) camposFaltantes.push("Puesto");
+            if (!tel) camposFaltantes.push("Teléfono");
+            if (!zon) camposFaltantes.push("Zona");
+            if (!cor) camposFaltantes.push("Correo");
+            if (!fotoUrlActual || fotoUrlActual.startsWith('data:image/svg+xml') || fotoUrlActual.includes('placeholder')) {
+                camposFaltantes.push("Fotografía Oficial");
+            }
+            // 🖋️ AUDITORÍA DE FIRMA: Si está vacío en Sheets, lo mandamos a firmar
+            if (!firmaBase64 || firmaBase64 === "" || firmaBase64 === "null") {
+                camposFaltantes.push("Firma Digital Obligatoria");
+            }
 
-if (camposFaltantes.length > 0) {
-    ocultarCarga();
-    alert(`⚠️ PERFIL INCOMPLETO.\n\nCompleta los campos pendientes para desbloquear tu credencial:\n• ${camposFaltantes.join('\n• ')}`);
-    document.getElementById('p2_titulo').innerText = "Completar Registro";
-    irAPantalla(2); 
-    return; 
-}
-// ...
+            if (camposFaltantes.length > 0) {
+                ocultarCarga();
+                alert(`⚠️ PERFIL INCOMPLETO.\n\nCompleta los campos pendientes para desbloquear tu credencial:\n• ${camposFaltantes.join('\n• ')}`);
+                document.getElementById('p2_titulo').innerText = "Completar Registro";
+                document.getElementById('fotoAviso').classList.add('hidden');
+                irAPantalla(2); 
+                return; 
+            }
 
             // Perfil completo: Ir a la credencial directa
             document.getElementById('credCompleto').innerText = `${nom} ${pat} ${mat}`.trim().toUpperCase();
@@ -199,6 +197,13 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
 
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    
+    // Bloquear envío si no hay firma en el canvas local
+    if (!firmaBase64 || firmaBase64 === "") {
+        alert("⚠️ CAMPOS REQUERIDOS:\n\nEs obligatorio estampar tu firma en el recuadro blanco antes de guardar el registro.");
+        return false;
+    }
+
     const curp = document.getElementById('nombre_curp').value;
     mostrarCarga("Sincronizando información de brigadista...");
 
@@ -435,3 +440,88 @@ function finalizarRenderizadoCredencial(canvas) {
     });
     ocultarCarga();
 }
+// ========================================================
+// BLOQUE 5: NAVEGACIÓN Y CONTROLES SECUNDARIOS
+// ========================================================
+
+// Botón "✏️ Modificar" de la pantalla de la credencial
+document.getElementById('btnEditarPerfil').addEventListener('click', () => {
+    document.getElementById('p2_titulo').innerText = "Modificar Perfil";
+    irAPantalla(2); // Te regresa al formulario
+    setTimeout(inicializarCanvasFirma, 150); // Reactiva el área de dibujo de la firma
+});
+
+// Botón "◀ Salir" de la pantalla de la credencial
+document.getElementById('btnCerrar').addEventListener('click', () => {
+    document.getElementById('p1_curp').value = ""; // Limpia el buscador
+    irAPantalla(1); // Te regresa al inicio de sesión
+});
+// ========================================================
+// BLOQUE 6: MOTOR DE CAPTURA TÁCTIL PARA FIRMA
+// ========================================================
+const canvasFirma = document.getElementById('canvasFirma');
+const ctxFirma = canvasFirma.getContext('2d');
+let dibujando = false;
+
+// Ajusta el ancho interno relativo del canvas al contenedor real en pantalla
+function inicializarCanvasFirma() {
+    const rect = canvasFirma.getBoundingClientRect();
+    canvasFirma.width = rect.width;
+    canvasFirma.height = 150; 
+    ctxFirma.strokeStyle = "#1f2937"; 
+    ctxFirma.lineWidth = 3;
+    ctxFirma.lineCap = "round";
+    ctxFirma.lineJoin = "round";
+}
+
+window.addEventListener('resize', inicializarCanvasFirma);
+
+// Calcula coordenadas normalizadas sin importar el scroll del dispositivo
+function obtenerPosicion(e) {
+    const rect = canvasFirma.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+    };
+}
+
+function empezarDibujo(e) {
+    dibujando = true;
+    const pos = obtenerPosicion(e);
+    ctxFirma.beginPath();
+    ctxFirma.moveTo(pos.x, pos.y);
+    if(e.cancelable) e.preventDefault();
+}
+
+function dibujar(e) {
+    if (!dibujando) return;
+    const pos = obtenerPosicion(e);
+    ctxFirma.lineTo(pos.x, pos.y);
+    ctxFirma.stroke();
+    if(e.cancelable) e.preventDefault();
+}
+
+function detenerDibujo() {
+    if (dibujando) {
+        dibujando = false;
+        firmaBase64 = canvasFirma.toDataURL('image/png'); // Guarda el trazo actual en Base64
+    }
+}
+
+// Escuchadores para periféricos tradicionales (PC/Mouse)
+canvasFirma.addEventListener('mousedown', empezarDibujo);
+canvasFirma.addEventListener('mousemove', dibujar);
+window.addEventListener('mouseup', detenerDibujo);
+
+// Escuchadores con prevención de scroll nativo para móviles (Táctil)
+canvasFirma.addEventListener('touchstart', empezarDibujo, { passive: false });
+canvasFirma.addEventListener('touchmove', dibujar, { passive: false });
+canvasFirma.addEventListener('touchend', detenerDibujo);
+
+// Botón Limpiar Lienzo
+document.getElementById('btnLimpiarFirma').addEventListener('click', () => {
+    ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
+    firmaBase64 = "";
+});
