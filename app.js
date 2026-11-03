@@ -269,7 +269,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     }
 });
 // ========================================================
-// BLOQUE 4: MOTOR DE RENDERIZADO HD SIN BLOQUEOS CORS
+// BLOQUE 4: MOTOR DE RENDERIZADO HD CORREGIDO (BANNER Y MODAL)
 // ========================================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
@@ -311,7 +311,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgBanner.onload = verificarCargas;
     imgFoto.onload = verificarCargas;
 
-    // Control de contingencia: si el banner falla, el sistema no se congela
+    // Control de contingencia: si el banner falla, el sistema continúa con el color sólido
     imgBanner.onerror = function() {
         console.warn("Fallo de renderizado en Banner. Aplicando contingencia gráfica.");
         verificarCargas();
@@ -322,18 +322,28 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         alert("⚠️ Error: La foto del brigadista no pudo ser procesada por el motor gráfico.");
     };
 
-    // 🛡️ SOLUCIÓN ANTIBLOQUEO: Banner institucional nativo en formato Base64 de alta densidad corporativa
-    // Esto simula de forma exacta la textura del banner abstracto sin conexiones externas
-    imgBanner.src = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='1276' height='280' viewBox='0 0 1276 280'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23611232'/><stop offset='50%' stop-color='%237a1c43'/><stop offset='100%' stop-color='%234a0d25'/></defs><rect width='1276' height='280' fill='url(%23g)'/><path d='M0,150 Q300,90 638,180 T1276,120 L1276,280 L0,280 Z' fill='%23ddc9a3' opacity='0.15'/><path d='M0,200 Q400,240 700,140 T1276,220 L1276,280 L0,280 Z' fill='%23ffffff' opacity='0.08'/></svg>";
-    
-    // Si en el futuro deseas usar tu propia imagen Base64 convertida, sustituye la cadena de arriba por: "data:image/jpeg;base64,/9j/4AAQSk..."
+    // 🛡️ SOLUCIÓN DEFECTIVA: Código Base64 PNG ultra-ligero que simula el fondo guinda institucional 
+    // Evita restricciones SVG y bloqueos CORS en cualquier navegador móvil (iOS / Android)
+    imgBanner.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAFAVwAAAEcAQMAAADDEpIdAAAAA1BMVEVhEhInNlcoAAAAM0lEQVR4Ae3BMQEAAADCIPuntsceYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKHBeAAB6gO20AAAAABJRU5ErkJggg==";
 
     imgFoto.src = fotoSrc;
 
     function construirGraficosGafete() {
         // 1. DIBUJAR BANNER SUPERIOR CORPORATIVO (De 0 a Y:280)
         if (imgBanner.complete && imgBanner.naturalWidth > 0) {
+            // Estiramos el fondo base e implementamos texturas nativas directamente con el pincel del Canvas
             ctx.drawImage(imgBanner, 0, 0, 1276, 280);
+            
+            // Ondas decorativas doradas dibujadas por código sobre el banner para romper el diseño plano
+            ctx.fillStyle = "rgba(221, 201, 163, 0.15)";
+            ctx.beginPath();
+            ctx.moveTo(0, 180);
+            ctx.quadraticCurveTo(300, 100, 638, 200);
+            ctx.quadraticCurveTo(950, 300, 1276, 150);
+            ctx.lineTo(1276, 280);
+            ctx.lineTo(0, 280);
+            ctx.closePath();
+            ctx.fill();
         } else {
             // Respaldo de color sólido institucional
             ctx.fillStyle = "#611232";
@@ -481,8 +491,9 @@ function finalizarRenderizadoCredencial(canvas) {
     modal.appendChild(texto);
     document.body.appendChild(modal);
 
+    // 🌟 CORRECCIÓN CLAVE: Se cambia document.getElementById('body') por document.body directamente
     document.getElementById('btnCerrarModalFirma').addEventListener('click', () => { 
-        document.getElementById('body').removeChild(modal); 
+        document.body.removeChild(modal); 
     });
     ocultarCarga();
 }
