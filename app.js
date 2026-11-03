@@ -269,7 +269,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     }
 });
 // ========================================================
-// BLOQUE 4: MOTOR DE RENDERIZADO HD REESPACIADO
+// BLOQUE 4: MOTOR DE RENDERIZADO HD CON BANNER REORDENADO
 // ========================================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
@@ -281,6 +281,9 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     const zona = document.getElementById('credZona').innerText;
     const fotoSrc = document.getElementById('credFoto').src;
 
+    // URL corporativa optimizada para evitar bloqueos CORS de red
+    const BANNER_URL = "https://unsplash.com";
+
     const canvas = document.createElement('canvas');
     canvas.width = 1276;   
     canvas.height = 2020;  
@@ -289,97 +292,150 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
+    // Fondo base del gafete
     ctx.fillStyle = "#fcfaf6";
     ctx.fillRect(0, 0, 1276, 2020);
-    ctx.fillStyle = "#611232";
-    ctx.fillRect(0, 0, 1276, 320);
-    ctx.fillStyle = "#ddc9a3";
-    ctx.fillRect(0, 320, 1276, 16);
 
-    ctx.fillStyle = "#ffffff";
-    ctx.textAlign = "center";
-    ctx.font = "bold 52px sans-serif";
-    ctx.fillText("SERVICIO UNIVERSAL DE SALUD", 638, 140);
-    ctx.fillStyle = "#ddc9a3";
-    ctx.font = "600 32px sans-serif";
-    ctx.fillText("ESTADOS UNIDOS MEXICANOS", 638, 230);
-
+    const imgBanner = new Image();
     const imgFoto = new Image();
+
+    // Habilitación de credenciales cruzadas antianomalías
+    imgBanner.crossOrigin = "anonymous";
     imgFoto.crossOrigin = "anonymous";
 
-    imgFoto.onload = function() {
-        const marcoX = 358;
-        const marcoY = 400; // Subimos ligeramente la foto para dar espacio (Antes 420)
-        const marcoAncho = 560;
-        const marcoAlto = 700;
+    let descargasExitosas = 0;
+    function verificarCargas() {
+        descargasExitosas++;
+        if (descargasExitosas === 2) {
+            construirGraficosGafete();
+        }
+    }
 
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(marcoX - 20, marcoY - 20, marcoAncho + 40, marcoAlto + 40);
-        ctx.strokeStyle = "#cbd5e1";
-        ctx.lineWidth = 4;
-        ctx.strokeRect(marcoX - 20, marcoY - 20, marcoAncho + 40, marcoAlto + 40);
-        
-        let fuenteX = 0, fuenteY = 0, fuenteAncho = imgFoto.width, fuenteAlto = imgFoto.height;
-        const relacionAspectoImagen = imgFoto.width / imgFoto.height;
-        const relacionAspectoMarco = marcoAncho / marcoAlto;
-        
-        if (relacionAspectoImagen > relacionAspectoMarco) {
-            fuenteAncho = imgFoto.height * relacionAspectoMarco;
-            fuenteX = (imgFoto.width - fuenteAncho) / 2;
+    imgBanner.onload = verificarCargas;
+    imgFoto.onload = verificarCargas;
+
+    // Respaldo de contingencia si falla la red con el banner externo
+    imgBanner.onerror = function() {
+        console.warn("Banner bloqueado por CORS. Usando renderizado alterno.");
+        verificarCargas();
+    };
+    
+    imgFoto.onerror = function() {
+        ocultarCarga();
+        alert("⚠️ Error: La foto del brigadista no pudo ser procesada por el motor gráfico.");
+    };
+
+    imgBanner.src = BANNER_URL;
+    imgFoto.src = fotoSrc;
+
+    function construirGraficosGafete() {
+        // 1. DIBUJAR BANNER SUPERIOR (De 0 a Y:280)
+        if (imgBanner.complete && imgBanner.naturalWidth > 0) {
+            let bSrcX = 0, bSrcY = 0, bSrcW = imgBanner.width, bSrcH = imgBanner.height;
+            const aspectBanner = imgBanner.width / imgBanner.height;
+            const aspectCabecera = 1276 / 280;
+
+            if (aspectBanner > aspectCabecera) {
+                bSrcW = imgBanner.height * aspectCabecera;
+                bSrcX = (imgBanner.width - bSrcW) / 2;
+            } else {
+                bSrcH = imgBanner.width / aspectCabecera;
+                bSrcY = (imgBanner.height - bSrcH) / 2;
+            }
+            ctx.drawImage(imgBanner, bSrcX, bSrcY, bSrcW, bSrcH, 0, 0, 1276, 280);
         } else {
-            fuenteAlto = imgFoto.width / relacionAspectoMarco;
-            fuenteY = (imgFoto.height - fuenteAlto) / 2;
+            // Fondo sólido de respaldo si no carga la imagen
+            ctx.fillStyle = "#611232";
+            ctx.fillRect(0, 0, 1276, 280);
         }
 
-        ctx.drawImage(imgFoto, fuenteX, fuenteY, fuenteAncho, fuenteAlto, marcoX, marcoY, marcoAncho, marcoAlto);
-        ctx.textAlign = "center";
-        
-        // Bloque Informativo 1: Nombre (Coordenadas controladas)
-        ctx.fillStyle = "#6b7280";
-        ctx.font = "bold 28px sans-serif";
-        ctx.fillText("NOMBRE COMPLETO", 638, 1180);
-        ctx.fillStyle = "#1f2937";
-        ctx.font = "bold 48px sans-serif";
-        if (nombre.length > 25) ctx.font = "bold 38px sans-serif";
-        ctx.fillText(nombre, 638, 1250);
-
-        // Bloque Informativo 2: Puesto y Zona
-        ctx.fillStyle = "#6b7280";
-        ctx.font = "bold 28px sans-serif";
-        ctx.fillText("PUESTO", 340, 1340);
-        ctx.fillStyle = "#1f2937";
-        ctx.font = "600 40px sans-serif";
-        ctx.fillText(puesto, 340, 1410);
-
-        ctx.fillStyle = "#6b7280";
-        ctx.font = "bold 28px sans-serif";
-        ctx.fillText("ZONA", 936, 1340);
-        ctx.fillStyle = "#1f2937";
-        ctx.font = "600 40px sans-serif";
-        ctx.fillText(zona, 936, 1410);
-
-        // Bloque Informativo 3: CURP Oficial (Ubicación compacta intermedia)
-        ctx.fillStyle = "#6b7280";
-        ctx.font = "bold 28px sans-serif";
-        ctx.fillText("CURP OFICIAL", 638, 1500);
-        ctx.fillStyle = "#111827";
-        ctx.font = "bold 42px monospace";
-        ctx.fillText(curp, 638, 1560);
-
-        // Estampar Faldón Institucional Inferior
+        // 2. CONTENEDOR BLANCO INSTITUCIONAL DEBAJO DEL BANNER (De Y:280 a Y:470)
         ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 1860, 1276, 130);
+        ctx.fillRect(0, 280, 1276, 190);
+        
+        ctx.fillStyle = "#ddc9a3";
+        ctx.fillRect(0, 470, 1276, 14); // Cintillo divisorio dorado
+
+        // 3. TEXTOS ABAJO DEL BANNER (Sobre el recuadro blanco)
+        ctx.fillStyle = "#611232"; // Letras guinda para máxima elegancia
+        ctx.textAlign = "center";
+        ctx.font = "bold 48px sans-serif";
+        ctx.fillText("SERVICIO UNIVERSAL DE SALUD", 638, 360);
+        
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "700 28px sans-serif";
+        ctx.fillText("ESTADOS UNIDOS MEXICANOS", 638, 425);
+
+        // 4. MARCO Y FOTOGRAFÍA DEL BRIGADISTA (Se desplaza hacia abajo Y:540)
+        const marcoX = 358;
+        const marcoY = 540; 
+        const marcoAncho = 560;
+        const marcoAlto = 660;
+
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(marcoX - 15, marcoY - 15, marcoAncho + 30, marcoAlto + 30);
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(marcoX - 15, marcoY - 15, marcoAncho + 30, marcoAlto + 30);
+        
+        let fSrcX = 0, fSrcY = 0, fSrcW = imgFoto.width, fSrcH = imgFoto.height;
+        const aspectImagen = imgFoto.width / imgFoto.height;
+        const aspectMarco = marcoAncho / marcoAlto;
+        
+        if (aspectImagen > aspectMarco) {
+            fSrcW = imgFoto.height * aspectMarco;
+            fSrcX = (imgFoto.width - fSrcW) / 2;
+        } else {
+            fSrcH = imgFoto.width / aspectMarco;
+            fSrcY = (imgFoto.height - fSrcH) / 2;
+        }
+
+        ctx.drawImage(imgFoto, fSrcX, fSrcY, fSrcW, fSrcH, marcoX, marcoY, marcoAncho, marcoAlto);
+        
+        // 5. DATOS DEL PERSONAL BRIGADISTA
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "bold 26px sans-serif";
+        ctx.fillText("NOMBRE COMPLETO", 638, 1275);
+        ctx.fillStyle = "#1f2937";
+        ctx.font = "bold 44px sans-serif";
+        if (nombre.length > 25) ctx.font = "bold 36px sans-serif";
+        ctx.fillText(nombre, 638, 1335);
+
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "bold 26px sans-serif";
+        ctx.fillText("PUESTO", 340, 1420);
+        ctx.fillStyle = "#1f2937";
+        ctx.font = "600 36px sans-serif";
+        ctx.fillText(puesto, 340, 1480);
+
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "bold 26px sans-serif";
+        ctx.fillText("ZONA", 936, 1420);
+        ctx.fillStyle = "#1f2937";
+        ctx.font = "600 36px sans-serif";
+        ctx.fillText(zona, 936, 1480);
+
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "bold 26px sans-serif";
+        ctx.fillText("CURP OFICIAL", 638, 1560);
+        ctx.fillStyle = "#111827";
+        ctx.font = "bold 38px monospace";
+        ctx.fillText(curp, 638, 1615);
+
+        // Faldón Inferior de Logotipos
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 1870, 1276, 120);
         ctx.fillStyle = "#e5e7eb";
-        ctx.fillRect(0, 1860, 1276, 4); 
+        ctx.fillRect(0, 1870, 1276, 4); 
 
         ctx.fillStyle = "#166534";
-        ctx.font = "bold 34px serif";
+        ctx.font = "bold 32px serif";
         ctx.fillText("IMSS", 180, 1940);
         ctx.fillStyle = "#831843";
-        ctx.font = "bold 34px serif";
+        ctx.font = "bold 32px serif";
         ctx.fillText("ISSSTE", 540, 1940);
         ctx.fillStyle = "#064e3b";
-        ctx.font = "bold 30px sans-serif";
+        ctx.font = "bold 28px sans-serif";
         ctx.fillText("IMSS BIENESTAR", 980, 1940);
 
         ctx.fillStyle = "#15803d"; 
@@ -389,23 +445,22 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.fillStyle = "#b91c1c"; 
         ctx.fillRect(851, 1990, 425, 30);
 
-        // 🖋️ INSERCIÓN AMPLIA DE FIRMA DIGITAL (Abajo de la CURP con holgura)
+        // 6. TRASLADO E IMPRESIÓN DE LA FIRMA DIGITAL (Espacio inferior holgado)
         if (firmaBase64 && firmaBase64.startsWith("data:image")) {
             const imgFirma = new Image();
             imgFirma.onload = function() {
-                // Posicionado holgado entre la CURP y el cintillo de logos
-                ctx.drawImage(imgFirma, 463, 1630, 350, 130);
+                ctx.drawImage(imgFirma, 473, 1675, 330, 110);
                 
                 ctx.strokeStyle = "#9ca3af";
                 ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.moveTo(438, 1770);
-                ctx.lineTo(838, 1770);
+                ctx.moveTo(438, 1795);
+                ctx.lineTo(838, 1795);
                 ctx.stroke();
                 
                 ctx.fillStyle = "#6b7280";
-                ctx.font = "bold 22px sans-serif";
-                ctx.fillText("FIRMA AUTORIZADA", 638, 1810);
+                ctx.font = "bold 20px sans-serif";
+                ctx.fillText("FIRMA AUTORIZADA", 638, 1830);
                 
                 finalizarRenderizadoCredencial(canvas);
             };
@@ -413,13 +468,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         } else {
             finalizarRenderizadoCredencial(canvas);
         }
-    };
-    
-    imgFoto.onerror = function() {
-        ocultarCarga();
-        alert("⚠️ Error de procesamiento: Google Drive denegó la transmisión de la imagen o expiró. Intenta de nuevo.");
-    };
-    imgFoto.src = fotoSrc;
+    }
 });
 
 function finalizarRenderizadoCredencial(canvas) {
@@ -446,6 +495,7 @@ function finalizarRenderizadoCredencial(canvas) {
     });
     ocultarCarga();
 }
+
 
 // ========================================================
 // BLOQUE 5: NAVEGACIÓN Y CONTROLES SECUNDARIOS
