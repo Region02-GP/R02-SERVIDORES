@@ -325,16 +325,41 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
 
     imgFoto.src = fotoSrc;
 
-    function construirGraficosGafete() {
-        // 1. DIBUJAR BANNER SUPERIOR CORPORATIVO (De 0 a Y:280)
+       function construirGraficosGafete() {
+        // ====================================================================
+        // 1. RECORTE INTELIGENTE "COVER" DEL BANNER (EVITA DISTORSIÓN)
+        // ====================================================================
         if (imgBanner.complete && imgBanner.naturalWidth > 0) {
-            ctx.drawImage(imgBanner, 0, 0, 1276, 280);
+            let bSrcX = 0;
+            let bSrcY = 0;
+            let bSrcW = imgBanner.width;
+            let bSrcH = imgBanner.height;
+
+            const aspectBannerOriginal = imgBanner.width / imgBanner.height;
+            const aspectCabeceraDestino = 1276 / 280;
+
+            // Si la imagen es más ancha de lo necesario, recortamos los laterales de forma simétrica
+            if (aspectBannerOriginal > aspectCabeceraDestino) {
+                bSrcW = imgBanner.height * aspectCabeceraDestino;
+                bSrcX = (imgBanner.width - bSrcW) / 2;
+            } 
+            // Si la imagen es más alta de lo necesario, recortamos el excedente vertical centrándolo
+            else {
+                bSrcH = imgBanner.width / aspectCabeceraDestino;
+                bSrcY = (imgBanner.height - bSrcH) / 2;
+            }
+
+            // Estampamos en el Canvas usando las coordenadas de recorte calculadas
+            ctx.drawImage(imgBanner, bSrcX, bSrcY, bSrcW, bSrcH, 0, 0, 1276, 280);
         } else {
+            // Fondo sólido guinda institucional de respaldo
             ctx.fillStyle = "#611232";
             ctx.fillRect(0, 0, 1276, 280);
         }
 
+        // ====================================================================
         // 2. CONTENEDOR BLANCO INSTITUCIONAL DEBAJO DEL BANNER (De Y:280 a Y:470)
+        // ====================================================================
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 280, 1276, 190);
         
