@@ -4,6 +4,7 @@
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzHPIDpz4wN6usc-8pvM0WZDV5q6t-dSj7xGUaktRqe0EXuQ2cYASJJjgU6RLmCi10VFg/exec";
+let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 
 let fotoCompletaBase64 = "";
 let fotoUrlActual = "";
@@ -395,4 +396,76 @@ document.getElementById('btnEditarPerfil').addEventListener('click', () => {
 document.getElementById('btnCerrar').addEventListener('click', () => {
     document.getElementById('p1_curp').value = "";
     irAPantalla(1);
+});
+// ========================================================
+// MOTOR TÁCTIL / MOUSE PARA CAPTURA DE FIRMA DIGITAL
+// ========================================================
+const canvasFirma = document.getElementById('canvasFirma');
+const ctxFirma = canvasFirma.getContext('2d');
+let dibujando = false;
+
+// Ajustar resolución interna del canvas de la firma sin alterar el CSS
+function inicializarCanvasFirma() {
+    const rect = canvasFirma.getBoundingClientRect();
+    canvasFirma.width = rect.width;
+    canvasFirma.height = 150; 
+    ctxFirma.strokeStyle = "#1f2937"; // Color de la tinta (Oscuro)
+    ctxFirma.lineWidth = 3;
+    ctxFirma.lineCap = "round";
+    ctxFirma.lineJoin = "round";
+}
+
+// Ejecutar ajuste al cargar la app y al cambiar a pantalla 2
+window.addEventListener('resize', inicializarCanvasFirma);
+document.getElementById('btnAcceder').addEventListener('click', () => { setTimeout(inicializarCanvasFirma, 100); });
+document.getElementById('btnEditarPerfil').addEventListener('click', () => { setTimeout(inicializarCanvasFirma, 100); });
+
+function obtenerPosicion(e) {
+    const rect = canvasFirma.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+    };
+}
+
+function empezarDibujo(e) {
+    dibujando = true;
+    const pos = obtenerPosicion(e);
+    ctxFirma.beginPath();
+    ctxFirma.moveTo(pos.x, pos.y);
+    if(e.cancelable) e.preventDefault();
+}
+
+function dibujar(e) {
+    if (!dibujando) return;
+    const pos = obtenerPosicion(e);
+    ctxFirma.lineTo(pos.x, pos.y);
+    ctxFirma.stroke();
+    if(e.cancelable) e.preventDefault();
+}
+
+function detenerDibujo() {
+    if (dibujando) {
+        dibujando = false;
+        // Guardamos el estado actual del trazo
+        firmaBase64 = canvasFirma.toDataURL('image/png');
+    }
+}
+
+// Eventos de Mouse
+canvasFirma.addEventListener('mousedown', empezarDibujo);
+canvasFirma.addEventListener('mousemove', dibujar);
+window.addEventListener('mouseup', detenerDibujo);
+
+// Eventos Táctiles (Celulares)
+canvasFirma.addEventListener('touchstart', empezarDibujo, { passive: false });
+canvasFirma.addEventListener('touchmove', dibujar, { passive: false });
+canvasFirma.addEventListener('touchend', detenerDibujo);
+
+// Botón Limpiar Lienzo
+document.getElementById('btnLimpiarFirma').addEventListener('click', () => {
+    ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
+    firmaBase64 = "";
 });
