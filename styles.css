@@ -45,22 +45,18 @@ body {
     position: relative;
 }
 
-/* REEMPLAZAR EN STYLES.CSS PARA MOSTRAR LOS COLORES REALES DEL BANNER */
 .banner-institucional-img {
     width: 100%;
     height: 90px;
-    /* 🖼️ Se remueve el linear-gradient para conservar la fuerza y tono original del diseño */
-    background-image: url("https://i.postimg.cc/bwFBd3ch/Servidores-de-la-Nacion-Region-02.png");
+    background-image: url("https://postimg.cc");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     flex-shrink: 0;
 }
 
-
-/* REEMPLAZAR POR COMPLETO LA ANTERIOR REGLA DE ENCABEZADO */
 .encabezado-institucional {
-    background-color: #ffffff; /* Fondo claro debajo del banner */
+    background-color: #ffffff;
     padding: 0.85rem 1.25rem;
     text-align: center;
     color: var(--color-texto-oscuro) !important;
@@ -71,7 +67,7 @@ body {
 .encabezado-institucional .titulo-principal {
     font-size: 1.1rem;
     font-weight: 800;
-    color: var(--color-guinda); /* El texto ahora toma el color guinda institucional */
+    color: var(--color-guinda);
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.01em;
@@ -83,25 +79,6 @@ body {
     letter-spacing: 0.08em;
     font-weight: 700;
     margin-top: 0.25rem;
-    margin-bottom: 0;
-}
-
-
-
-.titulo-principal {
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: 0.025em;
-    margin: 0;
-    text-transform: uppercase;
-}
-
-.subtitulo-patria {
-    font-size: 0.7rem;
-    color: var(--color-dorado);
-    letter-spacing: 0.1em;
-    font-weight: 600;
-    margin-top: 0.35rem;
     margin-bottom: 0;
 }
 
@@ -153,7 +130,6 @@ body {
     font-family: monospace;
     text-transform: uppercase;
 }
-
 .btn-buscar {
     background-color: #1f2937;
     color: #ffffff;
@@ -184,15 +160,17 @@ body {
     background-color: var(--color-guinda-light);
 }
 
+/* MARCO FOTOGRAFÍA REAJUSTADO PARA EL NUEVO ESPACIO */
 .marco-fotografia {
-    width: 10rem;
-    height: 12.5rem;
+    width: 9.5rem;
+    height: 12rem;
     background-color: #e5e7eb;
     border: 3px solid #ffffff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     overflow: hidden;
     position: relative;
     border-radius: 0.35rem;
+    flex-shrink: 0;
 }
 
 .datos-gafete-contenedor {
@@ -256,7 +234,6 @@ body {
     }
 }
 
-/* PANTALLA DE CARGA FLOTANTE OVERLAY */
 .overlay-carga {
     position: fixed;
     top: 0;
@@ -306,7 +283,6 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* VENTANA FLOTANTE PARA GUARDAR IMAGEN EN EL CELULAR */
 .modal-foto-celular {
     position: fixed;
     top: 0;
