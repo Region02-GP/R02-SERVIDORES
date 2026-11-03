@@ -269,7 +269,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     }
 });
 // ========================================================
-// BLOQUE 4: MOTOR DE RENDERIZADO HD CORREGIDO (BANNER Y MODAL)
+// BLOQUE 4: MOTOR DE RENDERIZADO HD CON DIBUJO DE BANNER DIRECTO (A PRUEBA DE FALLOS)
 // ========================================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
@@ -289,90 +289,69 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // Fondo base del gafete
+    // 1. Fondo base de la credencial
     ctx.fillStyle = "#fcfaf6";
     ctx.fillRect(0, 0, 1276, 2020);
 
-    const imgBanner = new Image();
-    const imgFoto = new Image();
-
-    // Habilitación de credenciales cruzadas
-    imgFoto.crossOrigin = "anonymous";
-    imgBanner.crossOrigin = "anonymous";
-
-    let descargasExitosas = 0;
-    function verificarCargas() {
-        descargasExitosas++;
-        if (descargasExitosas === 2) {
-            construirGraficosGafete();
-        }
-    }
-
-    imgBanner.onload = verificarCargas;
-    imgFoto.onload = verificarCargas;
-
-    // Control de contingencia: si el banner falla, el sistema continúa con el color sólido
-    imgBanner.onerror = function() {
-        console.warn("Fallo de renderizado en Banner. Aplicando contingencia gráfica.");
-        verificarCargas();
-    };
+    // 2. 🛡️ DIBUJO DIRECTO DEL BANNER CORPORATIVO POR CÓDIGO (Inmune a CORS y caídas de red)
+    // Creamos el degradado guinda institucional en el área superior (De 0 a Y:280)
+    const degradadoGuinda = ctx.createLinearGradient(0, 0, 1276, 280);
+    degradadoGuinda.addColorStop(0, "#611232");
+    degradadoGuinda.addColorStop(0.5, "#7a1c43");
+    degradadoGuinda.addColorStop(1, "#4a0d25");
     
-    imgFoto.onerror = function() {
-        ocultarCarga();
-        alert("⚠️ Error: La foto del brigadista no pudo ser procesada por el motor gráfico.");
-    };
+    ctx.fillStyle = degradadoGuinda;
+    ctx.fillRect(0, 0, 1276, 280);
 
-    // 🛡️ SOLUCIÓN DEFECTIVA: Código Base64 PNG ultra-ligero que simula el fondo guinda institucional 
-    // Evita restricciones SVG y bloqueos CORS en cualquier navegador móvil (iOS / Android)
-    imgBanner.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAFAVwAAAEcAQMAAADDEpIdAAAAA1BMVEVhEhInNlcoAAAAM0lEQVR4Ae3BMQEAAADCIPuntsceYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKHBeAAB6gO20AAAAABJRU5ErkJggg==";
+    // Dibujamos las texturas y ondas abstractas doradas y blancas del banner por vectores
+    ctx.fillStyle = "rgba(221, 201, 163, 0.15)"; // Ondas doradas
+    ctx.beginPath();
+    ctx.moveTo(0, 150);
+    ctx.quadraticCurveTo(300, 90, 638, 180);
+    ctx.quadraticCurveTo(950, 270, 1276, 120);
+    ctx.lineTo(1276, 280);
+    ctx.lineTo(0, 280);
+    ctx.closePath();
+    ctx.fill();
 
-    imgFoto.src = fotoSrc;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.08)"; // Ondas blancas de brillo
+    ctx.beginPath();
+    ctx.moveTo(0, 200);
+    ctx.quadraticCurveTo(400, 240, 700, 140);
+    ctx.quadraticCurveTo(1000, 50, 1276, 220);
+    ctx.lineTo(1276, 280);
+    ctx.lineTo(0, 280);
+    ctx.closePath();
+    ctx.fill();
 
-    function construirGraficosGafete() {
-        // 1. DIBUJAR BANNER SUPERIOR CORPORATIVO (De 0 a Y:280)
-        if (imgBanner.complete && imgBanner.naturalWidth > 0) {
-            // Estiramos el fondo base e implementamos texturas nativas directamente con el pincel del Canvas
-            ctx.drawImage(imgBanner, 0, 0, 1276, 280);
-            
-            // Ondas decorativas doradas dibujadas por código sobre el banner para romper el diseño plano
-            ctx.fillStyle = "rgba(221, 201, 163, 0.15)";
-            ctx.beginPath();
-            ctx.moveTo(0, 180);
-            ctx.quadraticCurveTo(300, 100, 638, 200);
-            ctx.quadraticCurveTo(950, 300, 1276, 150);
-            ctx.lineTo(1276, 280);
-            ctx.lineTo(0, 280);
-            ctx.closePath();
-            ctx.fill();
-        } else {
-            // Respaldo de color sólido institucional
-            ctx.fillStyle = "#611232";
-            ctx.fillRect(0, 0, 1276, 280);
-        }
+    // 3. CONTENEDOR BLANCO INSTITUCIONAL DEBAJO DEL BANNER (De Y:280 a Y:470)
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 280, 1276, 190);
+    
+    ctx.fillStyle = "#ddc9a3";
+    ctx.fillRect(0, 470, 1276, 14); // Cintillo divisorio dorado
 
-        // 2. CONTENEDOR BLANCO INSTITUCIONAL DEBAJO DEL BANNER (De Y:280 a Y:470)
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 280, 1276, 190);
-        
-        ctx.fillStyle = "#ddc9a3";
-        ctx.fillRect(0, 470, 1276, 14); // Cintillo divisorio dorado
+    // 4. TEXTOS DEL ENCABEZADO (Sobre el recuadro blanco limpio)
+    ctx.fillStyle = "#611232"; // Letras en color guinda institucional
+    ctx.textAlign = "center";
+    ctx.font = "bold 48px sans-serif";
+    ctx.fillText("SERVICIO UNIVERSAL DE SALUD", 638, 360);
+    
+    ctx.fillStyle = "#6b7280";
+    ctx.font = "700 28px sans-serif";
+    ctx.fillText("ESTADOS UNIDOS MEXICANOS", 638, 425);
 
-        // 3. TEXTOS ABAJO DEL BANNER (Sobre el recuadro blanco limpio)
-        ctx.fillStyle = "#611232"; // Letras en color guinda institucional
-        ctx.textAlign = "center";
-        ctx.font = "bold 48px sans-serif";
-        ctx.fillText("SERVICIO UNIVERSAL DE SALUD", 638, 360);
-        
-        ctx.fillStyle = "#6b7280";
-        ctx.font = "700 28px sans-serif";
-        ctx.fillText("ESTADOS UNIDOS MEXICANOS", 638, 425);
+    // 5. CARGA EXCLUSIVA DE LA FOTOGRAFÍA DEL BRIGADISTA
+    const imgFoto = new Image();
+    imgFoto.crossOrigin = "anonymous";
 
-        // 4. MARCO Y FOTOGRAFÍA DEL BRIGADISTA (Y:540)
+    imgFoto.onload = function() {
         const marcoX = 358;
         const marcoY = 540; 
         const marcoAncho = 560;
         const marcoAlto = 660;
 
+        // Dibujo de marco de contención de la foto
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(marcoX - 15, marcoY - 15, marcoAncho + 30, marcoAlto + 30);
         ctx.strokeStyle = "#cbd5e1";
@@ -393,7 +372,10 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
 
         ctx.drawImage(imgFoto, fSrcX, fSrcY, fSrcW, fSrcH, marcoX, marcoY, marcoAncho, marcoAlto);
         
-        // 5. DATOS DEL PERSONAL BRIGADISTA
+        // 6. DATOS DEL PERSONAL BRIGADISTA
+        ctx.fillStyle = "#1f2937";
+        ctx.textAlign = "center";
+        
         ctx.fillStyle = "#6b7280";
         ctx.font = "bold 26px sans-serif";
         ctx.fillText("NOMBRE COMPLETO", 638, 1275);
@@ -423,7 +405,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.font = "bold 38px monospace";
         ctx.fillText(curp, 638, 1615);
 
-        // Faldón Inferior de Logotipos
+        // Barra Inferior de Logos de Salud
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 1870, 1276, 120);
         ctx.fillStyle = "#e5e7eb";
@@ -446,7 +428,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.fillStyle = "#b91c1c"; 
         ctx.fillRect(851, 1990, 425, 30);
 
-        // 6. TRASLADO E IMPRESIÓN DE LA FIRMA DIGITAL
+        // 7. PROCESAMIENTO E IMPRESIÓN DE LA FIRMA DIGITAL
         if (firmaBase64 && firmaBase64.startsWith("data:image")) {
             const imgFirma = new Image();
             imgFirma.onload = function() {
@@ -469,7 +451,14 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         } else {
             finalizarRenderizadoCredencial(canvas);
         }
-    }
+    };
+    
+    imgFoto.onerror = function() {
+        ocultarCarga();
+        alert("⚠️ Error: La foto del brigadista no pudo ser integrada por restricciones del navegador móvil.");
+    };
+
+    imgFoto.src = fotoSrc;
 });
 
 function finalizarRenderizadoCredencial(canvas) {
@@ -491,12 +480,12 @@ function finalizarRenderizadoCredencial(canvas) {
     modal.appendChild(texto);
     document.body.appendChild(modal);
 
-    // 🌟 CORRECCIÓN CLAVE: Se cambia document.getElementById('body') por document.body directamente
     document.getElementById('btnCerrarModalFirma').addEventListener('click', () => { 
         document.body.removeChild(modal); 
     });
     ocultarCarga();
 }
+
 
 
 // ========================================================
