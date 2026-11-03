@@ -325,12 +325,73 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.font = "600 44px sans-serif";
         ctx.fillText(zona, 936, 1550);
 
+               // ... (Tu código anterior de CURP Oficial se mantiene igual) ...
         ctx.fillStyle = "#6b7280";
         ctx.font = "bold 30px sans-serif";
         ctx.fillText("CURP OFICIAL", 638, 1690);
         ctx.fillStyle = "#111827";
         ctx.font = "bold 48px monospace";
         ctx.fillText(curp, 638, 1770);
+
+        // ========================================================
+        // INSERCIÓN DE LA FIRMA DIGITAL EN ALTA DENSIDAD
+        // ========================================================
+        if (firmaBase64) {
+            const imgFirma = new Image();
+            imgFirma.onload = function() {
+                // Dibujamos la firma centrada en la parte inferior de la credencial
+                ctx.drawImage(imgFirma, 438, 1460, 400, 150);
+                
+                // Línea fina debajo de la firma
+                ctx.strokeStyle = "#6b7280";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(438, 1600);
+                ctx.lineTo(838, 1600);
+                ctx.stroke();
+                
+                ctx.fillStyle = "#6b7280";
+                ctx.font = "bold 20px sans-serif";
+                ctx.fillText("FIRMA AUTORIZADA", 638, 1630);
+                
+                // Finalizar el flujo original e invocar el modal
+                finalizarRenderizadoCredencial(canvas);
+            };
+            imgFirma.src = firmaBase64;
+        } else {
+            // Si el usuario no firmó, continúa el flujo sin estamparla
+            finalizarRenderizadoCredencial(canvas);
+        }
+    };
+    imgFoto.src = fotoSrc;
+});
+
+// FUNCIÓN AUXILIAR DE CIERRE (Mueve las últimas líneas de tu 'btnDescargarPDF' actual aquí)
+function finalizarRenderizadoCredencial(canvas) {
+    const urlImagenFinal = canvas.toDataURL('image/jpeg', 1.0);
+    const modal = document.createElement('div');
+    modal.className = 'modal-foto-celular';
+    
+    const img = document.createElement('img');
+    img.src = urlImagenFinal;
+    img.className = 'imagen-renderizada';
+    img.style.width = "auto";
+    img.style.height = "75vh";
+    
+    const texto = document.createElement('p');
+    texto.className = 'instrucciones-foto';
+    texto.innerHTML = "☝️ MANTÉN PRESIONADA LA CREDENCIAL<br>para guardarla o compartirla.<br><br><span id='btnCerrarModalFirma' style='font-weight:400; font-size:0.85rem; background:#6b7280; padding:0.5rem 1rem; border-radius:0.5rem; cursor:pointer;'>Regresar</span>";
+    
+    modal.appendChild(img);
+    modal.appendChild(texto);
+    document.body.appendChild(modal);
+
+    document.getElementById('btnCerrarModalFirma').addEventListener('click', () => { 
+        document.body.removeChild(modal); 
+    });
+    ocultarCarga();
+}
+
 
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 1840, 1276, 150);
