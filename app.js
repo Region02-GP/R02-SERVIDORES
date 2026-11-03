@@ -93,27 +93,33 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
                 }
             }, 150);
 
-            // Validación interna de datos requeridos
-            let camposFaltantes = [];
-            if (!nom) camposFaltantes.push("Nombre");
-            if (!pat) camposFaltantes.push("Primer Apellido");
-            if (!mun) camposFaltantes.push("Municipio");
-            if (!pue) camposFaltantes.push("Puesto");
-            if (!tel) camposFaltantes.push("Teléfono");
-            if (!zon) camposFaltantes.push("Zona");
-            if (!cor) camposFaltantes.push("Correo");
-            if (!fotoUrlActual || fotoUrlActual.startsWith('data:image/svg+xml') || fotoUrlActual.includes('placeholder')) {
-                camposFaltantes.push("Fotografía Oficial");
-            }
+           // ====================================================================
+// MODIFICACIÓN EN EL BLOQUE 2: AGREGAR A LA AUDITORÍA DE CAMPOS
+// ====================================================================
+// ... (dentro de datos.existe, abajo de los otros camposFaltantes.push)
+if (!nom) camposFaltantes.push("Nombre");
+if (!pat) camposFaltantes.push("Primer Apellido");
+if (!mun) camposFaltantes.push("Municipio");
+if (!pue) camposFaltantes.push("Puesto");
+if (!tel) camposFaltantes.push("Teléfono");
+if (!zon) camposFaltantes.push("Zona");
+if (!cor) camposFaltantes.push("Correo");
+if (!fotoUrlActual || fotoUrlActual.startsWith('data:image/svg+xml') || fotoUrlActual.includes('placeholder')) {
+    camposFaltantes.push("Fotografía Oficial");
+}
+// 🖋️ NUEVA VALIDACIÓN: Si no hay firma previa guardada en Sheets, frena el acceso directo
+if (!firmaBase64 || firmaBase64 === "" || firmaBase64 === "null") {
+    camposFaltantes.push("Firma Digital Obligatoria");
+}
 
-            if (camposFaltantes.length > 0) {
-                ocultarCarga();
-                alert(`⚠️ PERFIL INCOMPLETO.\n\nCompleta los campos pendientes para desbloquear tu credencial:\n• ${camposFaltantes.join('\n• ')}`);
-                document.getElementById('p2_titulo').innerText = "Completar Registro";
-                document.getElementById('fotoAviso').classList.add('hidden');
-                irAPantalla(2); 
-                return; 
-            }
+if (camposFaltantes.length > 0) {
+    ocultarCarga();
+    alert(`⚠️ PERFIL INCOMPLETO.\n\nCompleta los campos pendientes para desbloquear tu credencial:\n• ${camposFaltantes.join('\n• ')}`);
+    document.getElementById('p2_titulo').innerText = "Completar Registro";
+    irAPantalla(2); 
+    return; 
+}
+// ...
 
             // Perfil completo: Ir a la credencial directa
             document.getElementById('credCompleto').innerText = `${nom} ${pat} ${mat}`.trim().toUpperCase();
