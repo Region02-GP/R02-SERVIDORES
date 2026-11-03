@@ -195,7 +195,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         fotoParaEnviar = fotoCompletaBase64;
     }
 
-    const payloadCompleto = {
+        const payloadCompleto = {
         action: 'guardar',
         curp: curp,
         nombre: document.getElementById('nombre').value,
@@ -207,8 +207,10 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         zona: document.getElementById('zona').value,
         correo: document.getElementById('correo').value,
         foto_url: fotoParaEnviar,
-        fotoCompletaBase64: fotoCompletaBase64
+        fotoCompletaBase64: fotoCompletaBase64,
+        firmaBase64: firmaBase64 // 🖋️ Enviamos la firma actual en formato Base64 a Google Sheets
     };
+
 
     try {
         const res = await fetch(WEB_APP_URL, {
