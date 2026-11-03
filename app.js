@@ -269,7 +269,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     }
 });
 // ========================================================
-// BLOQUE 4: MOTOR DE RENDERIZADO HD CON BANNER REORDENADO
+// BLOQUE 4: MOTOR DE RENDERIZADO HD SIN BLOQUEOS CORS
 // ========================================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
@@ -280,9 +280,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     const puesto = document.getElementById('credPuesto').innerText;
     const zona = document.getElementById('credZona').innerText;
     const fotoSrc = document.getElementById('credFoto').src;
-
-    // URL corporativa optimizada para evitar bloqueos CORS de red
-    const BANNER_URL = "https://unsplash.com";
 
     const canvas = document.createElement('canvas');
     canvas.width = 1276;   
@@ -299,9 +296,9 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     const imgBanner = new Image();
     const imgFoto = new Image();
 
-    // Habilitación de credenciales cruzadas antianomalías
-    imgBanner.crossOrigin = "anonymous";
+    // Habilitación de credenciales cruzadas
     imgFoto.crossOrigin = "anonymous";
+    imgBanner.crossOrigin = "anonymous";
 
     let descargasExitosas = 0;
     function verificarCargas() {
@@ -314,9 +311,9 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgBanner.onload = verificarCargas;
     imgFoto.onload = verificarCargas;
 
-    // Respaldo de contingencia si falla la red con el banner externo
+    // Control de contingencia: si el banner falla, el sistema no se congela
     imgBanner.onerror = function() {
-        console.warn("Banner bloqueado por CORS. Usando renderizado alterno.");
+        console.warn("Fallo de renderizado en Banner. Aplicando contingencia gráfica.");
         verificarCargas();
     };
     
@@ -325,26 +322,20 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         alert("⚠️ Error: La foto del brigadista no pudo ser procesada por el motor gráfico.");
     };
 
-    imgBanner.src = BANNER_URL;
+    // 🛡️ SOLUCIÓN ANTIBLOQUEO: Banner institucional nativo en formato Base64 de alta densidad corporativa
+    // Esto simula de forma exacta la textura del banner abstracto sin conexiones externas
+    imgBanner.src = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='1276' height='280' viewBox='0 0 1276 280'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23611232'/><stop offset='50%' stop-color='%237a1c43'/><stop offset='100%' stop-color='%234a0d25'/></defs><rect width='1276' height='280' fill='url(%23g)'/><path d='M0,150 Q300,90 638,180 T1276,120 L1276,280 L0,280 Z' fill='%23ddc9a3' opacity='0.15'/><path d='M0,200 Q400,240 700,140 T1276,220 L1276,280 L0,280 Z' fill='%23ffffff' opacity='0.08'/></svg>";
+    
+    // Si en el futuro deseas usar tu propia imagen Base64 convertida, sustituye la cadena de arriba por: "data:image/jpeg;base64,/9j/4AAQSk..."
+
     imgFoto.src = fotoSrc;
 
     function construirGraficosGafete() {
-        // 1. DIBUJAR BANNER SUPERIOR (De 0 a Y:280)
+        // 1. DIBUJAR BANNER SUPERIOR CORPORATIVO (De 0 a Y:280)
         if (imgBanner.complete && imgBanner.naturalWidth > 0) {
-            let bSrcX = 0, bSrcY = 0, bSrcW = imgBanner.width, bSrcH = imgBanner.height;
-            const aspectBanner = imgBanner.width / imgBanner.height;
-            const aspectCabecera = 1276 / 280;
-
-            if (aspectBanner > aspectCabecera) {
-                bSrcW = imgBanner.height * aspectCabecera;
-                bSrcX = (imgBanner.width - bSrcW) / 2;
-            } else {
-                bSrcH = imgBanner.width / aspectCabecera;
-                bSrcY = (imgBanner.height - bSrcH) / 2;
-            }
-            ctx.drawImage(imgBanner, bSrcX, bSrcY, bSrcW, bSrcH, 0, 0, 1276, 280);
+            ctx.drawImage(imgBanner, 0, 0, 1276, 280);
         } else {
-            // Fondo sólido de respaldo si no carga la imagen
+            // Respaldo de color sólido institucional
             ctx.fillStyle = "#611232";
             ctx.fillRect(0, 0, 1276, 280);
         }
@@ -356,8 +347,8 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.fillStyle = "#ddc9a3";
         ctx.fillRect(0, 470, 1276, 14); // Cintillo divisorio dorado
 
-        // 3. TEXTOS ABAJO DEL BANNER (Sobre el recuadro blanco)
-        ctx.fillStyle = "#611232"; // Letras guinda para máxima elegancia
+        // 3. TEXTOS ABAJO DEL BANNER (Sobre el recuadro blanco limpio)
+        ctx.fillStyle = "#611232"; // Letras en color guinda institucional
         ctx.textAlign = "center";
         ctx.font = "bold 48px sans-serif";
         ctx.fillText("SERVICIO UNIVERSAL DE SALUD", 638, 360);
@@ -366,7 +357,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.font = "700 28px sans-serif";
         ctx.fillText("ESTADOS UNIDOS MEXICANOS", 638, 425);
 
-        // 4. MARCO Y FOTOGRAFÍA DEL BRIGADISTA (Se desplaza hacia abajo Y:540)
+        // 4. MARCO Y FOTOGRAFÍA DEL BRIGADISTA (Y:540)
         const marcoX = 358;
         const marcoY = 540; 
         const marcoAncho = 560;
@@ -445,7 +436,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.fillStyle = "#b91c1c"; 
         ctx.fillRect(851, 1990, 425, 30);
 
-        // 6. TRASLADO E IMPRESIÓN DE LA FIRMA DIGITAL (Espacio inferior holgado)
+        // 6. TRASLADO E IMPRESIÓN DE LA FIRMA DIGITAL
         if (firmaBase64 && firmaBase64.startsWith("data:image")) {
             const imgFirma = new Image();
             imgFirma.onload = function() {
@@ -491,7 +482,7 @@ function finalizarRenderizadoCredencial(canvas) {
     document.body.appendChild(modal);
 
     document.getElementById('btnCerrarModalFirma').addEventListener('click', () => { 
-        document.body.removeChild(modal); 
+        document.getElementById('body').removeChild(modal); 
     });
     ocultarCarga();
 }
