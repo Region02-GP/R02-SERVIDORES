@@ -1,14 +1,15 @@
 // ========================================================
-// BLOQUE 1: NAUFRAGIO DE VISTAS Y CONFIGURACIÓN INICIAL
+// BLOQUE 1: CONFIGURACIÓN INICIAL Y VISTAS
 // ========================================================
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbziH8OT8dQCPoWRHBnbDs7LQyPnPQOgnShg9TLIbzcQwBW6T6ZxtFzig35awzW3HF2Org/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyW83ucO62nFH0t4sSC6qhPiLAC_emeMvoVM0GcB-AgxRB6cYpfK8-nwfmdXTSH0lrvSg/exec";
+
 let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
+let fotoCompletaBase64 = ""; // Foto local capturada
+let fotoUrlActual = ""; // URL de la foto en la base de datos
 
-let fotoCompletaBase64 = "";
-let fotoUrlActual = "";
-
+// Función para alternar entre las tres pantallas principales
 function irAPantalla(num) {
     document.getElementById('pantalla1').classList.add('hidden');
     document.getElementById('pantalla2').classList.add('hidden');
@@ -16,16 +17,18 @@ function irAPantalla(num) {
     document.getElementById('pantalla' + num).classList.remove('hidden');
 }
 
+// Muestra el overlay de procesamiento
 function mostrarCarga(texto) {
     document.getElementById('textoCarga').innerText = texto || "Procesando...";
     document.getElementById('pantallaCarga').classList.remove('hidden');
 }
 
+// Oculta el overlay de procesamiento
 function ocultarCarga() {
     document.getElementById('pantallaCarga').classList.add('hidden');
 }
 // ========================================================
-// BLOQUE 2: VALIDADOR DE IDENTIDAD (CORREGIDO)
+// BLOQUE 2: VALIDADOR DE IDENTIDAD (ACCESO)
 // ========================================================
 
 document.getElementById('btnAcceder').addEventListener('click', async () => {
@@ -44,7 +47,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         
         const datos = await res.json();
 
-        // CONTROL DE RECHAZO AUTOMÁTICO
+        // Control de brigadistas rechazados por el padrón
         if (datos.status === "denied") {
             ocultarCarga();
             alert(`⛔ ACCESO DENEGADO\n\n${datos.message}`);
@@ -53,7 +56,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 
         document.getElementById('nombre_curp').value = curp;
 
-        // BRIGADISTA EXISTENTE EN LA HOJA DE EXCEL
+        // Caso A: El brigadista ya tiene registros previos en Sheets
         if (datos.existe) {
             const nom = String(datos.nombre || "").trim();
             const pat = String(datos.ap_paterno || "").trim();
@@ -64,20 +67,10 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             const zon = String(datos.zona || "").trim();
             const cor = String(datos.correo || "").trim();
             
-                       // ... (Abajo de donde asignas fotoUrlActual)
             fotoUrlActual = String(datos.foto_url || "").trim();
-            firmaBase64 = String(datos.firma_url || "").trim(); // 🖋️ Recupera firma de Sheets
+            firmaBase64 = String(datos.firma_url || "").trim(); // Recuperación desde la columna 11
 
-            // Si el brigadista ya tiene una firma guardada, la pintamos de fondo en el lienzo
-            if (firmaBase64) {
-                const imgFirmaPrevia = new Image();
-                imgFirmaPrevia.onload = function() {
-                    ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
-                    ctxFirma.drawImage(imgFirmaPrevia, 0, 0);
-                };
-                imgFirmaPrevia.src = firmaBase64;
-            }
-
+            // Inyectar datos en el formulario
             document.getElementById('nombre').value = nom;
             document.getElementById('ap_paterno').value = pat;
             document.getElementById('ap_materno').value = mat;
@@ -87,7 +80,20 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('zona').value = zon;
             document.getElementById('correo').value = cor;
 
-            // AUDITORÍA INTERNA DE CAMPOS OBLIGATORIOS
+            // Inicializar el lienzo y pintar la firma recuperada si es válida
+            setTimeout(() => {
+                inicializarCanvasFirma();
+                if (firmaBase64 && firmaBase64.startsWith("data:image")) {
+                    const imgFirmaPrevia = new Image();
+                    imgFirmaPrevia.onload = function() {
+                        ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
+                        ctxFirma.drawImage(imgFirmaPrevia, 0, 0);
+                    };
+                    imgFirmaPrevia.src = firmaBase64;
+                }
+            }, 150);
+
+            // Validación interna de datos requeridos
             let camposFaltantes = [];
             if (!nom) camposFaltantes.push("Nombre");
             if (!pat) camposFaltantes.push("Primer Apellido");
@@ -109,7 +115,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
                 return; 
             }
 
-            // PERFIL LISTO: ENVIAR AL GAFETE
+            // Perfil completo: Ir a la credencial directa
             document.getElementById('credCompleto').innerText = `${nom} ${pat} ${mat}`.trim().toUpperCase();
             document.getElementById('credPuesto').innerText = pue.toUpperCase();
             document.getElementById('credZona').innerText = zon.toUpperCase();
@@ -120,21 +126,22 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             irAPantalla(3);
 
         } else {
-            // BRIGADISTA AUTORIZADO - PRIMER REGISTRO EN EL SISTEMA
+            // Caso B: El brigadista accede por primera vez al sistema
             ocultarCarga();
-            alert(`🎉 ¡Validación Exitosa!\n\nCURP localizada en el padrón oficial de Brigadistas de Campo. Complementa tu perfil para emitir tu credencial.`);
+            alert(`🎉 ¡Validación Exitosa!\n\nCURP localizada en el padrón oficial. Complementa tu perfil para emitir tu credencial.`);
             
             document.getElementById('p2_titulo').innerText = "Nuevo Registro";
             document.getElementById('perfilForm').reset();
             document.getElementById('nombre_curp').value = curp;
             
-            // Inyectar de manera segura la información oficial inalterable desde el backend
             document.getElementById('nombre').value = String(datos.nombre_oficial || "").toUpperCase();
             document.getElementById('municipio').value = String(datos.municipio_oficial || "").toUpperCase();
             
             fotoUrlActual = "";
             fotoCompletaBase64 = "";
+            firmaBase64 = "";
             document.getElementById('fotoAviso').classList.add('hidden');
+            setTimeout(inicializarCanvasFirma, 150);
             irAPantalla(2);
         }
     } catch (err) {
@@ -143,9 +150,8 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         alert('Error en el enlace de red con el módulo de acceso. Verifica que la URL del servidor sea correcta.');
     }
 });
-
 // ========================================================
-// BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO (CORREGIDO)
+// BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO SINCRO
 // ========================================================
 
 document.getElementById('inputFoto').addEventListener('change', (e) => {
@@ -181,7 +187,7 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
             };
             img.src = evt.target.result;
         };
-        reader.readAsDataURL(files[0]); // <--- CORRECCIÓN CLAVE: Se añade el índice [0] para leer el archivo correctamente
+        reader.readAsDataURL(files[0]);
     }
 });
 
@@ -195,7 +201,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         fotoParaEnviar = fotoCompletaBase64;
     }
 
-        const payloadCompleto = {
+    const payloadCompleto = {
         action: 'guardar',
         curp: curp,
         nombre: document.getElementById('nombre').value,
@@ -208,9 +214,8 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         correo: document.getElementById('correo').value,
         foto_url: fotoParaEnviar,
         fotoCompletaBase64: fotoCompletaBase64,
-        firmaBase64: firmaBase64 // 🖋️ Enviamos la firma actual en formato Base64 a Google Sheets
+        firmaBase64: firmaBase64 // Enviamos la firma actual en formato Base64
     };
-
 
     try {
         const res = await fetch(WEB_APP_URL, {
@@ -245,9 +250,8 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         alert('Fallo de sincronización con la base de datos central.');
     }
 });
-
 // ========================================================
-// BLOQUE 4: MOTOR DE RENDERIZADO HD CON CORRECCIÓN CORS
+// BLOQUE 4: MOTOR DE RENDERIZADO HD CON FIRMA INTEGRADA
 // ========================================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
@@ -267,28 +271,25 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
+    // Fondo y cintillo superior institucional
     ctx.fillStyle = "#fcfaf6";
     ctx.fillRect(0, 0, 1276, 2020);
-
     ctx.fillStyle = "#611232";
     ctx.fillRect(0, 0, 1276, 320);
-
     ctx.fillStyle = "#ddc9a3";
     ctx.fillRect(0, 320, 1276, 16);
 
+    // Textos de cabecera
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.font = "bold 52px sans-serif";
     ctx.fillText("SERVICIO UNIVERSAL DE SALUD", 638, 140);
-    
     ctx.fillStyle = "#ddc9a3";
     ctx.font = "600 32px sans-serif";
     ctx.fillText("ESTADOS UNIDOS MEXICANOS", 638, 230);
 
     const imgFoto = new Image();
-    
-    // 🛡️ CLAÚSULA DE SEGURIDAD ANTIBLOQUEO: Permite leer píxeles externos de Drive sin ensuciar el Canvas
-    imgFoto.crossOrigin = "anonymous";
+    imgFoto.crossOrigin = "anonymous"; // Seguridad antibloqueo CORS
 
     imgFoto.onload = function() {
         const marcoX = 358;
@@ -296,6 +297,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         const marcoAncho = 560;
         const marcoAlto = 700;
 
+        // Dibujar marco blanco de fotografía
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(marcoX - 20, marcoY - 20, marcoAncho + 40, marcoAlto + 40);
         ctx.strokeStyle = "#cbd5e1";
@@ -317,6 +319,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.drawImage(imgFoto, fuenteX, fuenteY, fuenteAncho, fuenteAlto, marcoX, marcoY, marcoAncho, marcoAlto);
         ctx.textAlign = "center";
         
+        // Estampar los datos del Brigadista en la estructura del Canvas
         ctx.fillStyle = "#6b7280";
         ctx.font = "bold 30px sans-serif";
         ctx.fillText("NOMBRE COMPLETO", 638, 1250);
@@ -339,7 +342,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.font = "600 44px sans-serif";
         ctx.fillText(zona, 936, 1550);
 
-               // ... (Tu código anterior de CURP Oficial se mantiene igual) ...
         ctx.fillStyle = "#6b7280";
         ctx.font = "bold 30px sans-serif";
         ctx.fillText("CURP OFICIAL", 638, 1690);
@@ -347,40 +349,62 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.font = "bold 48px monospace";
         ctx.fillText(curp, 638, 1770);
 
-        // ========================================================
-        // INSERCIÓN DE LA FIRMA DIGITAL EN ALTA DENSIDAD
-        // ========================================================
-        if (firmaBase64) {
+        // Barra inferior de logotipos institucionales
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 1840, 1276, 150);
+        ctx.fillStyle = "#e5e7eb";
+        ctx.fillRect(0, 1840, 1276, 4); 
+
+        ctx.fillStyle = "#166534";
+        ctx.font = "bold 36px serif";
+        ctx.fillText("IMSS", 180, 1930);
+        ctx.fillStyle = "#831843";
+        ctx.font = "bold 36px serif";
+        ctx.fillText("ISSSTE", 540, 1930);
+        ctx.fillStyle = "#064e3b";
+        ctx.font = "bold 32px sans-serif";
+        ctx.fillText("IMSS BIENESTAR", 980, 1930);
+
+        ctx.fillStyle = "#15803d"; 
+        ctx.fillRect(0, 1990, 425, 30);
+        ctx.fillStyle = "#ffffff"; 
+        ctx.fillRect(425, 1990, 426, 30);
+        ctx.fillStyle = "#b91c1c"; 
+        ctx.fillRect(851, 1990, 425, 30);
+
+        // Inserción asíncrona de la firma si existe un dibujo válido
+        if (firmaBase64 && firmaBase64.startsWith("data:image")) {
             const imgFirma = new Image();
             imgFirma.onload = function() {
-                // Dibujamos la firma centrada en la parte inferior de la credencial
-                ctx.drawImage(imgFirma, 438, 1460, 400, 150);
+                ctx.drawImage(imgFirma, 438, 1430, 400, 150);
                 
-                // Línea fina debajo de la firma
                 ctx.strokeStyle = "#6b7280";
                 ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.moveTo(438, 1600);
-                ctx.lineTo(838, 1600);
+                ctx.moveTo(438, 1570);
+                ctx.lineTo(838, 1570);
                 ctx.stroke();
                 
                 ctx.fillStyle = "#6b7280";
                 ctx.font = "bold 20px sans-serif";
-                ctx.fillText("FIRMA AUTORIZADA", 638, 1630);
+                ctx.fillText("FIRMA AUTORIZADA", 638, 1600);
                 
-                // Finalizar el flujo original e invocar el modal
                 finalizarRenderizadoCredencial(canvas);
             };
             imgFirma.src = firmaBase64;
         } else {
-            // Si el usuario no firmó, continúa el flujo sin estamparla
             finalizarRenderizadoCredencial(canvas);
         }
+    };
+    
+    imgFoto.onerror = function() {
+        ocultarCarga();
+        alert("⚠️ Error de procesamiento: Google Drive denegó la transmisión de la imagen o expiró. Intenta de nuevo.");
     };
     imgFoto.src = fotoSrc;
 });
 
-// FUNCIÓN AUXILIAR DE CIERRE (Mueve las últimas líneas de tu 'btnDescargarPDF' actual aquí)
+// Invoca el modal contenedor flotante con la imagen lista en HD para guardado celular
 function finalizarRenderizadoCredencial(canvas) {
     const urlImagenFinal = canvas.toDataURL('image/jpeg', 1.0);
     const modal = document.createElement('div');
@@ -405,142 +429,3 @@ function finalizarRenderizadoCredencial(canvas) {
     });
     ocultarCarga();
 }
-
-
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 1840, 1276, 150);
-        ctx.fillStyle = "#e5e7eb";
-        ctx.fillRect(0, 1840, 1276, 4); 
-
-        ctx.fillStyle = "#166534";
-        ctx.font = "bold 36px serif";
-        ctx.fillText("IMSS", 180, 1930);
-
-        ctx.fillStyle = "#831843";
-        ctx.font = "bold 36px serif";
-        ctx.fillText("ISSSTE", 540, 1930);
-
-        ctx.fillStyle = "#064e3b";
-        ctx.font = "bold 32px sans-serif";
-        ctx.fillText("IMSS BIENESTAR", 980, 1930);
-
-        ctx.fillStyle = "#15803d"; 
-        ctx.fillRect(0, 1990, 425, 30);
-        ctx.fillStyle = "#ffffff"; 
-        ctx.fillRect(425, 1990, 426, 30);
-        ctx.fillStyle = "#b91c1c"; 
-        ctx.fillRect(851, 1990, 425, 30);
-
-        // Conversión limpia sin bloqueos de seguridad activos
-        const urlImagenFinal = canvas.toDataURL('image/jpeg', 1.0);
-        const modal = document.createElement('div');
-        modal.className = 'modal-foto-celular';
-        
-        const img = document.createElement('img');
-        img.src = urlImagenFinal;
-        img.className = 'imagen-renderizada';
-        img.style.width = "auto";
-        img.style.height = "75vh";
-        
-        const texto = document.createElement('p');
-        texto.className = 'instrucciones-foto';
-        texto.innerHTML = "☝️ MANTÉN PRESIONADA LA CREDENCIAL<br>para guardarla o compartirla.<br><br><span style='font-weight:400; font-size:0.85rem; background:#6b7280; padding:0.5rem 1rem; border-radius:0.5rem; cursor:pointer;'>Regresar</span>";
-        
-        modal.appendChild(img);
-        modal.appendChild(texto);
-        document.body.appendChild(modal);
-
-        texto.addEventListener('click', () => { document.body.removeChild(modal); });
-        ocultarCarga();
-    };
-    
-    // Control de error por si el enlace de Drive tarda en resolver en la red celular
-    imgFoto.onerror = function() {
-        ocultarCarga();
-        alert("⚠️ Error de procesamiento: Google Drive denegó la transmisión temporal de la imagen o el enlace expiró. Intenta de nuevo.");
-    };
-
-    imgFoto.src = fotoSrc;
-});
-
-document.getElementById('btnEditarPerfil').addEventListener('click', () => {
-    document.getElementById('p2_titulo').innerText = "Modificar Perfil";
-    irAPantalla(2);
-});
-
-document.getElementById('btnCerrar').addEventListener('click', () => {
-    document.getElementById('p1_curp').value = "";
-    irAPantalla(1);
-});
-// ========================================================
-// MOTOR TÁCTIL / MOUSE PARA CAPTURA DE FIRMA DIGITAL
-// ========================================================
-const canvasFirma = document.getElementById('canvasFirma');
-const ctxFirma = canvasFirma.getContext('2d');
-let dibujando = false;
-
-// Ajustar resolución interna del canvas de la firma sin alterar el CSS
-function inicializarCanvasFirma() {
-    const rect = canvasFirma.getBoundingClientRect();
-    canvasFirma.width = rect.width;
-    canvasFirma.height = 150; 
-    ctxFirma.strokeStyle = "#1f2937"; // Color de la tinta (Oscuro)
-    ctxFirma.lineWidth = 3;
-    ctxFirma.lineCap = "round";
-    ctxFirma.lineJoin = "round";
-}
-
-// Ejecutar ajuste al cargar la app y al cambiar a pantalla 2
-window.addEventListener('resize', inicializarCanvasFirma);
-document.getElementById('btnAcceder').addEventListener('click', () => { setTimeout(inicializarCanvasFirma, 100); });
-document.getElementById('btnEditarPerfil').addEventListener('click', () => { setTimeout(inicializarCanvasFirma, 100); });
-
-function obtenerPosicion(e) {
-    const rect = canvasFirma.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    return {
-        x: clientX - rect.left,
-        y: clientY - rect.top
-    };
-}
-
-function empezarDibujo(e) {
-    dibujando = true;
-    const pos = obtenerPosicion(e);
-    ctxFirma.beginPath();
-    ctxFirma.moveTo(pos.x, pos.y);
-    if(e.cancelable) e.preventDefault();
-}
-
-function dibujar(e) {
-    if (!dibujando) return;
-    const pos = obtenerPosicion(e);
-    ctxFirma.lineTo(pos.x, pos.y);
-    ctxFirma.stroke();
-    if(e.cancelable) e.preventDefault();
-}
-
-function detenerDibujo() {
-    if (dibujando) {
-        dibujando = false;
-        // Guardamos el estado actual del trazo
-        firmaBase64 = canvasFirma.toDataURL('image/png');
-    }
-}
-
-// Eventos de Mouse
-canvasFirma.addEventListener('mousedown', empezarDibujo);
-canvasFirma.addEventListener('mousemove', dibujar);
-window.addEventListener('mouseup', detenerDibujo);
-
-// Eventos Táctiles (Celulares)
-canvasFirma.addEventListener('touchstart', empezarDibujo, { passive: false });
-canvasFirma.addEventListener('touchmove', dibujar, { passive: false });
-canvasFirma.addEventListener('touchend', detenerDibujo);
-
-// Botón Limpiar Lienzo
-document.getElementById('btnLimpiarFirma').addEventListener('click', () => {
-    ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
-    firmaBase64 = "";
-});
