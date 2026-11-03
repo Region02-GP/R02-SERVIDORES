@@ -80,18 +80,25 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('zona').value = zon;
             document.getElementById('correo').value = cor;
 
-            // Inicializar el lienzo y pintar la firma recuperada si es válida
+           // ========================================================
+// BLOQUE 2: VALIDADOR DE IDENTIDAD (FRAGMENTO)
+// ========================================================
+// ... (dentro del flujo de datos.existe, localiza el setTimeout anterior y reemplázalo con este)
             setTimeout(() => {
                 inicializarCanvasFirma();
                 if (firmaBase64 && firmaBase64.startsWith("data:image")) {
+                    document.getElementById('firmaAviso').classList.remove('hidden');
                     const imgFirmaPrevia = new Image();
                     imgFirmaPrevia.onload = function() {
                         ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
                         ctxFirma.drawImage(imgFirmaPrevia, 0, 0);
                     };
                     imgFirmaPrevia.src = firmaBase64;
+                } else {
+                    document.getElementById('firmaAviso').classList.add('hidden');
                 }
             }, 150);
+// ...
 
             // Validación interna de datos requeridos
             let camposFaltantes = [];
@@ -262,7 +269,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     }
 });
 // ========================================================
-// BLOQUE 4: MOTOR DE RENDERIZADO HD CON FIRMA INTEGRADA
+// BLOQUE 4: MOTOR DE RENDERIZADO HD REESPACIADO
 // ========================================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
@@ -282,7 +289,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // Fondo y cintillo superior institucional
     ctx.fillStyle = "#fcfaf6";
     ctx.fillRect(0, 0, 1276, 2020);
     ctx.fillStyle = "#611232";
@@ -290,7 +296,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.fillStyle = "#ddc9a3";
     ctx.fillRect(0, 320, 1276, 16);
 
-    // Textos de cabecera
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.font = "bold 52px sans-serif";
@@ -300,15 +305,14 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.fillText("ESTADOS UNIDOS MEXICANOS", 638, 230);
 
     const imgFoto = new Image();
-    imgFoto.crossOrigin = "anonymous"; // Seguridad antibloqueo CORS
+    imgFoto.crossOrigin = "anonymous";
 
     imgFoto.onload = function() {
         const marcoX = 358;
-        const marcoY = 420;
+        const marcoY = 400; // Subimos ligeramente la foto para dar espacio (Antes 420)
         const marcoAncho = 560;
         const marcoAlto = 700;
 
-        // Dibujar marco blanco de fotografía
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(marcoX - 20, marcoY - 20, marcoAncho + 40, marcoAlto + 40);
         ctx.strokeStyle = "#cbd5e1";
@@ -330,51 +334,53 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.drawImage(imgFoto, fuenteX, fuenteY, fuenteAncho, fuenteAlto, marcoX, marcoY, marcoAncho, marcoAlto);
         ctx.textAlign = "center";
         
-        // Estampar los datos del Brigadista en la estructura del Canvas
+        // Bloque Informativo 1: Nombre (Coordenadas controladas)
         ctx.fillStyle = "#6b7280";
-        ctx.font = "bold 30px sans-serif";
-        ctx.fillText("NOMBRE COMPLETO", 638, 1250);
+        ctx.font = "bold 28px sans-serif";
+        ctx.fillText("NOMBRE COMPLETO", 638, 1180);
         ctx.fillStyle = "#1f2937";
-        ctx.font = "bold 52px sans-serif";
-        if (nombre.length > 25) ctx.font = "bold 40px sans-serif";
-        ctx.fillText(nombre, 638, 1330);
+        ctx.font = "bold 48px sans-serif";
+        if (nombre.length > 25) ctx.font = "bold 38px sans-serif";
+        ctx.fillText(nombre, 638, 1250);
+
+        // Bloque Informativo 2: Puesto y Zona
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "bold 28px sans-serif";
+        ctx.fillText("PUESTO", 340, 1340);
+        ctx.fillStyle = "#1f2937";
+        ctx.font = "600 40px sans-serif";
+        ctx.fillText(puesto, 340, 1410);
 
         ctx.fillStyle = "#6b7280";
-        ctx.font = "bold 30px sans-serif";
-        ctx.fillText("PUESTO", 340, 1470);
+        ctx.font = "bold 28px sans-serif";
+        ctx.fillText("ZONA", 936, 1340);
         ctx.fillStyle = "#1f2937";
-        ctx.font = "600 44px sans-serif";
-        ctx.fillText(puesto, 340, 1550);
+        ctx.font = "600 40px sans-serif";
+        ctx.fillText(zona, 936, 1410);
 
+        // Bloque Informativo 3: CURP Oficial (Ubicación compacta intermedia)
         ctx.fillStyle = "#6b7280";
-        ctx.font = "bold 30px sans-serif";
-        ctx.fillText("ZONA", 936, 1470);
-        ctx.fillStyle = "#1f2937";
-        ctx.font = "600 44px sans-serif";
-        ctx.fillText(zona, 936, 1550);
-
-        ctx.fillStyle = "#6b7280";
-        ctx.font = "bold 30px sans-serif";
-        ctx.fillText("CURP OFICIAL", 638, 1690);
+        ctx.font = "bold 28px sans-serif";
+        ctx.fillText("CURP OFICIAL", 638, 1500);
         ctx.fillStyle = "#111827";
-        ctx.font = "bold 48px monospace";
-        ctx.fillText(curp, 638, 1770);
+        ctx.font = "bold 42px monospace";
+        ctx.fillText(curp, 638, 1560);
 
-        // Barra inferior de logotipos institucionales
+        // Estampar Faldón Institucional Inferior
         ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 1840, 1276, 150);
+        ctx.fillRect(0, 1860, 1276, 130);
         ctx.fillStyle = "#e5e7eb";
-        ctx.fillRect(0, 1840, 1276, 4); 
+        ctx.fillRect(0, 1860, 1276, 4); 
 
         ctx.fillStyle = "#166534";
-        ctx.font = "bold 36px serif";
-        ctx.fillText("IMSS", 180, 1930);
+        ctx.font = "bold 34px serif";
+        ctx.fillText("IMSS", 180, 1940);
         ctx.fillStyle = "#831843";
-        ctx.font = "bold 36px serif";
-        ctx.fillText("ISSSTE", 540, 1930);
+        ctx.font = "bold 34px serif";
+        ctx.fillText("ISSSTE", 540, 1940);
         ctx.fillStyle = "#064e3b";
-        ctx.font = "bold 32px sans-serif";
-        ctx.fillText("IMSS BIENESTAR", 980, 1930);
+        ctx.font = "bold 30px sans-serif";
+        ctx.fillText("IMSS BIENESTAR", 980, 1940);
 
         ctx.fillStyle = "#15803d"; 
         ctx.fillRect(0, 1990, 425, 30);
@@ -383,22 +389,23 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.fillStyle = "#b91c1c"; 
         ctx.fillRect(851, 1990, 425, 30);
 
-        // Inserción asíncrona de la firma si existe un dibujo válido
+        // 🖋️ INSERCIÓN AMPLIA DE FIRMA DIGITAL (Abajo de la CURP con holgura)
         if (firmaBase64 && firmaBase64.startsWith("data:image")) {
             const imgFirma = new Image();
             imgFirma.onload = function() {
-                ctx.drawImage(imgFirma, 438, 1430, 400, 150);
+                // Posicionado holgado entre la CURP y el cintillo de logos
+                ctx.drawImage(imgFirma, 463, 1630, 350, 130);
                 
-                ctx.strokeStyle = "#6b7280";
+                ctx.strokeStyle = "#9ca3af";
                 ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.moveTo(438, 1570);
-                ctx.lineTo(838, 1570);
+                ctx.moveTo(438, 1770);
+                ctx.lineTo(838, 1770);
                 ctx.stroke();
                 
                 ctx.fillStyle = "#6b7280";
-                ctx.font = "bold 20px sans-serif";
-                ctx.fillText("FIRMA AUTORIZADA", 638, 1600);
+                ctx.font = "bold 22px sans-serif";
+                ctx.fillText("FIRMA AUTORIZADA", 638, 1810);
                 
                 finalizarRenderizadoCredencial(canvas);
             };
@@ -415,7 +422,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFoto.src = fotoSrc;
 });
 
-// Invoca el modal contenedor flotante con la imagen lista en HD para guardado celular
 function finalizarRenderizadoCredencial(canvas) {
     const urlImagenFinal = canvas.toDataURL('image/jpeg', 1.0);
     const modal = document.createElement('div');
@@ -440,6 +446,7 @@ function finalizarRenderizadoCredencial(canvas) {
     });
     ocultarCarga();
 }
+
 // ========================================================
 // BLOQUE 5: NAVEGACIÓN Y CONTROLES SECUNDARIOS
 // ========================================================
@@ -457,26 +464,53 @@ document.getElementById('btnCerrar').addEventListener('click', () => {
     irAPantalla(1); // Te regresa al inicio de sesión
 });
 // ========================================================
-// BLOQUE 6: MOTOR DE CAPTURA TÁCTIL PARA FIRMA
+// BLOQUE 6: MOTOR MÓVIL PANTALLA COMPLETA PARA FIRMA
 // ========================================================
 const canvasFirma = document.getElementById('canvasFirma');
 const ctxFirma = canvasFirma.getContext('2d');
 let dibujando = false;
 
-// Ajusta el ancho interno relativo del canvas al contenedor real en pantalla
+// Ajusta dinámicamente las dimensiones internas según el modal completo abierto
 function inicializarCanvasFirma() {
-    const rect = canvasFirma.getBoundingClientRect();
-    canvasFirma.width = rect.width;
-    canvasFirma.height = 150; 
-    ctxFirma.strokeStyle = "#1f2937"; 
-    ctxFirma.lineWidth = 3;
+    const contenedor = canvasFirma.parentElement;
+    canvasFirma.width = contenedor.clientWidth;
+    canvasFirma.height = contenedor.clientHeight;
+    
+    ctxFirma.strokeStyle = "#111827"; // Tinta oscura de alta densidad
+    ctxFirma.lineWidth = 4; // Trazado más visible
     ctxFirma.lineCap = "round";
     ctxFirma.lineJoin = "round";
 }
 
-window.addEventListener('resize', inicializarCanvasFirma);
+// Controladores para abrir y cerrar la ventana flotante de firma
+document.getElementById('btnAbrirFirmaModal').addEventListener('click', () => {
+    document.getElementById('modalFirmaPantallaCompleta').classList.remove('hidden');
+    setTimeout(inicializarCanvasFirma, 100);
+});
 
-// Calcula coordenadas normalizadas sin importar el scroll del dispositivo
+document.getElementById('btnAceptarFirma').addEventListener('click', () => {
+    // Si el usuario realizó trazos, se captura el estado
+    if (dibujando === false) {
+        firmaBase64 = canvasFirma.toDataURL('image/png');
+    }
+    
+    // Si el canvas tiene datos, encendemos el aviso de éxito
+    if (firmaBase64 && firmaBase64.length > 1000) {
+        document.getElementById('firmaAviso').classList.remove('hidden');
+    } else {
+        firmaBase64 = "";
+        document.getElementById('firmaAviso').classList.add('hidden');
+    }
+    document.getElementById('modalFirmaPantallaCompleta').classList.add('hidden');
+});
+
+// Evento de redimensionamiento de pantalla
+window.addEventListener('resize', () => {
+    if(!document.getElementById('modalFirmaPantallaCompleta').classList.contains('hidden')) {
+        inicializarCanvasFirma();
+    }
+});
+
 function obtenerPosicion(e) {
     const rect = canvasFirma.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -504,24 +538,22 @@ function dibujar(e) {
 }
 
 function detenerDibujo() {
-    if (dibujando) {
-        dibujando = false;
-        firmaBase64 = canvasFirma.toDataURL('image/png'); // Guarda el trazo actual en Base64
-    }
+    dibujando = false;
 }
 
-// Escuchadores para periféricos tradicionales (PC/Mouse)
+// Registros de escucha periférica mouse de escritorio
 canvasFirma.addEventListener('mousedown', empezarDibujo);
 canvasFirma.addEventListener('mousemove', dibujar);
 window.addEventListener('mouseup', detenerDibujo);
 
-// Escuchadores con prevención de scroll nativo para móviles (Táctil)
+// Registros táctiles directos con bloqueo de arrastre nativo en pantallas móviles
 canvasFirma.addEventListener('touchstart', empezarDibujo, { passive: false });
 canvasFirma.addEventListener('touchmove', dibujar, { passive: false });
 canvasFirma.addEventListener('touchend', detenerDibujo);
 
-// Botón Limpiar Lienzo
+// Botón Limpiador de Trazo
 document.getElementById('btnLimpiarFirma').addEventListener('click', () => {
     ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
     firmaBase64 = "";
+    document.getElementById('firmaAviso').classList.add('hidden');
 });
