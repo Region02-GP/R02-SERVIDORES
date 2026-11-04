@@ -28,7 +28,7 @@ function ocultarCarga() {
     document.getElementById('pantallaCarga').classList.add('hidden');
 }
 // ========================================================
-// BLOQUE 2: VALIDADOR DE IDENTIDAD (ACCESO)
+// BLOQUE 2: VALIDADOR DE IDENTIDAD (ACCESO) - CORREGIDO
 // ========================================================
 
 document.getElementById('btnAcceder').addEventListener('click', async () => {
@@ -56,7 +56,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 
         document.getElementById('nombre_curp').value = curp;
 
-                // Caso A: El brigadista ya tiene registros previos en Sheets
+        // Caso A: El brigadista ya tiene registros previos en Sheets
         if (datos.existe) {
             const nom = String(datos.nombre || "").trim(); // Aquí ya viene completo
             const mun = String(datos.municipio || "").trim();
@@ -76,9 +76,23 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('zona').value = zon;
             document.getElementById('correo').value = cor;
 
-            // ... (deja tu setTimeout de la firma tal cual está) ...
+            // Manejo y precarga de firma digital previa
+            setTimeout(() => {
+                inicializarCanvasFirma();
+                if (firmaBase64 && firmaBase64.startsWith("data:image")) {
+                    document.getElementById('firmaAviso').classList.remove('hidden');
+                    const imgFirmaPrevia = new Image();
+                    imgFirmaPrevia.onload = function() {
+                        ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
+                        ctxFirma.drawImage(imgFirmaPrevia, 0, 0);
+                    };
+                    imgFirmaPrevia.src = firmaBase64;
+                } else {
+                    document.getElementById('firmaAviso').classList.add('hidden');
+                }
+            }, 150);
 
-            // Validación interna de datos requeridos (Se quitaron los apellidos de la lista)
+            // Validación interna de datos requeridos (Unificado a Nombre Completo)
             let camposFaltantes = [];
             if (!nom) camposFaltantes.push("Nombre Completo");
             if (!mun) camposFaltantes.push("Municipio");
@@ -102,64 +116,8 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
                 return; 
             }
 
-            // Perfil completo: Ir a la credencial directa (Se simplificó el nombre)
+            // Perfil completo: Ir a la credencial directa (Pantalla 3)
             document.getElementById('credCompleto').innerText = nom.toUpperCase();
-            document.getElementById('credPuesto').innerText = pue.toUpperCase();
-            document.getElementById('credZona').innerText = zon.toUpperCase();
-            document.getElementById('credIdentificacion').innerText = curp;
-            document.getElementById('credFoto').src = fotoUrlActual;
-            
-            ocultarCarga();
-            irAPantalla(3);
-
-           // ========================================================
-// BLOQUE 2: VALIDADOR DE IDENTIDAD (FRAGMENTO)
-// ========================================================
-// ... (dentro del flujo de datos.existe, localiza el setTimeout anterior y reemplázalo con este)
-            setTimeout(() => {
-                inicializarCanvasFirma();
-                if (firmaBase64 && firmaBase64.startsWith("data:image")) {
-                    document.getElementById('firmaAviso').classList.remove('hidden');
-                    const imgFirmaPrevia = new Image();
-                    imgFirmaPrevia.onload = function() {
-                        ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
-                        ctxFirma.drawImage(imgFirmaPrevia, 0, 0);
-                    };
-                    imgFirmaPrevia.src = firmaBase64;
-                } else {
-                    document.getElementById('firmaAviso').classList.add('hidden');
-                }
-            }, 150);
-// ...
-
-            // Validación interna de datos requeridos
-            let camposFaltantes = [];
-            if (!nom) camposFaltantes.push("Nombre");
-            if (!pat) camposFaltantes.push("Primer Apellido");
-            if (!mun) camposFaltantes.push("Municipio");
-            if (!pue) camposFaltantes.push("Puesto");
-            if (!tel) camposFaltantes.push("Teléfono");
-            if (!zon) camposFaltantes.push("Zona");
-            if (!cor) camposFaltantes.push("Correo");
-            if (!fotoUrlActual || fotoUrlActual.startsWith('data:image/svg+xml') || fotoUrlActual.includes('placeholder')) {
-                camposFaltantes.push("Fotografía Oficial");
-            }
-            // 🖋️ AUDITORÍA DE FIRMA: Si está vacío en Sheets, lo mandamos a firmar
-            if (!firmaBase64 || firmaBase64 === "" || firmaBase64 === "null") {
-                camposFaltantes.push("Firma Digital Obligatoria");
-            }
-
-            if (camposFaltantes.length > 0) {
-                ocultarCarga();
-                alert(`⚠️ PERFIL INCOMPLETO.\n\nCompleta los campos pendientes para desbloquear tu credencial:\n• ${camposFaltantes.join('\n• ')}`);
-                document.getElementById('p2_titulo').innerText = "Completar Registro";
-                document.getElementById('fotoAviso').classList.add('hidden');
-                irAPantalla(2); 
-                return; 
-            }
-
-            // Perfil completo: Ir a la credencial directa
-            document.getElementById('credCompleto').innerText = `${nom} ${pat} ${mat}`.trim().toUpperCase();
             document.getElementById('credPuesto').innerText = pue.toUpperCase();
             document.getElementById('credZona').innerText = zon.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
@@ -193,6 +151,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         alert('Error en el enlace de red con el módulo de acceso. Verifica que la URL del servidor sea correcta.');
     }
 });
+
 // ========================================================
 // BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO SINCRO
 // ========================================================
