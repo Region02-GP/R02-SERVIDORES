@@ -318,7 +318,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFoto.crossOrigin = "anonymous";
 
     // Asignación de rutas de origen (Banner Base64 Reparado)
-    imgBanner.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACHwAAALUCAIAAAD8byAGAABVeWNhQlgAAFV5anVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAVVNqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOmQzOTE2OGIyLTcyMTItNGVjYi1hMzY0LTczMmUxZmY0OTA3ZQAAAAx8anVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAJ0Wp1bWIAAAA7anVtZEDLDDK7ikidpwsq1vR/Q2kTYzJwYS5pY29uAAAAABhjMnNo3a9MTCYv/nwYI2VR7N0CuwAAABdiZmRiAGltYWdlL3N2Zyt4bWwAAAAJd2JpZGI8c3ZnIHdpZHRoPSI3MTYiIGhlaWdodD0iNzE2IiB2aWV3Qm94PSIwIDAgNzE2IDcxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTUwOC43NDkgMzE3LjM5OUM1MTYuNzc3IDI4Ny4zMTQgNTA4LjkuYwYBAAFAyBhA2AIEAAsYyAxgAAQGAAgMAIHAQCAsAAsAghACwEIAmGcCwEDIXGEA/wDREpYREgBAICQkCYHAPJMB/wEDAJLMBP8AAA==";
+    imgBanner.src = "https://i.postimg.cc/bwFBd3ch/Servidores-de-la-Nacion-Region-02.png";
     imgFoto.src = fotoSrc;
 
     function construirGraficosGafete() {
