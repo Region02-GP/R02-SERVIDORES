@@ -160,10 +160,11 @@ body {
     border: 3px solid #ffffff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     overflow: hidden;
-    position: center;
+    margin: 0 auto; /* Se cambió 'position: center' por este margen que centra horizontalmente */
     border-radius: 0.35rem;
     flex-shrink: 0;
 }
+
 
 .datos-gafete-contenedor {
     width: 100%;
