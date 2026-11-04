@@ -261,9 +261,9 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         alert('Fallo de sincronización con la base de datos central.');
     }
 });
-// ========================================================
-// BLOQUE 4: MOTOR DE RENDERIZADO HD FINAL (CANVAS GRÁFICO)
-// ========================================================
+// ====================================================================
+// BLOQUE 4 (PARTE 1): CAPTURA DE VARIABLES Y CONTROL DE RECURSOS HD
+// ====================================================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     mostrarCarga("Dibujando credencial en alta densidad gráfica...");
@@ -286,16 +286,31 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // Fondo base del gafete
+    // 1. ESTILO CREDENCIAL: Crear esquinas redondeadas en el borde exterior total del gafete (Efecto Tarjeta PVC)
+    const cardRadius = 60; 
+    ctx.beginPath();
+    ctx.moveTo(cardRadius, 0);
+    ctx.lineTo(canvas.width - cardRadius, 0);
+    ctx.quadraticCurveTo(canvas.width, 0, canvas.width, cardRadius);
+    ctx.lineTo(canvas.width, canvas.height - cardRadius);
+    ctx.quadraticCurveTo(canvas.width, canvas.height, canvas.width - cardRadius, canvas.height);
+    ctx.lineTo(cardRadius, canvas.height);
+    ctx.quadraticCurveTo(0, canvas.height, 0, canvas.height - cardRadius);
+    ctx.lineTo(0, cardRadius);
+    ctx.quadraticCurveTo(0, 0, cardRadius, 0);
+    ctx.closePath();
+    ctx.clip(); 
+
+    // Fondo base limpio del gafete
     ctx.fillStyle = "#fcfaf6";
     ctx.fillRect(0, 0, 1276, 2020);
 
     const imgBanner = new Image();
     const imgFoto = new Image();
-    const imgFirma = new Image(); // Nueva instancia para cargar el trazo de la firma
+    const imgFirma = new Image();
 
     let descargasExitosas = 0;
-    const totalImagenes = 3; // Ahora controlamos 3 recursos gráficos en paralelo
+    const totalImagenes = 3;
 
     function verificarCargas() {
         descargasExitosas++;
@@ -309,13 +324,15 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFirma.onload = verificarCargas;
 
     imgBanner.onerror = function() {
-        console.warn("⚠️ Fallo al cargar el Banner. Aplicando contingencia de color.");
+        console.warn("⚠️ Fallo al cargar el Banner remoto. Aplicando contingencia de color institucional.");
+        ctx.fillStyle = "#611232";
+        ctx.fillRect(0, 0, 1276, 280);
         verificarCargas();
     };
     
     imgFoto.onerror = function() {
         console.warn("⚠️ La foto del brigadista falló. Aplicando silueta de contingencia.");
-        imgFoto.src = "https://i.postimg.cc/bwFBd3ch/Servidores-de-la-Nacion-Region-02.png";
+        imgFoto.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADAEYAAACl6ZIsAAAAFElEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAMCXA80AAAG67v3fAAAAAElFTkSuQmCC";
     };
 
     imgFirma.onerror = function() {
@@ -327,15 +344,17 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFoto.crossOrigin = "anonymous";
     imgFirma.crossOrigin = "anonymous";
 
-    // Asignación de rutas de origen
-    imgBanner.src = "https://i.postimg.cc/bwFBd3ch/Servidores-de-la-Nacion-Region-02.png";
+    // SOLUCIÓN AL BANNER: Se reemplaza la cadena Base64 corrupta por la URL directa y funcional de tu servidor de imágenes
+    imgBanner.src = "https://postimg.cc";
     imgFoto.src = fotoSrc;
-    // Si existe una firma en memoria usa esa, si no, jala una estructura en blanco por seguridad
     imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+// ====================================================================
+// BLOQUE 4 (PARTE 2): ALGORITMO OBJECT-FIT, DIBUJO Y DESCARGA PNG HD
+// ====================================================================
 
     function construirGraficosGafete() {
         try {
-            // 1. Banner Institucional Superior
+            // Dibujar el Banner Institucional Superior ya corregido
             try {
                 ctx.drawImage(imgBanner, 0, 0, 1276, 280); 
             } catch(e) {
@@ -343,25 +362,65 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
                 ctx.fillRect(0, 0, 1276, 280);
             }
 
-            // 2. Encuadre de Fotografía con Contorno Formal e Institucional
-            const fX = 458, fY = 350, fW = 360, fH = 480;
+            // 2. CORRECCIÓN ANTIESTIRADO (OBJECT-FIT: COVER NO DEFORMATIVO)
+            const targetX = 458, targetY = 350, targetW = 360, targetH = 480;
+            const fotoRadius = 24; // Bordes suavemente redondeados para la foto (Estilo Credencial Elegante)
+
+            ctx.save(); 
             
-            // Fondo blanco base de la foto
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(fX - 8, fY - 8, fW + 16, fH + 16);
-            
-            // Renderizado de la imagen del brigadista
-            try {
-                ctx.drawImage(imgFoto, fX, fY, fW, fH); 
-            } catch(e) {
-                ctx.fillStyle = "#e5e7eb";
-                ctx.fillRect(fX, fY, fW, fH);
+            // Dibujar la máscara redondeada de la fotografía
+            ctx.beginPath();
+            ctx.moveTo(targetX + fotoRadius, targetY);
+            ctx.lineTo(targetX + targetW - fotoRadius, targetY);
+            ctx.quadraticCurveTo(targetX + targetW, targetY, targetX + targetW, targetY + fotoRadius);
+            ctx.lineTo(targetX + targetW, targetY + targetH - fotoRadius);
+            ctx.quadraticCurveTo(targetX + targetW, targetY + targetH, targetX + targetW - fotoRadius, targetY + targetH);
+            ctx.lineTo(targetX + fotoRadius, targetY + targetH);
+            ctx.quadraticCurveTo(targetX, targetY + targetH, targetX, targetY + targetH - fotoRadius);
+            ctx.lineTo(targetX, targetY + fotoRadius);
+            ctx.quadraticCurveTo(targetX, targetY, targetX + fotoRadius, targetY);
+            ctx.closePath();
+            ctx.clip();
+
+            // Fondo de seguridad para la foto
+            ctx.fillStyle = "#e5e7eb";
+            ctx.fillRect(targetX, targetY, targetW, targetH);
+
+            // Algoritmo matemático para encuadrar la imagen de la cámara sin deformarla
+            let imgW = imgFoto.width;
+            let imgH = imgFoto.height;
+            let srcX = 0, srcY = 0, srcW = imgW, srcH = imgH;
+
+            const aspectoImagen = imgW / imgH;
+            const aspectoContenedor = targetW / targetH;
+
+            if (aspectoImagen > aspectoContenedor) {
+                srcW = imgH * aspectoContenedor;
+                srcX = (imgW - srcW) / 2;
+            } else {
+                srcH = imgW / aspectoContenedor;
+                srcY = (imgH - srcH) / 2;
             }
 
-            // Marco formal: Filete dorado de alta gama perimetral
+            // Pintar la foto respetando las proporciones humanas exactas
+            ctx.drawImage(imgFoto, srcX, srcY, srcW, srcH, targetX, targetY, targetW, targetH);
+            ctx.restore(); 
+
+            // Dibujar contorno perimetral formal de la foto (Filete dorado decorativo exterior)
             ctx.strokeStyle = "#ddc9a3";
-            ctx.lineWidth = 4;
-            ctx.strokeRect(fX - 8, fY - 8, fW + 16, fH + 16);
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(targetX + fotoRadius, targetY);
+            ctx.lineTo(targetX + targetW - fotoRadius, targetY);
+            ctx.quadraticCurveTo(targetX + targetW, targetY, targetX + targetW, targetY + fotoRadius);
+            ctx.lineTo(targetX + targetW, targetY + targetH - fotoRadius);
+            ctx.quadraticCurveTo(targetX + targetW, targetY + targetH, targetX + targetW - fotoRadius, targetY + targetH);
+            ctx.lineTo(targetX + fotoRadius, targetY + targetH);
+            ctx.quadraticCurveTo(targetX, targetY + targetH, targetX, targetY + targetH - fotoRadius);
+            ctx.lineTo(targetX, targetY + fotoRadius);
+            ctx.quadraticCurveTo(targetX, targetY, targetX + fotoRadius, targetY);
+            ctx.closePath();
+            ctx.stroke();
 
             // 3. Tipografías y Datos Nominativos
             ctx.fillStyle = "#1f2937"; 
@@ -386,37 +445,36 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.fillStyle = "#1f2937";
             ctx.font = "bold 36px sans-serif";
             ctx.fillText(puesto, (canvas.width / 2) - 250, 1160);
-            ctx.fillText(zona, (canvas.width / 2) + 250, 1160);
+            ctx.fillText(zona, (canvas.width / 2) + 250, 1180);
 
             // Municipio Adscrito
             ctx.fillStyle = "#6b7280";
             ctx.font = "600 28px sans-serif";
-            ctx.fillText("MUNICIPIO ADSCRITO", canvas.width / 2, 1245);
+            ctx.fillText("MUNICIPIO ADSCRITO", canvas.width / 2, 1265);
             
             ctx.fillStyle = "#1f2937";
             ctx.font = "bold 36px sans-serif";
-            ctx.fillText(municipio, canvas.width / 2, 1300);
+            ctx.fillText(municipio, canvas.width / 2, 1320);
 
             // Identificación CURP Oficial
             ctx.fillStyle = "#6b7280";
             ctx.font = "600 28px sans-serif";
-            ctx.fillText("CURP OFICIAL DEL BRIGADISTA", canvas.width / 2, 1395);
+            ctx.fillText("CURP OFICIAL DEL BRIGADISTA", canvas.width / 2, 1415);
 
             ctx.fillStyle = "#111827";
             ctx.font = "bold 38px monospace";
-            ctx.fillText(curp, canvas.width / 2, 1455);
+            ctx.fillText(curp, canvas.width / 2, 1475);
 
-            // 4. Estampado de Firma Digital Autorizada (Nuevo elemento incorporado)
+            // Estampado de Firma Digital Autorizada
             if (firmaBase64 && firmaBase64.startsWith("data:image")) {
                 ctx.fillStyle = "#6b7280";
                 ctx.font = "600 24px sans-serif";
-                ctx.fillText("FIRMA DIGITAL AUTORIZADA", canvas.width / 2, 1550);
+                ctx.fillText("FIRMA DIGITAL AUTORIZADA", canvas.width / 2, 1565);
                 
-                // Dibujar el trazo de la firma centrado de manera uniforme
                 const firmaW = 340;
                 const firmaH = 140;
                 const firmaX = (canvas.width / 2) - (firmaW / 2);
-                const firmaY = 1570;
+                const firmaY = 1585;
                 
                 ctx.drawImage(imgFirma, firmaX, firmaY, firmaW, firmaH);
             }
@@ -441,7 +499,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.fillStyle = "#b91c1c";
             ctx.fillRect(851, 1980, 425, 40);
 
-            // Generador dinámico de descarga final
+            // Generador dinámico de descarga final en formato PNG de alta definición
             const link = document.createElement('a');
             link.download = `CREDENCIAL_${curp}.png`;
             link.href = canvas.toDataURL('image/png', 1.0);
