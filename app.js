@@ -3,7 +3,7 @@
 // ========================================================
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyW83ucO62nFH0t4sSC6qhPiLAC_emeMvoVM0GcB-AgxRB6cYpfK8-nwfmdXTSH0lrvSg/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxnyeH4ua3RigrzT5M8ga0I5m5WpN6pDoQd_7DUD-ByxSGWJnxgpfvoZAXfZAApIwqt2w/exec";
 
 let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 let fotoCompletaBase64 = ""; // Foto local capturada
@@ -359,37 +359,54 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
 
     imgFoto.src = fotoSrc;
 
-       function construirGraficosGafete() {
-        // ====================================================================
-        // 1. RECORTE INTELIGENTE "COVER" DEL BANNER (EVITA DISTORSIÓN)
-        // ====================================================================
-        if (imgBanner.complete && imgBanner.naturalWidth > 0) {
-            let bSrcX = 0;
-            let bSrcY = 0;
-            let bSrcW = imgBanner.width;
-            let bSrcH = imgBanner.height;
+           // ========================================================
+    // BLOQUE 4: MOTOR DE RENDERIZADO HD (FRAGMENTO DE DIBUJO)
+    // ========================================================
+    function construirGraficosGafete() {
+        // ... (Tu código existente que dibuja el fondo y el banner) ...
 
-            const aspectBannerOriginal = imgBanner.width / imgBanner.height;
-            const aspectCabeceraDestino = 1276 / 280;
+        // 🖼️ Dibujar la fotografía del brigadista (180x240 escalada a HD)
+        // Ajusta las coordenadas X, Y, Ancho y Alto según el diseño de tu tarjeta
+        ctx.drawImage(imgFoto, 100, 350, 360, 480); 
 
-            // Si la imagen es más ancha de lo necesario, recortamos los laterales de forma simétrica
-            if (aspectBannerOriginal > aspectCabeceraDestino) {
-                bSrcW = imgBanner.height * aspectCabeceraDestino;
-                bSrcX = (imgBanner.width - bSrcW) / 2;
-            } 
-            // Si la imagen es más alta de lo necesario, recortamos el excedente vertical centrándolo
-            else {
-                bSrcH = imgBanner.width / aspectCabeceraDestino;
-                bSrcY = (imgBanner.height - bSrcH) / 2;
-            }
+        // 🖋️ Configuración de Estilos para Textos
+        ctx.fillStyle = "#1f2937"; // Color oscuro para los datos principales
+        ctx.textAlign = "center";   // Forzamos el centrado simétrico de los textos
 
-            // Estampamos en el Canvas usando las coordenadas de recorte calculadas
-            ctx.drawImage(imgBanner, bSrcX, bSrcY, bSrcW, bSrcH, 0, 0, 1276, 280);
-        } else {
-            // Fondo sólido guinda institucional de respaldo
-            ctx.fillStyle = "#611232";
-            ctx.fillRect(0, 0, 1276, 280);
-        }
+        // 1. NOMBRE COMPLETO (Unificado y en una sola instrucción)
+        ctx.font = "bold 44px sans-serif";
+        // Calculamos el centro horizontal dinámicamente (canvas.width / 2)
+        ctx.fillText(nombre, canvas.width / 2, 950); 
+
+        // 2. PUESTO Y ZONA
+        ctx.font = "600 32px sans-serif";
+        ctx.fillStyle = "#6b7280"; // Color mutado para las etiquetas secundarias
+        ctx.fillText("PUESTO", (canvas.width / 2) - 200, 1100);
+        ctx.fillText("ZONA", (canvas.width / 2) + 200, 1100);
+
+        ctx.fillStyle = "#1f2937";
+        ctx.font = "bold 38px sans-serif";
+        ctx.fillText(puesto, (canvas.width / 2) - 200, 1160);
+        ctx.fillText(zona, (canvas.width / 2) + 200, 1160);
+
+        // 3. CURP OFICIAL
+        ctx.font = "600 28px sans-serif";
+        ctx.fillStyle = "#6b7280";
+        ctx.fillText("CURP OFICIAL", canvas.width / 2, 1280);
+
+        ctx.font = "bold 36px monospace";
+        ctx.fillStyle = "#111827";
+        ctx.fillText(curp, canvas.width / 2, 1340);
+
+        // ... (Tu código existente para dibujar logos de salud o barras de colores) ...
+
+        // 💾 Código final para exportar el lienzo a PDF / Imagen
+        ocultarCarga();
+        const link = document.createElement('a');
+        link.download = `CREDENCIAL_${curp}.png`;
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+    }
 
         // ====================================================================
         // 2. CONTENEDOR BLANCO INSTITUCIONAL DEBAJO DEL BANNER (De Y:280 a Y:470)
