@@ -251,12 +251,10 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         fotoParaEnviar = fotoCompletaBase64;
     }
 
-    const payloadCompleto = {
+        const payloadCompleto = {
         action: 'guardar',
         curp: curp,
-        nombre: document.getElementById('nombre').value,
-        ap_paterno: document.getElementById('ap_paterno').value,
-        ap_materno: document.getElementById('ap_materno').value,
+        nombre: document.getElementById('nombre').value, // Nombre Completo
         municipio: document.getElementById('municipio').value,
         puesto: document.getElementById('puesto').value,
         telefono: document.getElementById('telefono').value,
@@ -264,7 +262,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         correo: document.getElementById('correo').value,
         foto_url: fotoParaEnviar,
         fotoCompletaBase64: fotoCompletaBase64,
-        firmaBase64: firmaBase64 // Enviamos la firma actual en formato Base64
+        firmaBase64: firmaBase64 
     };
 
     try {
@@ -279,10 +277,14 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             ocultarCarga();
             alert('🎉 ¡Perfil sincronizado correctamente!');
             
-            document.getElementById('credCompleto').innerText = `${document.getElementById('nombre').value} ${document.getElementById('ap_paterno').value} ${document.getElementById('ap_materno').value}`.toUpperCase();
+            // Actualización directa del Nombre Completo en Pantalla 3
+            document.getElementById('credCompleto').innerText = document.getElementById('nombre').value.toUpperCase();
             document.getElementById('credPuesto').innerText = document.getElementById('puesto').value.toUpperCase();
             document.getElementById('credZona').innerText = document.getElementById('zona').value.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
+            
+            // ... (deja el resto del flujo del submit igual) ...
+
             
             fotoUrlActual = resultado.foto_url || fotoParaEnviar;
             document.getElementById('credFoto').src = fotoUrlActual;
