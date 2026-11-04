@@ -428,12 +428,14 @@ function inicializarCanvasFirma() {
     
     ctxFirma = canvasFirma.getContext('2d');
 
+    // SOLUCIÓN TABLET: Forzar dimensiones basadas en la ventana gráfica real si falla el padre
     const rect = canvasFirma.parentElement.getBoundingClientRect();
-    canvasFirma.width = rect.width;
-    canvasFirma.height = rect.height;
+    canvasFirma.width = rect.width > 0 ? rect.width : window.innerWidth * 0.9;
+    canvasFirma.height = rect.height > 0 ? rect.height : window.innerHeight * 0.6;
 
+    // Configuración del trazo digital uniforme
     ctxFirma.strokeStyle = "#1e293b"; 
-    ctxFirma.lineWidth = 3;           
+    ctxFirma.lineWidth = 4; // Un poco más grueso para pantallas HD de tablets           
     ctxFirma.lineCap = "round";       
     ctxFirma.lineJoin = "round";      
 
@@ -441,8 +443,9 @@ function inicializarCanvasFirma() {
     canvasFirma.dataset.isInit = "true";
 
     function obtenerPosicion(e) {
-        const clientX = e.touches ? e.touches.clientX : e.clientX;
-        const clientY = e.touches ? e.touches.clientY : e.clientY;
+        // Soporte unificado para eventos táctiles avanzados de Tablet/iPad
+        const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
         const cRect = canvasFirma.getBoundingClientRect();
         return {
             x: (clientX - cRect.left) * (canvasFirma.width / cRect.width),
@@ -451,6 +454,7 @@ function inicializarCanvasFirma() {
     }
 
     function iniciarDibujo(e) {
+        e.preventDefault(); // Evita retrasos de clicks fantasmas en sistemas móviles
         enTrazo = true;
         const pos = obtenerPosicion(e);
         ctxFirma.beginPath();
@@ -459,7 +463,7 @@ function inicializarCanvasFirma() {
 
     function dibujar(e) {
         if (!enTrazo) return;
-        e.preventDefault();
+        e.preventDefault(); // Detiene el scroll nativo de la tablet
         const pos = obtenerPosicion(e);
         ctxFirma.lineTo(pos.x, pos.y);
         ctxFirma.stroke();
@@ -473,15 +477,18 @@ function inicializarCanvasFirma() {
         }
     }
 
+    // Eventos tradicionales de Mouse
     canvasFirma.addEventListener('mousedown', iniciarDibujo);
     canvasFirma.addEventListener('mousemove', dibujar);
     canvasFirma.addEventListener('mouseup', detenerDibujo);
     canvasFirma.addEventListener('mouseleave', detenerDibujo);
 
-    canvasFirma.addEventListener('touchstart', iniciarDibujo);
-    canvasFirma.addEventListener('touchmove', dibujar);
+    // Eventos Táctiles específicos de Tablet/Celular
+    canvasFirma.addEventListener('touchstart', iniciarDibujo, { passive: false });
+    canvasFirma.addEventListener('touchmove', dibujar, { passive: false });
     canvasFirma.addEventListener('touchend', detenerDibujo);
 }
+
 
 document.getElementById('btnAbrirFirmaModal').addEventListener('click', () => {
     document.getElementById('modalFirmaPantallaCompleta').classList.remove('hidden');
