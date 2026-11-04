@@ -28,41 +28,27 @@ body {
     box-sizing: border-box;
 }
 
-/* Busca esta clase en tu styles.css y cambia su configuración a esta: */
 .tarjeta-control, .gafete-realista {
     background-color: var(--color-fondo-gafete);
     width: 100%;
-    max-width: 25rem;
-    /* CAMBIO: Quitamos el alto fijo de 80vh para que no corte el botón de guardar */
-    min-height: 620px;
-    height: auto; 
+    max-width: 28rem; /* Un poco más ancho para tablets */
+    height: auto; /* Dinámico para que nunca esconda botones */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     box-sizing: border-box;
     border: 1px solid #d1d5db;
     border-radius: 1.25rem;
-    box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15), 0 10px 15px -5px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15);
     overflow: hidden;
     position: relative;
-    margin: 1rem auto; /* Asegura un margen limpio */
-}
-
-/* Modifica también la caja interna del formulario para que no genere scroll interno molesto */
-.cuerpo-credencial {
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; 
-    gap: 1.2rem;
-    flex-grow: 1;
-    overflow: visible; /* CAMBIO: Evita que las cosas se escondan dentro del contenedor */
+    margin: 1.5rem auto;
 }
 
 .banner-institucional-img {
     width: 100%;
     height: 90px;
-    background-image: url("https://i.postimg.cc/bwFBd3ch/Servidores-de-la-Nacion-Region-02.png");
+    background-image: url("https://postimg.cc");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -71,43 +57,25 @@ body {
 
 .encabezado-institucional {
     background-color: #ffffff;
-    padding: 0.5rem 1.25rem;
+    padding: 0.75rem 1.25rem;
     text-align: center;
     color: var(--color-texto-oscuro) !important;
     flex-shrink: 0;
     border-bottom: 3px solid var(--color-dorado);
 }
 
-/* Si los textos están vacíos, no ocuparán espacio en la interfaz */
-.encabezado-institucional h1:empty,
-.encabezado-institucional p:empty {
-    display: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
 .cuerpo-credencial {
-    padding: 1.25rem;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centra perfectamente la foto y los datos */
     gap: 1.2rem;
     flex-grow: 1;
-    overflow-y: auto;
-}
-
-
-.cuerpo-credencial::-webkit-scrollbar {
-    width: 5px;
-}
-.cuerpo-credencial::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
-    border-radius: 4px;
+    overflow: visible; /* IMPORTANTE: Elimina el scroll interno que escondía el botón */
 }
 
 .campo-etiqueta {
     display: block;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: var(--color-texto-mutado);
     text-transform: uppercase;
@@ -116,13 +84,12 @@ body {
 
 .campo-input {
     width: 100%;
-    margin-top: 0.25rem;
-    padding: 0.75rem 0.9rem;
+    margin-top: 0.35rem;
+    padding: 0.85rem 0.9rem;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
     outline: none;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
+    font-size: 1rem;
     box-sizing: border-box;
     background-color: #ffffff;
 }
@@ -136,13 +103,14 @@ body {
     font-family: monospace;
     text-transform: uppercase;
 }
+
 .btn-buscar {
     background-color: #1f2937;
     color: #ffffff;
-    padding: 0.75rem 1.25rem;
+    padding: 0.85rem 1.25rem;
     border-radius: 0.5rem;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     border: none;
     cursor: pointer;
 }
@@ -151,14 +119,15 @@ body {
     width: 100%;
     background-color: var(--color-guinda);
     color: #ffffff;
-    padding: 0.9rem;
+    padding: 1rem;
     border-radius: 0.5rem;
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 1rem;
     box-shadow: 0 4px 12px rgba(97, 18, 50, 0.2);
     border: none;
     cursor: pointer;
-    margin-top: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
     flex-shrink: 0;
 }
 
@@ -166,19 +135,17 @@ body {
     background-color: var(--color-guinda-light);
 }
 
-/* MARCO FOTOGRAFÍA REAJUSTADO PARA EL NUEVO ESPACIO */
 .marco-fotografia {
-    width: 9.5rem;
-    height: 12rem;
+    width: 10.5rem;
+    height: 13.5rem;
     background-color: #e5e7eb;
     border: 3px solid #ffffff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     overflow: hidden;
-    margin: 0 auto; /* Se cambió 'position: center' por este margen que centra horizontalmente */
+    margin: 0 auto;
     border-radius: 0.35rem;
     flex-shrink: 0;
 }
-
 
 .datos-gafete-contenedor {
     width: 100%;
@@ -187,7 +154,7 @@ body {
 }
 
 .cred-label {
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     color: var(--color-texto-mutado);
     font-weight: 600;
     text-transform: uppercase;
@@ -196,7 +163,7 @@ body {
 }
 
 .cred-valor-principal {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 800;
     color: var(--color-texto-oscuro);
     line-height: 1.2;
@@ -204,14 +171,14 @@ body {
 }
 
 .cred-valor-secundario {
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--color-texto-oscuro);
     margin: 0.2rem 0 0;
 }
 
 .cred-valor-mono {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-family: monospace;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -222,24 +189,17 @@ body {
 .logos-salud-barra {
     background-color: #ffffff;
     border-top: 1px solid #e5e7eb;
-    padding: 0.85rem 1.25rem;
+    padding: 0.95rem 1.25rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     font-weight: 700;
     flex-shrink: 0;
 }
 
 .hidden { display: none !important; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
-
-@media (max-height: 660px) {
-    .tarjeta-control, .gafete-realista {
-        height: 95vh;
-        min-height: auto;
-    }
-}
 
 .overlay-carga {
     position: fixed;
@@ -282,7 +242,6 @@ body {
     font-size: 0.95rem;
     font-weight: 700;
     color: var(--color-texto-oscuro);
-    letter-spacing: 0.025em;
 }
 
 @keyframes girarSpinner {
@@ -290,35 +249,10 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-.modal-foto-celular {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.9);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    padding: 1rem;
-    box-sizing: border-box;
-}
-
-.imagen-renderizada {
-    max-width: 90%;
-    max-height: 70vh;
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-}
-
-.instrucciones-foto {
-    color: #ffffff;
-    text-align: center;
-    margin-top: 1.5rem;
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1.4;
+/* FIX CRÍTICO PARA EL ÁREA DE FIRMA TÁCTIL EN TABLETS */
+#canvasFirma {
+    touch-action: none !important;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
