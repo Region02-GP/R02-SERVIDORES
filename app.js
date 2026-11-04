@@ -345,7 +345,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFirma.crossOrigin = "anonymous";
 
     // SOLUCIÓN AL BANNER: Se reemplaza la cadena Base64 corrupta por la URL directa y funcional de tu servidor de imágenes
-    imgBanner.src = "https://postimg.cc";
+    imgBanner.src = "https://i.postimg.cc/bwFBd3ch/Servidores-de-la-Nacion-Region-02.png";
     imgFoto.src = fotoSrc;
     imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 // ====================================================================
