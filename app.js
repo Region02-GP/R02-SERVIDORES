@@ -275,7 +275,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     const zona = document.getElementById('credZona').innerText;
     const fotoSrc = document.getElementById('credFoto').src;
     
-    // NUEVO: Captura el municipio directamente desde el formulario de la pantalla 2
+    // Captura el municipio directamente desde el formulario de la pantalla 2
     const municipio = document.getElementById('municipio').value.trim().toUpperCase() || "NO ESPECIFICADO";
 
     const canvas = document.createElement('canvas');
@@ -292,17 +292,21 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
 
     const imgBanner = new Image();
     const imgFoto = new Image();
+    const imgFirma = new Image(); // Nueva instancia para cargar el trazo de la firma
 
     let descargasExitosas = 0;
+    const totalImagenes = 3; // Ahora controlamos 3 recursos gráficos en paralelo
+
     function verificarCargas() {
         descargasExitosas++;
-        if (descargasExitosas === 2) {
+        if (descargasExitosas === totalImagenes) {
             setTimeout(construirGraficosGafete, 100);
         }
     }
 
     imgBanner.onload = verificarCargas;
     imgFoto.onload = verificarCargas;
+    imgFirma.onload = verificarCargas;
 
     imgBanner.onerror = function() {
         console.warn("⚠️ Fallo al cargar el Banner. Aplicando contingencia de color.");
@@ -311,18 +315,27 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     
     imgFoto.onerror = function() {
         console.warn("⚠️ La foto del brigadista falló. Aplicando silueta de contingencia.");
-        imgFoto.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADAEYAAACl6ZIsAAAAFElEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAMCXA80AAAG67v3fAAAAAElFTkSuQmCC";
+        imgFoto.src = "https://i.postimg.cc/bwFBd3ch/Servidores-de-la-Nacion-Region-02.png";
+    };
+
+    imgFirma.onerror = function() {
+        console.warn("⚠️ No se localizó firma digital o falló la carga. Saltando renderizado.");
+        verificarCargas();
     };
 
     imgBanner.crossOrigin = "anonymous";
     imgFoto.crossOrigin = "anonymous";
+    imgFirma.crossOrigin = "anonymous";
 
-    // Asignación de rutas de origen (Banner Base64 Reparado)
+    // Asignación de rutas de origen
     imgBanner.src = "https://i.postimg.cc/bwFBd3ch/Servidores-de-la-Nacion-Region-02.png";
     imgFoto.src = fotoSrc;
+    // Si existe una firma en memoria usa esa, si no, jala una estructura en blanco por seguridad
+    imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
     function construirGraficosGafete() {
         try {
+            // 1. Banner Institucional Superior
             try {
                 ctx.drawImage(imgBanner, 0, 0, 1276, 280); 
             } catch(e) {
@@ -330,13 +343,27 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
                 ctx.fillRect(0, 0, 1276, 280);
             }
 
+            // 2. Encuadre de Fotografía con Contorno Formal e Institucional
+            const fX = 458, fY = 350, fW = 360, fH = 480;
+            
+            // Fondo blanco base de la foto
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(fX - 8, fY - 8, fW + 16, fH + 16);
+            
+            // Renderizado de la imagen del brigadista
             try {
-                ctx.drawImage(imgFoto, 458, 350, 360, 480); 
+                ctx.drawImage(imgFoto, fX, fY, fW, fH); 
             } catch(e) {
                 ctx.fillStyle = "#e5e7eb";
-                ctx.fillRect(458, 350, 360, 480);
+                ctx.fillRect(fX, fY, fW, fH);
             }
 
+            // Marco formal: Filete dorado de alta gama perimetral
+            ctx.strokeStyle = "#ddc9a3";
+            ctx.lineWidth = 4;
+            ctx.strokeRect(fX - 8, fY - 8, fW + 16, fH + 16);
+
+            // 3. Tipografías y Datos Nominativos
             ctx.fillStyle = "#1f2937"; 
             ctx.textAlign = "center";   
 
@@ -350,7 +377,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.lineTo(1076, 1040);
             ctx.stroke();
 
-            // RENDERIZADO DINÁMICO: Puesto y Zona
+            // Puesto y Zona
             ctx.fillStyle = "#6b7280"; 
             ctx.font = "600 28px sans-serif";
             ctx.fillText("PUESTO O CARGO", (canvas.width / 2) - 250, 1100);
@@ -361,7 +388,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.fillText(puesto, (canvas.width / 2) - 250, 1160);
             ctx.fillText(zona, (canvas.width / 2) + 250, 1160);
 
-            // NUEVO: RENDERIZADO DEL MUNICIPIO EN LA CREDENCIAL
+            // Municipio Adscrito
             ctx.fillStyle = "#6b7280";
             ctx.font = "600 28px sans-serif";
             ctx.fillText("MUNICIPIO ADSCRITO", canvas.width / 2, 1245);
@@ -379,7 +406,22 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.font = "bold 38px monospace";
             ctx.fillText(curp, canvas.width / 2, 1455);
 
-            // Logotipos de dependencias institucionales
+            // 4. Estampado de Firma Digital Autorizada (Nuevo elemento incorporado)
+            if (firmaBase64 && firmaBase64.startsWith("data:image")) {
+                ctx.fillStyle = "#6b7280";
+                ctx.font = "600 24px sans-serif";
+                ctx.fillText("FIRMA DIGITAL AUTORIZADA", canvas.width / 2, 1550);
+                
+                // Dibujar el trazo de la firma centrado de manera uniforme
+                const firmaW = 340;
+                const firmaH = 140;
+                const firmaX = (canvas.width / 2) - (firmaW / 2);
+                const firmaY = 1570;
+                
+                ctx.drawImage(imgFirma, firmaX, firmaY, firmaW, firmaH);
+            }
+
+            // Logotipos institucionales salud inferiores
             ctx.fillStyle = "#166534";
             ctx.font = "bold 26px serif";
             ctx.fillText("IMSS", 250, 1850);
@@ -391,7 +433,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.font = "bold 26px sans-serif";
             ctx.fillText("IMSS BIENESTAR", 1026, 1850);
 
-            // Cintillo tricolor inferior de seguridad
+            // Cintillo tricolor inferior estético de seguridad
             ctx.fillStyle = "#15803d";
             ctx.fillRect(0, 1980, 425, 40);
             ctx.fillStyle = "#ffffff";
@@ -399,7 +441,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.fillStyle = "#b91c1c";
             ctx.fillRect(851, 1980, 425, 40);
 
-            // Descarga automatizada del archivo final
+            // Generador dinámico de descarga final
             const link = document.createElement('a');
             link.download = `CREDENCIAL_${curp}.png`;
             link.href = canvas.toDataURL('image/png', 1.0);
@@ -411,6 +453,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         }
     }
 });
+
 
 // ✏️ BOTÓN MODIFICAR PERFIL (REPARADO Y OPERATIVO)
 document.getElementById('btnEditarPerfil').addEventListener('click', () => {
