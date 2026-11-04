@@ -116,11 +116,13 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
                 return; 
             }
 
-            // Perfil completo: Ir a la credencial directa (Pantalla 3)
+                       // Perfil completo: Ir a la credencial directa (Pantalla 3)
             document.getElementById('credCompleto').innerText = nom.toUpperCase();
             document.getElementById('credPuesto').innerText = pue.toUpperCase();
             document.getElementById('credZona').innerText = zon.toUpperCase();
-            document.getElementById('credIdentificacion').innerText = curp;
+            
+            // CORRECCIÓN: Usamos la variable local 'curp' obtenida del input al principio del evento clic
+            document.getElementById('credIdentificacion').innerText = curp; 
             document.getElementById('credFoto').src = fotoUrlActual;
             
             ocultarCarga();
@@ -268,6 +270,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     mostrarCarga("Dibujando credencial en alta densidad gráfica...");
 
+    // MOVIDO AQUÍ DENTRO: Se capturan los datos reales del gafete en el momento del clic
     const curp = document.getElementById('credIdentificacion').innerText;
     const nombre = document.getElementById('credCompleto').innerText;
     const puesto = document.getElementById('credPuesto').innerText;
@@ -278,6 +281,9 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     canvas.width = 1276;   
     canvas.height = 2020;  
     const ctx = canvas.getContext('2d');
+    
+    // ... (El resto de tu función btnDescargarPDF se queda exactamente igual) ...
+
 
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
