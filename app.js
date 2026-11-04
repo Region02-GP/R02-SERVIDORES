@@ -56,11 +56,9 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 
         document.getElementById('nombre_curp').value = curp;
 
-        // Caso A: El brigadista ya tiene registros previos en Sheets
+                // Caso A: El brigadista ya tiene registros previos en Sheets
         if (datos.existe) {
-            const nom = String(datos.nombre || "").trim();
-            const pat = String(datos.ap_paterno || "").trim();
-            const mat = String(datos.ap_materno || "").trim(); 
+            const nom = String(datos.nombre || "").trim(); // Aquí ya viene completo
             const mun = String(datos.municipio || "").trim();
             const pue = String(datos.puesto || "").trim();
             const tel = String(datos.telefono || "").trim();
@@ -68,17 +66,51 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             const cor = String(datos.correo || "").trim();
             
             fotoUrlActual = String(datos.foto_url || "").trim();
-            firmaBase64 = String(datos.firma_url || "").trim(); // Recuperación desde la columna 11
+            firmaBase64 = String(datos.firma_url || "").trim();
 
             // Inyectar datos en el formulario
             document.getElementById('nombre').value = nom;
-            document.getElementById('ap_paterno').value = pat;
-            document.getElementById('ap_materno').value = mat;
             document.getElementById('municipio').value = mun;
             document.getElementById('puesto').value = pue;
             document.getElementById('telefono').value = tel;
             document.getElementById('zona').value = zon;
             document.getElementById('correo').value = cor;
+
+            // ... (deja tu setTimeout de la firma tal cual está) ...
+
+            // Validación interna de datos requeridos (Se quitaron los apellidos de la lista)
+            let camposFaltantes = [];
+            if (!nom) camposFaltantes.push("Nombre Completo");
+            if (!mun) camposFaltantes.push("Municipio");
+            if (!pue) camposFaltantes.push("Puesto");
+            if (!tel) camposFaltantes.push("Teléfono");
+            if (!zon) camposFaltantes.push("Zona");
+            if (!cor) camposFaltantes.push("Correo");
+            if (!fotoUrlActual || fotoUrlActual.startsWith('data:image/svg+xml') || fotoUrlActual.includes('placeholder')) {
+                camposFaltantes.push("Fotografía Oficial");
+            }
+            if (!firmaBase64 || firmaBase64 === "" || firmaBase64 === "null") {
+                camposFaltantes.push("Firma Digital Obligatoria");
+            }
+
+            if (camposFaltantes.length > 0) {
+                ocultarCarga();
+                alert(`⚠️ PERFIL INCOMPLETO.\n\nCompleta los campos pendientes para desbloquear tu credencial:\n• ${camposFaltantes.join('\n• ')}`);
+                document.getElementById('p2_titulo').innerText = "Completar Registro";
+                document.getElementById('fotoAviso').classList.add('hidden');
+                irAPantalla(2); 
+                return; 
+            }
+
+            // Perfil completo: Ir a la credencial directa (Se simplificó el nombre)
+            document.getElementById('credCompleto').innerText = nom.toUpperCase();
+            document.getElementById('credPuesto').innerText = pue.toUpperCase();
+            document.getElementById('credZona').innerText = zon.toUpperCase();
+            document.getElementById('credIdentificacion').innerText = curp;
+            document.getElementById('credFoto').src = fotoUrlActual;
+            
+            ocultarCarga();
+            irAPantalla(3);
 
            // ========================================================
 // BLOQUE 2: VALIDADOR DE IDENTIDAD (FRAGMENTO)
