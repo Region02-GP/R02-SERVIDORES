@@ -28,12 +28,14 @@ body {
     box-sizing: border-box;
 }
 
+/* Busca esta clase en tu styles.css y cambia su configuración a esta: */
 .tarjeta-control, .gafete-realista {
     background-color: var(--color-fondo-gafete);
     width: 100%;
     max-width: 25rem;
-    height: 80vh;
+    /* CAMBIO: Quitamos el alto fijo de 80vh para que no corte el botón de guardar */
     min-height: 620px;
+    height: auto; 
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -43,6 +45,18 @@ body {
     box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15), 0 10px 15px -5px rgba(0, 0, 0, 0.05);
     overflow: hidden;
     position: relative;
+    margin: 1rem auto; /* Asegura un margen limpio */
+}
+
+/* Modifica también la caja interna del formulario para que no genere scroll interno molesto */
+.cuerpo-credencial {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    gap: 1.2rem;
+    flex-grow: 1;
+    overflow: visible; /* CAMBIO: Evita que las cosas se escondan dentro del contenedor */
 }
 
 .banner-institucional-img {
