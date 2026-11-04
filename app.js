@@ -288,14 +288,12 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     const imgBanner = new Image();
     const imgFoto = new Image();
 
-    imgFoto.crossOrigin = "anonymous";
-    imgBanner.crossOrigin = "anonymous";
-
     let descargasExitosas = 0;
     function verificarCargas() {
         descargasExitosas++;
         if (descargasExitosas === 2) {
-            construirGraficosGafete();
+            // Un pequeño retraso para asegurar que los mapas de bits estén listos en memoria
+            setTimeout(construirGraficosGafete, 100);
         }
     }
 
@@ -303,202 +301,114 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFoto.onload = verificarCargas;
 
     imgBanner.onerror = function() {
-        console.warn("Fallo de renderizado en Banner. Aplicando contingencia.");
+        console.warn("⚠️ Fallo al cargar el Banner. Aplicando contingencia de color.");
         verificarCargas();
     };
     
     imgFoto.onerror = function() {
-        ocultarCarga();
-        alert("⚠️ Error: La foto del brigadista no pudo ser procesada.");
+        console.warn("⚠️ La foto del brigadista falló por CORS o red. Aplicando silueta de contingencia.");
+        // Colocamos un marcador de posición en base64 (Silueta gris) para evitar que se quede cargando
+        imgFoto.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADAEYAAACl6ZIsAAAAFElEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAMCXA80AAAG67v3fAAAAAElFTkSuQmCC";
     };
 
-    // Carga de imágenes para el Canvas
-    imgBanner.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACHwAAALUCAIAAAD8byAGAABVeWNhQlgAAFV5anVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAVVNqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOmQzOTE2OGIyLTcyMTItNGVjYi1hMzY0LTczMmUxZmY0OTA3ZQAAAAx8anVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAJ0Wp1bWIAAAA7anVtZEDLDDK7ikidpwsq1vR/Q2kTYzJwYS5pY29uAAAAABhjMnNo3a9MTCYv/nwYI2VR7N0CuwAAABdiZmRiAGltYWdlL3N2Zyt4bWwAAAAJd2JpZGI8c3ZnIHdpZHRoPSI3MTYiIGhlaWdodD0iNzE2IiB2aWV3Qm94PSIwIDAgNzE2IDcxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTUwOC43NDkgMzE3LjM5OUM1MTYuNzc3IDI4Ny4zMTQgNTA4.YwYBAAFAyBhA2AIEAAsYyAxgAAQGAAgMAIHAQCAsAAsAghACwEIAmGcCwEDIXGEA/wDREpYREgBAICQkCYHAPJMB/wEDAJLMBP8AAA== ";
+    // 🚨 CONFIGURACIÓN CRÍTICA DE ORDEN: crossOrigin DEBE ir antes del .src
+    imgBanner.crossOrigin = "anonymous";
+    imgFoto.crossOrigin = "anonymous";
+
+    // Asignación de rutas de origen
+    imgBanner.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACHwAAALUCAIAAAD8byAGAABVeWNhQlgAAFV5anVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAVVNqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOmQzOTE2OGIyLTcyMTItNGVjYi1hMzY0LTczMmUxZmY0OTA3ZQAAAAx8anVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAJ0Wp1bWIAAAA7anVtZEDLDDK7ikidpwsq1vR/Q2kTYzJwYS5pY29uAAAAABhjMnNo3a9MTCYv/nwYI2VR7N0CuwAAABdiZmRiAGltYWdlL3N2Zyt4bWwAAAAJd2JpZGI8c3ZnIHdpZHRoPSI3MTYiIGhlaWdodD0iNzE2IiB2aWV3Qm94PSIwIDAgNzE2IDcxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTUwOC43NDkgMzE3LjM5OUM1MTYuNzc3IDI4Ny4zMTQgNTA4.YwYBAAFAyBhA2AIEAAsYyAxgAAQGAAgMAIHAQCAsAAsAghACwEIAmGcCwEDIXGEA/wDREpYREgBAICQkCYHAPJMB/wEDAJLMBP8AAA==";
     imgFoto.src = fotoSrc;
 
     function construirGraficosGafete() {
-        // Dibujar Banner Superior Institucional
-        ctx.drawImage(imgBanner, 0, 0, 1276, 280); 
+        try {
+            // Dibujar Banner Superior Institucional
+            try {
+                ctx.drawImage(imgBanner, 0, 0, 1276, 280); 
+            } catch(e) {
+                // Si el banner falla por completo, pinta un fondo guinda institucional
+                ctx.fillStyle = "#611232";
+                ctx.fillRect(0, 0, 1276, 280);
+            }
 
-        // 🖼️ Dibujar la fotografía del brigadista centrada (Escalada a la densidad del Canvas)
-        ctx.drawImage(imgFoto, 458, 350, 360, 480); 
+            // 🖼️ Dibujar la fotografía del brigadista centrada (458 es el centro perfecto en X)
+            try {
+                ctx.drawImage(imgFoto, 458, 350, 360, 480); 
+            } catch(e) {
+                // Contingencia extrema si el navegador bloquea el dibujo de la foto por CORS
+                ctx.fillStyle = "#e5e7eb";
+                ctx.fillRect(458, 350, 360, 480);
+                ctx.fillStyle = "#9ca3af";
+                ctx.font = "bold 30px sans-serif";
+                ctx.fillText("FOTO CON DEFECTO", 638, 590);
+            }
 
-        // 🖋️ Configuración de Estilos para Textos
-        ctx.fillStyle = "#1f2937"; 
-        ctx.textAlign = "center";   
+            // 🖋️ Configuración de Estilos para Textos
+            ctx.fillStyle = "#1f2937"; 
+            ctx.textAlign = "center";   
 
-        // 1. NOMBRE COMPLETO (Unificado y centrado simétricamente)
-        ctx.font = "bold 46px sans-serif";
-        ctx.fillText(nombre, canvas.width / 2, 980); 
+            // 1. NOMBRE COMPLETO (Unificado y centrado simétricamente)
+            ctx.font = "bold 46px sans-serif";
+            ctx.fillText(nombre, canvas.width / 2, 980); 
 
-        // Linea divisora estética debajo del nombre
-        ctx.strokeStyle = "#e5e7eb";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(200, 1050);
-        ctx.lineTo(1076, 1050);
-        ctx.stroke();
+            // Linea divisora estética debajo del nombre
+            ctx.strokeStyle = "#e5e7eb";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(200, 1050);
+            ctx.lineTo(1076, 1050);
+            ctx.stroke();
 
-        // 2. VALORES SECUNDARIOS: PUESTO Y ZONA
-        ctx.fillStyle = "#6b7280"; 
-        ctx.font = "600 28px sans-serif";
-        ctx.fillText("PUESTO O CARGO", (canvas.width / 2) - 250, 1120);
-        ctx.fillText("ZONA / REGIÓN", (canvas.width / 2) + 250, 1120);
+            // 2. VALORES SECUNDARIOS: PUESTO Y ZONA
+            ctx.fillStyle = "#6b7280"; 
+            ctx.font = "600 28px sans-serif";
+            ctx.fillText("PUESTO O CARGO", (canvas.width / 2) - 250, 1120);
+            ctx.fillText("ZONA / REGIÓN", (canvas.width / 2) + 250, 1120);
 
-        ctx.fillStyle = "#1f2937";
-        ctx.font = "bold 36px sans-serif";
-        ctx.fillText(puesto, (canvas.width / 2) - 250, 1180);
-        ctx.fillText(zona, (canvas.width / 2) + 250, 1180);
+            ctx.fillStyle = "#1f2937";
+            ctx.font = "bold 36px sans-serif";
+            ctx.fillText(puesto, (canvas.width / 2) - 250, 1180);
+            ctx.fillText(zona, (canvas.width / 2) + 250, 1180);
 
-        // 3. IDENTIFICADOR ÚNICO: CURP OFICIAL
-        ctx.fillStyle = "#6b7280";
-        ctx.font = "600 28px sans-serif";
-        ctx.fillText("CURP OFICIAL DEL BRIGADISTA", canvas.width / 2, 1310);
+            // 3. IDENTIFICADOR ÚNICO: CURP OFICIAL
+            ctx.fillStyle = "#6b7280";
+            ctx.font = "600 28px sans-serif";
+            ctx.fillText("CURP OFICIAL DEL BRIGADISTA", canvas.width / 2, 1310);
 
-        ctx.fillStyle = "#111827";
-        ctx.font = "bold 38px monospace";
-        ctx.fillText(curp, canvas.width / 2, 1370);
+            ctx.fillStyle = "#111827";
+            ctx.font = "bold 38px monospace";
+            ctx.fillText(curp, canvas.width / 2, 1370);
 
-        // Dibujar logos de salud institucionales en la base del Canvas
-        ctx.fillStyle = "#166534";
-        ctx.font = "bold 26px serif";
-        ctx.fillText("IMSS", 250, 1850);
+            // Dibujar logos de salud institucionales en la base del Canvas
+            ctx.fillStyle = "#166534";
+            ctx.font = "bold 26px serif";
+            ctx.fillText("IMSS", 250, 1850);
 
-        ctx.fillStyle = "#831843";
-        ctx.fillText("ISSSTE", 638, 1850);
+            ctx.fillStyle = "#831843";
+            ctx.fillText("ISSSTE", 638, 1850);
 
-        ctx.fillStyle = "#064e3b";
-        ctx.font = "bold 26px sans-serif";
-        ctx.fillText("IMSS BIENESTAR", 1026, 1850);
+            ctx.fillStyle = "#064e3b";
+            ctx.font = "bold 26px sans-serif";
+            ctx.fillText("IMSS BIENESTAR", 1026, 1850);
 
-        // Barra inferior tricolor mexicana reglamentaria
-        ctx.fillStyle = "#15803d";
-        ctx.fillRect(0, 1980, 425, 40);
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(425, 1980, 426, 40);
-        ctx.fillStyle = "#b91c1c";
-        ctx.fillRect(851, 1980, 425, 40);
+            // Barra inferior tricolor mexicana reglamentaria
+            ctx.fillStyle = "#15803d";
+            ctx.fillRect(0, 1980, 425, 40);
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(425, 1980, 426, 40);
+            ctx.fillStyle = "#b91c1c";
+            ctx.fillRect(851, 1980, 425, 40);
 
-        // Exportación y descarga del Gafete en formato de imagen de alta fidelidad
-        ocultarCarga();
-        const link = document.createElement('a');
-        link.download = `CREDENCIAL_${curp}.png`;
-        link.href = canvas.toDataURL('image/png', 1.0);
-        link.click();
-    }
-});
-
-// ✏️ BOTÓN MODIFICAR PERFIL (PANTALLA 3 -> PANTALLA 2)
-document.getElementById('btnEditarPerfil').addEventListener('click', () => {
-    document.getElementById('p2_titulo').innerText = "Modificar Perfil";
-    document.getElementById('fotoAviso').classList.remove('hidden');
-    document.getElementById('firmaAviso').classList.remove('hidden');
-    irAPantalla(2);
-});
-
-// ◀ BOTÓN SALIR / CERRAR SESIÓN (PANTALLA 3 -> PANTALLA 1)
-document.getElementById('btnCerrar').addEventListener('click', () => {
-    document.getElementById('p1_curp').value = "";
-    firmaBase64 = "";
-    fotoCompletaBase64 = "";
-    fotoUrlActual = "";
-    document.getElementById('fotoAviso').classList.add('hidden');
-    document.getElementById('firmaAviso').classList.add('hidden');
-    irAPantalla(1);
-});
-
-// ========================================================
-// BLOQUE EXTRA: INICIALIZACIÓN DE FIRMA DIGITAL Y CAPTURA
-// ========================================================
-
-let canvasFirma, ctxFirma;
-let enTrazo = false;
-
-function inicializarCanvasFirma() {
-    canvasFirma = document.getElementById('canvasFirma');
-    if (!canvasFirma) return;
-    
-    ctxFirma = canvasFirma.getContext('2d');
-
-    // Escalado responsivo dinámico del lienzo según el tamaño del contenedor
-    const rect = canvasFirma.parentElement.getBoundingClientRect();
-    canvasFirma.width = rect.width;
-    canvasFirma.height = rect.height;
-
-    ctxFirma.strokeStyle = "#1e293b"; 
-    ctxFirma.lineWidth = 3;           
-    ctxFirma.lineCap = "round";       
-    ctxFirma.lineJoin = "round";      
-
-    // Detectar si ya es un lienzo con eventos previamente configurados
-    if (canvasFirma.dataset.isInit === "true") return;
-    canvasFirma.dataset.isInit = "true";
-
-    // Funciones auxiliares para obtener las coordenadas de trazo correctas
-    function obtenerPosicion(e) {
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        const cRect = canvasFirma.getBoundingClientRect();
-        return {
-            x: (clientX - cRect.left) * (canvasFirma.width / cRect.width),
-            y: (clientY - cRect.top) * (canvasFirma.height / cRect.height)
-        };
-    }
-
-    function iniciarDibujo(e) {
-        enTrazo = true;
-        const pos = obtenerPosicion(e);
-        ctxFirma.beginPath();
-        ctxFirma.moveTo(pos.x, pos.y);
-    }
-
-    function dibujar(e) {
-        if (!enTrazo) return;
-        e.preventDefault();
-        const pos = obtenerPosicion(e);
-        ctxFirma.lineTo(pos.x, pos.y);
-        ctxFirma.stroke();
-    }
-
-    function detenerDibujo() {
-        if (enTrazo) {
-            enTrazo = false;
-            ctxFirma.closePath();
-            // Guarda el estado actual en la variable global base64
-            firmaBase64 = canvasFirma.toDataURL('image/png');
+            // Exportación y descarga segura del Gafete en formato de imagen
+            const link = document.createElement('a');
+            link.download = `CREDENCIAL_${curp}.png`;
+            link.href = canvas.toToDataURL ? canvas.toDataURL('image/png', 1.0) : canvas.toDataURL();
+            link.click();
+        } catch(errorFatal) {
+            console.error("Error detectado en el motor de renderizado:", errorFatal);
+            alert("⚠️ Se detectó un bloqueo de seguridad en su navegador al exportar la imagen. Pruebe descargándola desde otro navegador o verifique los permisos de su cámara/galería.");
+        } finally {
+            // El bloque 'finally' se ejecuta SÍ O SÍ, garantizando que el Loader desaparezca pase lo que pase
+            ocultarCarga();
         }
     }
-
-    // Vinculación de eventos de Mouse y Pantallas Táctiles (Celulares)
-    canvasFirma.addEventListener('mousedown', iniciarDibujo);
-    canvasFirma.addEventListener('mousemove', dibujar);
-    canvasFirma.addEventListener('mouseup', detenerDibujo);
-    canvasFirma.addEventListener('mouseleave', detenerDibujo);
-
-    canvasFirma.addEventListener('touchstart', iniciarDibujo);
-    canvasFirma.addEventListener('touchmove', dibujar);
-    canvasFirma.addEventListener('touchend', detenerDibujo);
-}
-
-// Controladores de eventos de la interfaz para abrir y cerrar el Modal de Firma
-document.getElementById('btnAbrirFirmaModal').addEventListener('click', () => {
-    document.getElementById('modalFirmaPantallaCompleta').classList.remove('hidden');
-    setTimeout(inicializarCanvasFirma, 100);
-});
-
-document.getElementById('btnLimpiarFirma').addEventListener('click', () => {
-    if (ctxFirma && canvasFirma) {
-        ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
-        firmaBase64 = "";
-        document.getElementById('firmaAviso').classList.add('hidden');
-    }
-});
-
-document.getElementById('btnAceptarFirma').addEventListener('click', () => {
-    if (!firmaBase64 || firmaBase64 === "") {
-        alert("Por favor, estampe su firma antes de aceptar.");
-        return;
-    }
-    document.getElementById('firmaAviso').classList.remove('hidden');
-    document.getElementById('modalFirmaPantallaCompleta').classList.add('hidden');
 });
