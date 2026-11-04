@@ -3,7 +3,7 @@
 // ========================================================
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz8DgfEUyjfzexnKyi-kRBhpjiuApJq-P_WMxPH5UsL1pQ10ghHpIiqAb9v1L2BTHwCqA/exec;
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz8DgfEUyjfzexnKyi-kRBhpjiuApJq-P_WMxPH5UsL1pQ10ghHpIiqAb9v1L2BTHwCqA/exec";
 
 let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 let fotoCompletaBase64 = ""; // Foto local capturada
