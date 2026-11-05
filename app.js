@@ -28,7 +28,7 @@ function ocultarCarga() {
     document.getElementById('pantallaCarga').classList.add('hidden');
 }
 // ========================================================
-// BLOQUE 2: VALIDADOR DE IDENTIDAD (ACCESO)
+// BLOQUE 2: VALIDADOR DE IDENTIDAD (ACCESO) - CORREGIDO
 // ========================================================
 
 document.getElementById('btnAcceder').addEventListener('click', async () => {
@@ -39,9 +39,11 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 
     try {
         const payloadBuscar = { action: 'buscar', curp: curp };
+        
+        // CORRECCIÓN: Se eliminó redirect: 'follow' para evitar bloqueos de red/CORS
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
-            redirect: 'follow',
+            mode: 'cors',
             body: JSON.stringify(payloadBuscar)
         });
         
@@ -155,6 +157,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         alert('Error en el enlace de red con el módulo de acceso. Verifica que la URL del servidor sea correcta.');
     }
 });
+
 // ========================================================
 // BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO SINCRO
 // ========================================================
