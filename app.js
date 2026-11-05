@@ -106,12 +106,13 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
                 return; 
             }
 
-            // Sincronización correcta con la estructura visual de la Pantalla 3
+                      // Sincronización individual en la Pantalla 3
             document.getElementById('credCompleto').innerText = nom.toUpperCase();
-            document.getElementById('credPuesto').innerText = pue.toUpperCase();
-            document.getElementById('credZona').innerText = `${mun.toUpperCase()} - ${zon.toUpperCase()}`;
+            document.getElementById('credPuesto').innerText = mun.toUpperCase();
+            document.getElementById('credZona').innerText = zon.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
             document.getElementById('credFoto').src = fotoUrlActual;
+
             
             setTimeout(() => {
                 inicializarCanvasFirma();
