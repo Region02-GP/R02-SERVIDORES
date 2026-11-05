@@ -57,13 +57,12 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         document.getElementById('nombre_curp').value = curp;
 
         // Caso A: El brigadista ya tiene registros previos en Sheets
-               // Caso A: El brigadista ya tiene registros previos en Sheets
         if (datos.existe) {
             const nom = String(datos.nombre || "").trim(); 
             const mun = String(datos.municipio || "").trim();
             const pue = String(datos.puesto || "").trim();
             const tel = String(datos.telefono || "").trim();
-            const zon = String(datos.zona || "").trim(); // El servidor ya entrega la propiedad mapeada correctamente
+            const zon = String(datos.zona || "").trim(); 
             const cor = String(datos.correo || "").trim();
             
             fotoUrlActual = String(datos.foto_url || "").trim();
@@ -76,7 +75,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('telefono').value = tel;
             document.getElementById('zona').value = zon;
             document.getElementById('correo').value = cor;
-
 
             // Validación interna de datos requeridos (Sin apellidos)
             let camposFaltantes = [];
@@ -274,8 +272,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     const puesto = document.getElementById('credPuesto').innerText;
     const zona = document.getElementById('credZona').innerText;
     const fotoSrc = document.getElementById('credFoto').src;
-    
-    // Captura el municipio directamente desde el formulario de la pantalla 2
     const municipio = document.getElementById('municipio').value.trim().toUpperCase() || "NO ESPECIFICADO";
 
     const canvas = document.createElement('canvas');
@@ -286,7 +282,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // 1. ESTILO CREDENCIAL: Crear esquinas redondeadas en el borde exterior total del gafete (Efecto Tarjeta PVC)
+    // Esquinar redondeado general (PVC Card style)
     const cardRadius = 60; 
     ctx.beginPath();
     ctx.moveTo(cardRadius, 0);
@@ -301,16 +297,17 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.closePath();
     ctx.clip(); 
 
-    // Fondo base limpio del gafete
+    // Fondo base del gafete
     ctx.fillStyle = "#fcfaf6";
     ctx.fillRect(0, 0, 1276, 2020);
 
     const imgBanner = new Image();
     const imgFoto = new Image();
     const imgFirma = new Image();
+    const imgFooter = new Image(); // Nueva instancia agregada para el procesamiento asíncrono
 
     let descargasExitosas = 0;
-    const totalImagenes = 3;
+    const totalImagenes = 4; // Cambiado a 4 recursos gráficos obligatorios
 
     function verificarCargas() {
         descargasExitosas++;
@@ -322,6 +319,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgBanner.onload = verificarCargas;
     imgFoto.onload = verificarCargas;
     imgFirma.onload = verificarCargas;
+    imgFooter.onload = verificarCargas;
 
     imgBanner.onerror = function() {
         console.warn("⚠️ Fallo al cargar el Banner remoto. Aplicando contingencia de color institucional.");
@@ -340,21 +338,30 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         verificarCargas();
     };
 
+    imgFooter.onerror = function() {
+        console.error("⚠️ Fallo crítico al cargar el Footer remoto.");
+        verificarCargas();
+    };
+
     imgBanner.crossOrigin = "anonymous";
     imgFoto.crossOrigin = "anonymous";
     imgFirma.crossOrigin = "anonymous";
+    imgFooter.crossOrigin = "anonymous";
 
-    // SOLUCIÓN AL BANNER: Se reemplaza la cadena Base64 corrupta por la URL directa y funcional de tu servidor de imágenes
+    // Enlaces de imágenes de recursos
     imgBanner.src = "https://i.postimg.cc/bwFBd3ch/Servidores-de-la-Nacion-Region-02.png";
     imgFoto.src = fotoSrc;
     imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+    
+    // REEMPLAZA ESTA URL CON EL ENLACE DE TU NUEVA IMAGEN DE FOOTER
+    imgFooter.src = "https://i.postimg.cc/vZgg4vyj/Banner-tricolor-mexicano-con-escudo-central.png";
 // ====================================================================
 // BLOQUE 4 (PARTE 2): ALGORITMO OBJECT-FIT, DIBUJO Y DESCARGA PNG HD
 // ====================================================================
 
     function construirGraficosGafete() {
         try {
-            // Dibujar el Banner Institucional Superior ya corregido
+            // Banner superior
             try {
                 ctx.drawImage(imgBanner, 0, 0, 1276, 280); 
             } catch(e) {
@@ -362,13 +369,11 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
                 ctx.fillRect(0, 0, 1276, 280);
             }
 
-            // 2. CORRECCIÓN ANTIESTIRADO (OBJECT-FIT: COVER NO DEFORMATIVO)
+            // Encuadre de fotografía (Object-fit: Cover)
             const targetX = 458, targetY = 350, targetW = 360, targetH = 480;
-            const fotoRadius = 24; // Bordes suavemente redondeados para la foto (Estilo Credencial Elegante)
+            const fotoRadius = 24; 
 
             ctx.save(); 
-            
-            // Dibujar la máscara redondeada de la fotografía
             ctx.beginPath();
             ctx.moveTo(targetX + fotoRadius, targetY);
             ctx.lineTo(targetX + targetW - fotoRadius, targetY);
@@ -382,11 +387,9 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.closePath();
             ctx.clip();
 
-            // Fondo de seguridad para la foto
             ctx.fillStyle = "#e5e7eb";
             ctx.fillRect(targetX, targetY, targetW, targetH);
 
-            // Algoritmo matemático para encuadrar la imagen de la cámara sin deformarla
             let imgW = imgFoto.width;
             let imgH = imgFoto.height;
             let srcX = 0, srcY = 0, srcW = imgW, srcH = imgH;
@@ -402,11 +405,10 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
                 srcY = (imgH - srcH) / 2;
             }
 
-            // Pintar la foto respetando las proporciones humanas exactas
             ctx.drawImage(imgFoto, srcX, srcY, srcW, srcH, targetX, targetY, targetW, targetH);
             ctx.restore(); 
 
-            // Dibujar contorno perimetral formal de la foto (Filete dorado decorativo exterior)
+            // Filete dorado decorativo exterior de foto
             ctx.strokeStyle = "#ddc9a3";
             ctx.lineWidth = 6;
             ctx.beginPath();
@@ -422,7 +424,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.closePath();
             ctx.stroke();
 
-            // 3. Tipografías y Datos Nominativos
+            // Dibujo de datos e información textual nominativa
             ctx.fillStyle = "#1f2937"; 
             ctx.textAlign = "center";   
 
@@ -436,7 +438,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.lineTo(1076, 1040);
             ctx.stroke();
 
-            // Puesto y Zona
             ctx.fillStyle = "#6b7280"; 
             ctx.font = "600 28px sans-serif";
             ctx.fillText("PUESTO O CARGO", (canvas.width / 2) - 250, 1100);
@@ -447,7 +448,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.fillText(puesto, (canvas.width / 2) - 250, 1160);
             ctx.fillText(zona, (canvas.width / 2) + 250, 1180);
 
-            // Municipio Adscrito
             ctx.fillStyle = "#6b7280";
             ctx.font = "600 28px sans-serif";
             ctx.fillText("MUNICIPIO ADSCRITO", canvas.width / 2, 1265);
@@ -456,7 +456,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.font = "bold 36px sans-serif";
             ctx.fillText(municipio, canvas.width / 2, 1320);
 
-            // Identificación CURP Oficial
             ctx.fillStyle = "#6b7280";
             ctx.font = "600 28px sans-serif";
             ctx.fillText("CURP OFICIAL DEL BRIGADISTA", canvas.width / 2, 1415);
@@ -465,7 +464,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.font = "bold 38px monospace";
             ctx.fillText(curp, canvas.width / 2, 1475);
 
-            // Estampado de Firma Digital Autorizada
+            // Estampado asíncrono de firma digital
             if (firmaBase64 && firmaBase64.startsWith("data:image")) {
                 ctx.fillStyle = "#6b7280";
                 ctx.font = "600 24px sans-serif";
@@ -479,27 +478,19 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
                 ctx.drawImage(imgFirma, firmaX, firmaY, firmaW, firmaH);
             }
 
-            // Logotipos institucionales salud inferiores
-            ctx.fillStyle = "#166534";
-            ctx.font = "bold 26px serif";
-            ctx.fillText("IMSS", 250, 1850);
+            // DIBUJO E INTEGRACIÓN GRÁFICA DEL NUEVO FOOTER HD REMOTO EN LA BASE DEL CANVAS
+            const footerHeight = 220; // Espacio asignado en píxeles HD
+            const footerY = canvas.height - footerHeight; // Ubicación exacta (Y: 1800)
+            
+            try {
+                ctx.drawImage(imgFooter, 0, footerY, canvas.width, footerHeight);
+            } catch(eFooter) {
+                console.warn("Fallo el estampado de contingencia gráfica, aplicando color base.");
+                ctx.fillStyle = "#611232";
+                ctx.fillRect(0, footerY, canvas.width, footerHeight);
+            }
 
-            ctx.fillStyle = "#831843";
-            ctx.fillText("ISSSTE", 638, 1850);
-
-            ctx.fillStyle = "#064e3b";
-            ctx.font = "bold 26px sans-serif";
-            ctx.fillText("IMSS BIENESTAR", 1026, 1850);
-
-            // Cintillo tricolor inferior estético de seguridad
-            ctx.fillStyle = "#15803d";
-            ctx.fillRect(0, 1980, 425, 40);
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(425, 1980, 426, 40);
-            ctx.fillStyle = "#b91c1c";
-            ctx.fillRect(851, 1980, 425, 40);
-
-            // Generador dinámico de descarga final en formato PNG de alta definición
+            // Descarga automatizada PNG
             const link = document.createElement('a');
             link.download = `CREDENCIAL_${curp}.png`;
             link.href = canvas.toDataURL('image/png', 1.0);
@@ -511,9 +502,11 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         }
     }
 });
+// ========================================================
+// BLOQUE EXTRA: INICIALIZACIÓN DE FIRMA DIGITAL Y CAPTURA
+// ========================================================
 
-
-// ✏️ BOTÓN MODIFICAR PERFIL (REPARADO Y OPERATIVO)
+// Botones de Modificación y Sesión
 document.getElementById('btnEditarPerfil').addEventListener('click', () => {
     document.getElementById('p2_titulo').innerText = "Modificar Perfil";
     document.getElementById('fotoAviso').classList.remove('hidden');
@@ -521,7 +514,6 @@ document.getElementById('btnEditarPerfil').addEventListener('click', () => {
     irAPantalla(2);
 });
 
-// ◀ BOTÓN SALIR / CERRAR SESIÓN (REPARADO Y OPERATIVO)
 document.getElementById('btnCerrar').addEventListener('click', () => {
     document.getElementById('p1_curp').value = "";
     firmaBase64 = "";
@@ -532,10 +524,6 @@ document.getElementById('btnCerrar').addEventListener('click', () => {
     irAPantalla(1);
 });
 
-// ========================================================
-// BLOQUE EXTRA: INICIALIZACIÓN DE FIRMA DIGITAL Y CAPTURA
-// ========================================================
-
 let canvasFirma, ctxFirma;
 let enTrazo = false;
 
@@ -545,14 +533,12 @@ function inicializarCanvasFirma() {
     
     ctxFirma = canvasFirma.getContext('2d');
 
-    // SOLUCIÓN TABLET: Forzar dimensiones basadas en la ventana gráfica real si falla el padre
     const rect = canvasFirma.parentElement.getBoundingClientRect();
     canvasFirma.width = rect.width > 0 ? rect.width : window.innerWidth * 0.9;
     canvasFirma.height = rect.height > 0 ? rect.height : window.innerHeight * 0.6;
 
-    // Configuración del trazo digital uniforme
     ctxFirma.strokeStyle = "#1e293b"; 
-    ctxFirma.lineWidth = 4; // Un poco más grueso para pantallas HD de tablets           
+    ctxFirma.lineWidth = 4;           
     ctxFirma.lineCap = "round";       
     ctxFirma.lineJoin = "round";      
 
@@ -560,7 +546,6 @@ function inicializarCanvasFirma() {
     canvasFirma.dataset.isInit = "true";
 
     function obtenerPosicion(e) {
-        // Soporte unificado para eventos táctiles avanzados de Tablet/iPad
         const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
         const cRect = canvasFirma.getBoundingClientRect();
@@ -571,7 +556,7 @@ function inicializarCanvasFirma() {
     }
 
     function iniciarDibujo(e) {
-        e.preventDefault(); // Evita retrasos de clicks fantasmas en sistemas móviles
+        e.preventDefault(); 
         enTrazo = true;
         const pos = obtenerPosicion(e);
         ctxFirma.beginPath();
@@ -580,7 +565,7 @@ function inicializarCanvasFirma() {
 
     function dibujar(e) {
         if (!enTrazo) return;
-        e.preventDefault(); // Detiene el scroll nativo de la tablet
+        e.preventDefault(); 
         const pos = obtenerPosicion(e);
         ctxFirma.lineTo(pos.x, pos.y);
         ctxFirma.stroke();
@@ -594,18 +579,15 @@ function inicializarCanvasFirma() {
         }
     }
 
-    // Eventos tradicionales de Mouse
     canvasFirma.addEventListener('mousedown', iniciarDibujo);
     canvasFirma.addEventListener('mousemove', dibujar);
     canvasFirma.addEventListener('mouseup', detenerDibujo);
     canvasFirma.addEventListener('mouseleave', detenerDibujo);
 
-    // Eventos Táctiles específicos de Tablet/Celular
     canvasFirma.addEventListener('touchstart', iniciarDibujo, { passive: false });
     canvasFirma.addEventListener('touchmove', dibujar, { passive: false });
     canvasFirma.addEventListener('touchend', detenerDibujo);
 }
-
 
 document.getElementById('btnAbrirFirmaModal').addEventListener('click', () => {
     document.getElementById('modalFirmaPantallaCompleta').classList.remove('hidden');
