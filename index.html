@@ -96,47 +96,47 @@
         </div>
 
         <!-- PANTALLA 3: CREDENCIAL / GAFETE FINAL -->
-        <div id="pantalla3" class="gafete-realista hidden">
-            <div class="banner-institucional-img"></div>
-            
-            <div class="cuerpo-credencial" style="align-items: center;">
-                <div class="marco-fotografia">
-                    <img id="credFoto" src="" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                
-                <div class="datos-gafete-contenedor">
-                    <div style="margin-bottom: 0.5rem;">
-                        <p class="cred-label">Nombre Completo</p>
-                        <p id="credCompleto" class="cred-valor-principal">-</p>
-                    </div>
-                    <div class="grid-2" style="margin-bottom: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #e5e7eb;">
-                        <div>
-                            <p class="cred-label">Puesto</p>
-                            <p id="credPuesto" class="cred-valor-secundario">-</p>
-                        </div>
-                        <div>
-                            <p class="cred-label">Zona</p>
-                            <p id="credZona" class="cred-valor-secundario">-</p>
-                        </div>
-                    </div>
-                    <div style="padding-top: 0.5rem; border-top: 1px solid #e5e7eb;">
-                        <p class="cred-label">CURP Oficial</p>
-                        <p id="credIdentificacion" class="cred-valor-mono">-</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="padding: 0 1.25rem 1rem 1.25rem; display: flex; gap: 0.5rem; flex-shrink: 0; flex-wrap: wrap;">
-                <button type="button" id="btnEditarPerfil" class="btn-buscar" style="flex: 1; padding: 0.75rem 0;">✏️ Modificar</button>
-                <button type="button" id="btnDescargarPDF" class="btn-guardar" style="flex: 1; margin: 0; padding: 0.75rem 0; background-color: #15803d;">🖼️ Guardar</button>
-                <button type="button" id="btnCerrar" class="btn-buscar" style="background-color: #6b7280; padding: 0.75rem 1rem;">◀ Salir</button>
-            </div>
-
-            <!-- NUEVO FOOTER DE IMAGEN -->
-            <div class="footer-institucional-img"></div>
+       <!-- PANTALLA 3: CREDENCIAL / GAFETE FINAL -->
+<div id="pantalla3" class="gafete-realista hidden" style="background-image: url('https://postimg.cc'); background-size: cover; background-position: center; min-height: 42rem;">
+    
+    <!-- Modificamos padding y márgenes superiores para acoplar al nuevo fondo -->
+    <div class="cuerpo-credencial" style="align-items: center; padding-top: 5rem; gap: 1rem;">
+        
+        <!-- Foto acoplada a las nuevas dimensiones proporcionales -->
+        <div class="marco-fotografia" style="width: 10.8rem; height: 13.5rem; margin-top: 0.5rem; border: 2px solid #ddc9a3; border-radius: 0.8rem;">
+            <img id="credFoto" src="" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
-
+        
+        <!-- Contenedor flotante transparente para empalmar textos directamente sobre las líneas -->
+        <div class="datos-gafete-contenedor" style="margin-top: 1rem; width: 100%; padding: 0 1.5rem;">
+            
+            <!-- Nombre posicionado sobre el rectángulo guinda de la plantilla gráfica -->
+            <div style="background-color: #611232; border-radius: 0.5rem; padding: 0.5rem; margin-bottom: 2rem;">
+                <p id="credCompleto" style="color: #ffffff; font-size: 1.15rem; font-weight: 800; margin: 0; text-transform: uppercase;">-</p>
+            </div>
+            
+            <!-- Datos en bloque alineados verticalmente con los íconos de fondo -->
+            <div style="text-align: left; padding-left: 4.5rem; display: flex; flex-direction: column; gap: 1.35rem; color: #1f2937;">
+                <div>
+                    <p id="credPuesto" style="font-size: 0.95rem; font-weight: 700; margin: 0; text-transform: uppercase;">-</p>
+                </div>
+                <div>
+                    <p id="credZona" style="font-size: 0.9rem; font-weight: 700; margin: 0; text-transform: uppercase;">-</p>
+                </div>
+                <div>
+                    <p id="credIdentificacion" style="font-size: 0.95rem; font-family: monospace; font-weight: 700; margin: 0; letter-spacing: 0.05em;">-</p>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <!-- Botonera inferior libre y transparente -->
+    <div style="padding: 1.5rem 1.25rem 1rem 1.25rem; display: flex; gap: 0.5rem; flex-shrink: 0; position: relative; z-index: 10;">
+        <button type="button" id="btnEditarPerfil" class="btn-buscar" style="flex: 1; padding: 0.75rem 0;">✏️ Modificar</button>
+        <button type="button" id="btnDescargarPDF" class="btn-guardar" style="flex: 1; margin: 0; padding: 0.75rem 0; background-color: #15803d;">🖼️ Guardar</button>
+        <button type="button" id="btnCerrar" class="btn-buscar" style="background-color: #6b7280; padding: 0.75rem 1rem;">◀ Salir</button>
+    </div>
+</div>
 
     <!-- VENTANA FLOTANTE PARA FIRMA -->
     <div id="modalFirmaPantallaCompleta" class="overlay-carga hidden" style="background-color: rgba(17, 24, 39, 0.98); z-index: 10005; padding: 1rem; box-sizing: border-box; display: flex; flex-direction: column;">
