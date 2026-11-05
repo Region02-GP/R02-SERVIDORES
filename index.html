@@ -14,7 +14,6 @@
         <div id="pantalla1" class="tarjeta-control">
             <div class="banner-institucional-img"></div>
             <div class="encabezado-institucional">
-                
                 <p class="subtitulo-patria">IDENTIFICACIÓN DE BRIGADISTAS</p>
             </div>
             
@@ -30,16 +29,8 @@
                 <button type="button" id="btnAcceder" class="btn-guardar">🔍 Validar Identidad</button>
             </div>
 
-            <div class="logos-salud-barra">
-                <span style="color: #166534; font-family: serif;">IMSS</span>
-                <span style="color: #831843; font-family: serif;">ISSSTE</span>
-                <span style="color: #064e3b; font-family: sans-serif;">IMSS BIENESTAR</span>
-            </div>
-            <div style="display: flex; height: 6px; width: 100%; flex-shrink: 0;">
-                <div style="width: 33.33%; background-color: #15803d;"></div>
-                <div style="width: 33.33%; background-color: #ffffff;"></div>
-                <div style="width: 33.33%; background-color: #b91c1c;"></div>
-            </div>
+            <!-- NUEVO FOOTER DE IMAGEN -->
+            <div class="footer-institucional-img"></div>
         </div>
 
         <!-- PANTALLA 2: FORMULARIO REGISTRO -->
@@ -50,7 +41,7 @@
                 <p class="subtitulo-patria">DATOS COMPLEMENTARIOS</p>
             </div>
             
-                      <form id="perfilForm" class="cuerpo-credencial">
+            <form id="perfilForm" class="cuerpo-credencial">
                 <div>
                     <label class="campo-etiqueta">CURP (Invariable)</label>
                     <input type="text" id="nombre_curp" readonly class="campo-input id-mono" style="background-color: #f3f4f6;">
@@ -59,7 +50,6 @@
                     <label class="campo-etiqueta">Nombre Completo</label>
                     <input type="text" id="nombre" required class="campo-input">
                 </div>
-                <!-- SE ELIMINÓ EL BLOQUE GRID-2 DE APELLIDOS -->
                 <div class="grid-2">
                     <div>
                         <label class="campo-etiqueta">Municipio</label>
@@ -101,22 +91,14 @@
                 <button type="submit" class="btn-guardar">💾 Guardar Registro</button>
             </form>
 
-            <div class="logos-salud-barra">
-                <span style="color: #166534; font-family: serif;">IMSS</span>
-                <span style="color: #831843; font-family: serif;">ISSSTE</span>
-                <span style="color: #064e3b; font-family: sans-serif;">IMSS BIENESTAR</span>
-            </div>
-            <div style="display: flex; height: 6px; width: 100%; flex-shrink: 0;">
-                <div style="width: 33.33%; background-color: #15803d;"></div>
-                <div style="width: 33.33%; background-color: #ffffff;"></div>
-                <div style="width: 33.33%; background-color: #b91c1c;"></div>
-            </div>
+            <!-- NUEVO FOOTER DE IMAGEN -->
+            <div class="footer-institucional-img"></div>
         </div>
-               <!-- PANTALLA 3: CREDENCIAL / GAFETE FINAL -->
+
+        <!-- PANTALLA 3: CREDENCIAL / GAFETE FINAL -->
         <div id="pantalla3" class="gafete-realista hidden">
             <div class="banner-institucional-img"></div>
             
-            <!-- CONTENEDOR AGREGADO PARA CENTRAR FOTO Y DATOS -->
             <div class="cuerpo-credencial" style="align-items: center;">
                 <div class="marco-fotografia">
                     <img id="credFoto" src="" style="width: 100%; height: 100%; object-fit: cover;">
@@ -142,7 +124,7 @@
                         <p id="credIdentificacion" class="cred-valor-mono">-</p>
                     </div>
                 </div>
-            </div> <!-- CIERRE DEL CONTENEDOR -->
+            </div>
             
             <div style="padding: 0 1.25rem 1rem 1.25rem; display: flex; gap: 0.5rem; flex-shrink: 0; flex-wrap: wrap;">
                 <button type="button" id="btnEditarPerfil" class="btn-buscar" style="flex: 1; padding: 0.75rem 0;">✏️ Modificar</button>
@@ -150,18 +132,11 @@
                 <button type="button" id="btnCerrar" class="btn-buscar" style="background-color: #6b7280; padding: 0.75rem 1rem;">◀ Salir</button>
             </div>
 
-            <div class="logos-salud-barra">
-                <span style="color: #166534; font-family: serif;">IMSS</span>
-                <span style="color: #831843; font-family: serif;">ISSSTE</span>
-                <span style="color: #064e3b; font-family: sans-serif;">IMSS BIENESTAR</span>
-            </div>
-            <div style="display: flex; height: 6px; width: 100%; flex-shrink: 0;">
-                <div style="width: 33.33%; background-color: #15803d;"></div>
-                <div style="width: 33.33%; background-color: #ffffff;"></div>
-                <div style="width: 33.33%; background-color: #b91c1c;"></div>
-            </div>
+            <!-- NUEVO FOOTER DE IMAGEN -->
+            <div class="footer-institucional-img"></div>
         </div>
 
+    </div>
 
     <!-- VENTANA FLOTANTE PARA FIRMA -->
     <div id="modalFirmaPantallaCompleta" class="overlay-carga hidden" style="background-color: rgba(17, 24, 39, 0.98); z-index: 10005; padding: 1rem; box-sizing: border-box; display: flex; flex-direction: column;">
@@ -189,5 +164,4 @@
     </div>
 
     <script src="app.js"></script>
-</body>
-</html>
+
