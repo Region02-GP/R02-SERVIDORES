@@ -5,7 +5,6 @@
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz8DgfEUyjfzexnKyi-kRBhpjiuApJq-P_WMxPH5UsL1pQ10ghHpIiqAb9v1L2BTHwCqA/exec";
 
-
 let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 let fotoCompletaBase64 = ""; // Foto local capturada
 let fotoUrlActual = ""; // URL de la foto en la base de datos
@@ -106,13 +105,12 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
                 return; 
             }
 
-                      // Sincronización individual en la Pantalla 3
+            // Sincronización correcta con la estructura visual de la Pantalla 3
             document.getElementById('credCompleto').innerText = nom.toUpperCase();
             document.getElementById('credPuesto').innerText = mun.toUpperCase();
             document.getElementById('credZona').innerText = zon.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
             document.getElementById('credFoto').src = fotoUrlActual;
-
             
             setTimeout(() => {
                 inicializarCanvasFirma();
@@ -243,127 +241,14 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         });
         const resultado = await res.json();
         
-               if (resultado.status === "success") {
-            ocultarCarga();
-            alert('🎉 ¡Perfil sincronizado correctamente!');
-            
-            document.getElementById('credCompleto').innerText = txtNombre.toUpperCase();
-            document.getElementById('credPuesto').innerText = txtMunicipio.toUpperCase();
-            document.getElementById('credZona').innerText = txtZona.toUpperCase();
-            document.getElementById('credIdentificacion').innerText = curp;
-            
-            fotoUrlActual = resultado.foto_url || fotoParaEnviar;
-            document.getElementById('credFoto').src = fotoUrlActual;
-            
-            fotoCompletaBase64 = "";
-            document.getElementById('fotoAviso').classList.add('hidden');
-            irAPantalla(3);
-        }
-
-        } else {
-            ocultarCarga();
-            alert('Error: ' + resultado.message);
-        }
-    } catch (err) {
-        console.error(err);
-        ocultarCarga();
-        alert('Fallo de sincronización con la base de datos central.');
-    }
-});
-// ========================================================
-// BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO SINCRO
-// ========================================================
-
-document.getElementById('inputFoto').addEventListener('change', (e) => {
-    const files = e.target.files; 
-    if (files && files.length > 0) {
-        mostrarCarga("Comprimiendo fotografía a escala celular...");
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                canvas.width = 180; 
-                canvas.height = 240;
-                const ctx = canvas.getContext('2d');
-                
-                let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
-                const aspectImg = img.width / img.height;
-                const aspectCanv = 180 / 240;
-                
-                if (aspectImg > aspectCanv) {
-                    srcW = img.height * aspectCanv;
-                    srcX = (img.width - srcW) / 2;
-                } else {
-                    srcH = img.width / aspectCanv;
-                    srcY = (img.height - srcH) / 2;
-                }
-
-                ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 180, 240);
-                fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.6);
-                
-                document.getElementById('fotoAviso').classList.remove('hidden');
-                ocultarCarga();
-            };
-            img.src = evt.target.result;
-        };
-        reader.readAsDataURL(files[0]);
-    }
-});
-
-document.getElementById('perfilForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    if (!firmaBase64 || firmaBase64 === "") {
-        alert("⚠️ CAMPOS REQUERIDOS:\n\nEs obligatorio estampar tu firma en el recuadro blanco antes de guardar el registro.");
-        return false;
-    }
-
-    const curp = document.getElementById('nombre_curp').value;
-    mostrarCarga("Sincronizando información de brigadista...");
-
-    let fotoParaEnviar = fotoUrlActual;
-    if (fotoCompletaBase64) {
-        fotoParaEnviar = fotoCompletaBase64;
-    }
-
-    const txtNombre = document.getElementById('nombre').value;
-    const txtMunicipio = document.getElementById('municipio').value;
-    const txtPuesto = document.getElementById('puesto').value;
-    const txtTelefono = document.getElementById('telefono').value;
-    const txtZona = document.getElementById('zona').value;
-    const txtCorreo = document.getElementById('correo').value;
-
-    const payloadCompleto = {
-        action: 'guardar',
-        curp: curp,
-        nombre: txtNombre,
-        municipio: txtMunicipio,
-        puesto: txtPuesto,
-        telefono: txtTelefono,
-        zona: txtZona,
-        correo: txtCorreo,
-        foto_url: fotoParaEnviar,
-        fotoCompletaBase64: fotoCompletaBase64,
-        firmaBase64: firmaBase64 
-    };
-
-    try {
-        const res = await fetch(WEB_APP_URL, {
-            method: 'POST',
-            redirect: 'follow',
-            body: JSON.stringify(payloadCompleto)
-        });
-        const resultado = await res.json();
-        
         if (resultado.status === "success") {
             ocultarCarga();
             alert('🎉 ¡Perfil sincronizado correctamente!');
             
             // Inyección sobre IDs unificados en la pantalla 3
             document.getElementById('credCompleto').innerText = txtNombre.toUpperCase();
-            document.getElementById('credPuesto').innerText = txtPuesto.toUpperCase();
-            document.getElementById('credZona').innerText = `${txtMunicipio.toUpperCase()} - ${txtZona.toUpperCase()}`;
+            document.getElementById('credPuesto').innerText = txtMunicipio.toUpperCase();
+            document.getElementById('credZona').innerText = txtZona.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
             
             fotoUrlActual = resultado.foto_url || fotoParaEnviar;
@@ -455,7 +340,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFoto.src = fotoSrc;
     imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-        function construirGraficosGafete() {
+    function construirGraficosGafete() {
         try {
             // 1. Estampar plantilla de fondo completa
             ctx.drawImage(imgPlantillaFondo, 0, 0, 1276, 2020);
@@ -512,7 +397,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
 
             // Fila de Zona
             ctx.font = "bold 34px sans-serif";
-            ctx.fillText(`ZONA: ${zona}`, canvas.width / 2, 1425);
+            ctx.fillText(`ZONA: ${puesto}`, canvas.width / 2, 1425); // Usando puesto que almacena zona desde el form
 
             // Fila de CURP
             ctx.font = "bold 38px monospace";
@@ -536,7 +421,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ocultarCarga();
         }
     }
-
 });
 // ========================================================
 // BLOQUE EXTRA: CONTROLES INTERNOS Y ÁREA DE FIRMA
@@ -644,3 +528,4 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
     document.getElementById('firmaAviso').classList.remove('hidden');
     document.getElementById('modalFirmaPantallaCompleta').classList.add('hidden');
 });
+
