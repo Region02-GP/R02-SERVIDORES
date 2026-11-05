@@ -342,16 +342,99 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 // ====================================================================
+// BLOQUE 4 (PARTE 1): CAPTURA DE VARIABLES Y CONTROL DE RECURSOS HD
+// ====================================================================
+
+document.getElementById('btnDescargarPDF').addEventListener('click', () => {
+    margin: 0;
+    mostrarCarga("Dibujando credencial en alta densidad gráfica...");
+
+    const curp = document.getElementById('credIdentificacion').innerText;
+    const nombre = document.getElementById('credCompleto').innerText;
+    const puesto = document.getElementById('credPuesto').innerText;
+    const zona = document.getElementById('credZona').innerText;
+    const fotoSrc = document.getElementById('credFoto').src;
+    const municipio = document.getElementById('municipio').value.trim().toUpperCase() || "NO ESPECIFICADO";
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1276;   
+    canvas.height = 2020;  
+    const ctx = canvas.getContext('2d');
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    // Esquinar redondeado general (PVC Card style)
+    const cardRadius = 60; 
+    ctx.beginPath();
+    ctx.moveTo(cardRadius, 0);
+    ctx.lineTo(canvas.width - cardRadius, 0);
+    ctx.quadraticCurveTo(canvas.width, 0, canvas.width, cardRadius);
+    ctx.lineTo(canvas.width, canvas.height - cardRadius);
+    ctx.quadraticCurveTo(canvas.width, canvas.height, canvas.width - cardRadius, canvas.height);
+    ctx.lineTo(cardRadius, canvas.height);
+    ctx.quadraticCurveTo(0, canvas.height, 0, canvas.height - cardRadius);
+    ctx.lineTo(0, cardRadius);
+    ctx.quadraticCurveTo(0, 0, cardRadius, 0);
+    ctx.closePath();
+    ctx.clip(); 
+
+    const imgPlantillaFondo = new Image();
+    const imgFoto = new Image();
+    const imgFirma = new Image();
+
+    let descargasExitosas = 0;
+    const totalImagenes = 3;
+
+    function verificarCargas() {
+        descargasExitosas++;
+        if (descargasExitosas === totalImagenes) {
+            setTimeout(construirGraficosGafete, 100);
+        }
+    }
+
+    imgPlantillaFondo.onload = verificarCargas;
+    imgFoto.onload = verificarCargas;
+    imgFirma.onload = verificarCargas;
+
+    imgPlantillaFondo.onerror = function() {
+        console.error("⚠️ Error cargando plantilla base. Aplicando color institucional de rescate.");
+        ctx.fillStyle = "#611232";
+        ctx.fillRect(0, 0, 1276, 2020);
+        verificarCargas();
+    };
+    
+    imgFoto.onerror = function() {
+        console.warn("⚠️ Error en fotografía de brigadista.");
+        imgFoto.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADAEYAAACl6ZIsAAAAFElEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAMCXA80AAAG67v3fAAAAAElFTkSuQmCC";
+    };
+
+    imgFirma.onerror = function() {
+        console.warn("⚠️ No se localizó firma autorizada.");
+        verificarCargas();
+    };
+
+    imgFoto.crossOrigin = "anonymous";
+    imgFirma.crossOrigin = "anonymous";
+
+    // Solución al error de descarga: Carga directa mediante proxy CORS seguro
+    imgPlantillaFondo.crossOrigin = "anonymous";
+    imgPlantillaFondo.src = "https://weserv.nl";
+    
+    imgFoto.src = fotoSrc;
+    imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
+// ====================================================================
 // BLOQUE 4 (PARTE 2): ALGORITMO OBJECT-FIT, DIBUJO Y DESCARGA PNG HD
 // ====================================================================
 
     function construirGraficosGafete() {
         try {
-            // 1. Estampar la plantilla de fondo completa en todo el Canvas
+            // 1. Estampar fondo
             ctx.drawImage(imgPlantillaFondo, 0, 0, 1276, 2020);
 
-            // 2. Encuadre matemático de fotografía con bordes redondeados estilizados
-            const targetX = 394, targetY = 412, targetW = 490, targetH = 612; // Ajustado al recuadro dorado de tu imagen
+            // 2. Encuadre de fotografía
+            const targetX = 394, targetY = 412, targetW = 490, targetH = 612;
             const fotoRadius = 40; 
 
             ctx.save(); 
@@ -390,13 +473,13 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.textAlign = "center";   
 
             // NOMBRE COMPLETO: Centrado perfectamente dentro del cintillo guinda medio
-            ctx.fillStyle = "#ffffff"; // Texto blanco para legibilidad sobre fondo guinda
+            ctx.fillStyle = "#ffffff";
             ctx.font = "bold 44px sans-serif";
             ctx.fillText(nombre, canvas.width / 2, 1152); 
 
             // DATOS EN LÍNEAS (Alineados a la izquierda junto a los íconos de la plantilla)
             ctx.textAlign = "left";
-            ctx.fillStyle = "#1f2937"; // Gris muy oscuro/negro institucional
+            ctx.fillStyle = "#1f2937"; 
 
             // Línea 1 (Ícono Persona): Puesto o Cargo
             ctx.font = "bold 38px sans-serif";
@@ -415,7 +498,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
                 const firmaW = 300;
                 const firmaH = 120;
                 const firmaX = (canvas.width / 2) - (firmaW / 2);
-                const firmaY = 1680; // Ubicada armónicamente entre los datos y el escudo patrio
+                const firmaY = 1680;
                 
                 ctx.drawImage(imgFirma, firmaX, firmaY, firmaW, firmaH);
             }
@@ -427,117 +510,9 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             link.click();
         } catch(errorFatal) {
             console.error("Error en renderizado:", errorFatal);
+            alert("Ocurrió un inconveniente de seguridad con los orígenes de la imagen al exportar.");
         } finally {
             ocultarCarga();
         }
     }
-});
-    
-// ========================================================
-// BLOQUE EXTRA: INICIALIZACIÓN DE FIRMA DIGITAL Y CAPTURA
-// ========================================================
-
-// Botones de Modificación y Sesión
-document.getElementById('btnEditarPerfil').addEventListener('click', () => {
-    document.getElementById('p2_titulo').innerText = "Modificar Perfil";
-    document.getElementById('fotoAviso').classList.remove('hidden');
-    document.getElementById('firmaAviso').classList.remove('hidden');
-    irAPantalla(2);
-});
-
-document.getElementById('btnCerrar').addEventListener('click', () => {
-    document.getElementById('p1_curp').value = "";
-    firmaBase64 = "";
-    fotoCompletaBase64 = "";
-    fotoUrlActual = "";
-    document.getElementById('fotoAviso').classList.add('hidden');
-    document.getElementById('firmaAviso').classList.add('hidden');
-    irAPantalla(1);
-});
-
-let canvasFirma, ctxFirma;
-let enTrazo = false;
-
-function inicializarCanvasFirma() {
-    canvasFirma = document.getElementById('canvasFirma');
-    if (!canvasFirma) return;
-    
-    ctxFirma = canvasFirma.getContext('2d');
-
-    const rect = canvasFirma.parentElement.getBoundingClientRect();
-    canvasFirma.width = rect.width > 0 ? rect.width : window.innerWidth * 0.9;
-    canvasFirma.height = rect.height > 0 ? rect.height : window.innerHeight * 0.6;
-
-    ctxFirma.strokeStyle = "#1e293b"; 
-    ctxFirma.lineWidth = 4;           
-    ctxFirma.lineCap = "round";       
-    ctxFirma.lineJoin = "round";      
-
-    if (canvasFirma.dataset.isInit === "true") return;
-    canvasFirma.dataset.isInit = "true";
-
-    function obtenerPosicion(e) {
-        const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
-        const cRect = canvasFirma.getBoundingClientRect();
-        return {
-            x: (clientX - cRect.left) * (canvasFirma.width / cRect.width),
-            y: (clientY - cRect.top) * (canvasFirma.height / cRect.height)
-        };
-    }
-
-    function iniciarDibujo(e) {
-        e.preventDefault(); 
-        enTrazo = true;
-        const pos = obtenerPosicion(e);
-        ctxFirma.beginPath();
-        ctxFirma.moveTo(pos.x, pos.y);
-    }
-
-    function dibujar(e) {
-        if (!enTrazo) return;
-        e.preventDefault(); 
-        const pos = obtenerPosicion(e);
-        ctxFirma.lineTo(pos.x, pos.y);
-        ctxFirma.stroke();
-    }
-
-    function detenerDibujo() {
-        if (enTrazo) {
-            enTrazo = false;
-            ctxFirma.closePath();
-            firmaBase64 = canvasFirma.toDataURL('image/png');
-        }
-    }
-
-    canvasFirma.addEventListener('mousedown', iniciarDibujo);
-    canvasFirma.addEventListener('mousemove', dibujar);
-    canvasFirma.addEventListener('mouseup', detenerDibujo);
-    canvasFirma.addEventListener('mouseleave', detenerDibujo);
-
-    canvasFirma.addEventListener('touchstart', iniciarDibujo, { passive: false });
-    canvasFirma.addEventListener('touchmove', dibujar, { passive: false });
-    canvasFirma.addEventListener('touchend', detenerDibujo);
-}
-
-document.getElementById('btnAbrirFirmaModal').addEventListener('click', () => {
-    document.getElementById('modalFirmaPantallaCompleta').classList.remove('hidden');
-    setTimeout(inicializarCanvasFirma, 100);
-});
-
-document.getElementById('btnLimpiarFirma').addEventListener('click', () => {
-    if (ctxFirma && canvasFirma) {
-        ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
-        firmaBase64 = "";
-        document.getElementById('firmaAviso').classList.add('hidden');
-    }
-});
-
-document.getElementById('btnAceptarFirma').addEventListener('click', () => {
-    if (!firmaBase64 || firmaBase64 === "") {
-        alert("Por favor, estampe su firma antes de aceptar.");
-        return;
-    }
-    document.getElementById('firmaAviso').classList.remove('hidden');
-    document.getElementById('modalFirmaPantallaCompleta').classList.add('hidden');
 });
