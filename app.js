@@ -47,7 +47,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         
         const datos = await res.json();
 
-        // Control de brigadistas rechazados por el padrón
         if (datos.status === "denied") {
             ocultarCarga();
             alert(`⛔ ACCESO DENEGADO\n\n${datos.message}`);
@@ -56,7 +55,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 
         document.getElementById('nombre_curp').value = curp;
 
-        // Caso A: El brigadista ya tiene registros previos en Sheets
         if (datos.existe) {
             const nom = String(datos.nombre || "").trim(); 
             const mun = String(datos.municipio || "").trim();
@@ -68,7 +66,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             fotoUrlActual = String(datos.foto_url || "").trim();
             firmaBase64 = String(datos.firma_url || "").trim();
 
-            // Inyectar datos en el formulario por si decide modificar
             document.getElementById('nombre').value = nom;
             document.getElementById('municipio').value = mun;
             document.getElementById('puesto').value = pue;
@@ -76,7 +73,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('zona').value = zon;
             document.getElementById('correo').value = cor;
 
-            // Validación interna de datos requeridos (Sin apellidos)
             let camposFaltantes = [];
             if (!nom) camposFaltantes.push("Nombre Completo");
             if (!mun) camposFaltantes.push("Municipio");
@@ -105,10 +101,10 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
                 return; 
             }
 
-            // Perfil completo: Ir a la credencial directa
+            // Sincronización correcta con la estructura visual de la Pantalla 3
             document.getElementById('credCompleto').innerText = nom.toUpperCase();
             document.getElementById('credPuesto').innerText = pue.toUpperCase();
-            document.getElementById('credZona').innerText = zon.toUpperCase();
+            document.getElementById('credZona').innerText = `${mun.toUpperCase()} - ${zon.toUpperCase()}`;
             document.getElementById('credIdentificacion').innerText = curp;
             document.getElementById('credFoto').src = fotoUrlActual;
             
@@ -129,7 +125,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             irAPantalla(3);
 
         } else {
-            // Caso B: El brigadista accede por primera vez al sistema
             ocultarCarga();
             alert(`🎉 ¡Validación Exitosa!\n\nCURP localizada en el padrón oficial. Complementa tu perfil para emitir tu credencial.`);
             
@@ -155,6 +150,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         alert('Error en el enlace de red con el módulo de acceso. Verifica que la URL del servidor sea correcta.');
     }
 });
+
 // ========================================================
 // BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO SINCRO
 // ========================================================
@@ -212,15 +208,22 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         fotoParaEnviar = fotoCompletaBase64;
     }
 
+    const txtNombre = document.getElementById('nombre').value;
+    const txtMunicipio = document.getElementById('municipio').value;
+    const txtPuesto = document.getElementById('puesto').value;
+    const txtTelefono = document.getElementById('telefono').value;
+    const txtZona = document.getElementById('zona').value;
+    const txtCorreo = document.getElementById('correo').value;
+
     const payloadCompleto = {
         action: 'guardar',
         curp: curp,
-        nombre: document.getElementById('nombre').value,
-        municipio: document.getElementById('municipio').value,
-        puesto: document.getElementById('puesto').value,
-        telefono: document.getElementById('telefono').value,
-        zona: document.getElementById('zona').value,
-        correo: document.getElementById('correo').value,
+        nombre: txtNombre,
+        municipio: txtMunicipio,
+        puesto: txtPuesto,
+        telefono: txtTelefono,
+        zona: txtZona,
+        correo: txtCorreo,
         foto_url: fotoParaEnviar,
         fotoCompletaBase64: fotoCompletaBase64,
         firmaBase64: firmaBase64 
@@ -238,9 +241,10 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             ocultarCarga();
             alert('🎉 ¡Perfil sincronizado correctamente!');
             
-            document.getElementById('credCompleto').innerText = document.getElementById('nombre').value.toUpperCase();
-            document.getElementById('credPuesto').innerText = document.getElementById('puesto').value.toUpperCase();
-            document.getElementById('credZona').innerText = document.getElementById('zona').value.toUpperCase();
+            // Inyección corregida apuntando exactamente a los ID vigentes de la pantalla 3
+            document.getElementById('credCompleto').innerText = txtNombre.toUpperCase();
+            document.getElementById('credPuesto').innerText = txtPuesto.toUpperCase();
+            document.getElementById('credZona').innerText = `${txtMunicipio.toUpperCase()} - ${txtZona.toUpperCase()}`;
             document.getElementById('credIdentificacion').innerText = curp;
             
             fotoUrlActual = resultado.foto_url || fotoParaEnviar;
@@ -259,6 +263,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         alert('Fallo de sincronización con la base de datos central.');
     }
 });
+
 // ====================================================================
 // BLOQUE 4 (PARTE 1): CAPTURA DE VARIABLES Y CONTROL DE RECURSOS HD
 // ====================================================================
