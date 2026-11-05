@@ -449,7 +449,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFirma.crossOrigin = "anonymous";
 
     // Enlace de imagen procesado por puente CORS seguro
-    imgPlantillaFondo.src = "https://i.postimg.cc/sDrCQYWm/Credencial-oficial-Servidores-de-la-Nacion.png";
+    imgPlantillaFondo.src = "https://i.postimg.cc/269Fp7Df/Cartel-oficial-Servidores-de-la-Nacion.png";
     imgFoto.src = fotoSrc;
     imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
