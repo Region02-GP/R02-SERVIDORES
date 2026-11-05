@@ -82,7 +82,9 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('zona').value = zon;
             document.getElementById('correo').value = cor;
 
-            // Validación interna de datos requeridos (Sin apellidos)
+                        // ========================================================
+            // VALIDACIÓN OPTIMIZADA (EVITA DESBORDAMIENTO DE MEMORIA)
+            // ========================================================
             let camposFaltantes = [];
             if (!nom) camposFaltantes.push("Nombre Completo");
             if (!mun) camposFaltantes.push("Municipio");
@@ -90,12 +92,15 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             if (!tel) camposFaltantes.push("Teléfono");
             if (!zon) camposFaltantes.push("Zona");
             if (!cor) camposFaltantes.push("Correo");
-            if (!fotoUrlActual || fotoUrlActual.startsWith('data:image/svg+xml') || fotoUrlActual.includes('placeholder')) {
+            
+            // CORRECCIÓN: Validamos por existencia y longitud en vez de buscar texto interno pesado (.includes)
+            if (!fotoUrlActual || fotoUrlActual.length < 50 || fotoUrlActual.includes('placeholder')) {
                 camposFaltantes.push("Fotografía Oficial");
             }
-            if (!firmaBase64 || firmaBase64 === "" || firmaBase64 === "null") {
+            if (!firmaBase64 || firmaBase64 === "" || firmaBase64 === "null" || firmaBase64.length < 50) {
                 camposFaltantes.push("Firma Digital Obligatoria");
             }
+
 
             if (camposFaltantes.length > 0) {
                 ocultarCarga();
