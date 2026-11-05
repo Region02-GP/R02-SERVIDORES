@@ -243,14 +243,13 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         });
         const resultado = await res.json();
         
-        if (resultado.status === "success") {
+               if (resultado.status === "success") {
             ocultarCarga();
             alert('🎉 ¡Perfil sincronizado correctamente!');
             
-            // Inyección sobre IDs unificados en la pantalla 3
             document.getElementById('credCompleto').innerText = txtNombre.toUpperCase();
-            document.getElementById('credPuesto').innerText = txtPuesto.toUpperCase();
-            document.getElementById('credZona').innerText = `${txtMunicipio.toUpperCase()} - ${txtZona.toUpperCase()}`;
+            document.getElementById('credPuesto').innerText = txtMunicipio.toUpperCase();
+            document.getElementById('credZona').innerText = txtZona.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
             
             fotoUrlActual = resultado.foto_url || fotoParaEnviar;
@@ -259,6 +258,8 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             fotoCompletaBase64 = "";
             document.getElementById('fotoAviso').classList.add('hidden');
             irAPantalla(3);
+        }
+
         } else {
             ocultarCarga();
             alert('Error: ' + resultado.message);
@@ -454,12 +455,12 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFoto.src = fotoSrc;
     imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-    function construirGraficosGafete() {
+        function construirGraficosGafete() {
         try {
-            // 1. Dibujar Plantilla Base
+            // 1. Estampar plantilla de fondo completa
             ctx.drawImage(imgPlantillaFondo, 0, 0, 1276, 2020);
 
-            // 2. Encuadre de fotografía con bordes suavizados
+            // 2. Encuadre exacto de la fotografía
             const targetX = 394, targetY = 412, targetW = 490, targetH = 612;
             const fotoRadius = 40; 
 
@@ -494,32 +495,37 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.drawImage(imgFoto, srcX, srcY, srcW, srcH, targetX, targetY, targetW, targetH);
             ctx.restore(); 
 
-            // 3. Estampado de Textos Dinámicos
+            // 3. Renderizado de Datos Nominativos e Impresión Centrada
             ctx.textAlign = "center";   
+
+            // NOMBRE COMPLETO: Encajado perfectamente en la barra guinda
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 44px sans-serif";
             ctx.fillText(nombre, canvas.width / 2, 1152); 
 
-            ctx.textAlign = "left";
+            // DATOS DESCRIPTIVOS CENTRADOS (Distribuidos verticalmente con proporciones simétricas)
             ctx.fillStyle = "#1f2937"; 
 
-            ctx.font = "bold 38px sans-serif";
-            ctx.fillText(puesto, 290, 1318);
+            // Fila de Municipio
+            ctx.font = "bold 34px sans-serif";
+            ctx.fillText(`MUNICIPIO: ${municipio}`, canvas.width / 2, 1315);
 
-            ctx.font = "bold 36px sans-serif";
-            ctx.fillText(zona, 290, 1450);
+            // Fila de Zona
+            ctx.font = "bold 34px sans-serif";
+            ctx.fillText(`ZONA: ${zona}`, canvas.width / 2, 1425);
 
+            // Fila de CURP
             ctx.font = "bold 38px monospace";
-            ctx.fillText(curp, 290, 1582);
+            ctx.fillText(curp, canvas.width / 2, 1545);
 
-            // Estampado de Firma
+            // Estampado de Firma Digital Autorizada en la base central (sobre el escudo)
             if (firmaBase64 && firmaBase64.startsWith("data:image")) {
-                const firmaW = 300;
-                const firmaH = 120;
-                ctx.drawImage(imgFirma, (canvas.width/2)-(firmaW/2), 1680, firmaW, firmaH);
+                const firmaW = 320;
+                const firmaH = 130;
+                ctx.drawImage(imgFirma, (canvas.width / 2) - (firmaW / 2), 1640, firmaW, firmaH);
             }
 
-            // Descargar Archivo Final
+            // Disparador de descarga PNG
             const link = document.createElement('a');
             link.download = `CREDENCIAL_${curp}.png`;
             link.href = canvas.toDataURL('image/png', 1.0);
@@ -530,6 +536,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ocultarCarga();
         }
     }
+
 });
 // ========================================================
 // BLOQUE EXTRA: CONTROLES INTERNOS Y ÁREA DE FIRMA
