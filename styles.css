@@ -1,3 +1,6 @@
+/* ========================================================
+   BLOQUE 1: VARIABLES GLOBAL, RAÍZ Y CUERPO BASE
+   ======================================================== */
 :root {
     --color-guinda: #611232;
     --color-guinda-light: #7a1c43;
@@ -27,12 +30,14 @@ body {
     padding: 1rem;
     box-sizing: border-box;
 }
-
+/* ========================================================
+   BLOQUE 2: ESTRUCTURA DE TARJETAS Y ENCABEZADOS
+   ======================================================== */
 .tarjeta-control, .gafete-realista {
     background-color: var(--color-fondo-gafete);
     width: 100%;
-    max-width: 28rem; /* Un poco más ancho para tablets */
-    height: auto; /* Dinámico para que nunca esconda botones */
+    max-width: 28rem; /* Ideal para visualizaciones responsivas y tablets */
+    height: auto; /* Dinámico para evitar desbordes de botones */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -70,9 +75,11 @@ body {
     flex-direction: column;
     gap: 1.2rem;
     flex-grow: 1;
-    overflow: visible; /* IMPORTANTE: Elimina el scroll interno que escondía el botón */
+    overflow: visible; /* Elimina scrolls internos */
 }
-
+/* ========================================================
+   BLOQUE 3: CAMPOS DE FORMULARIO E INPUTS
+   ======================================================== */
 .campo-etiqueta {
     display: block;
     font-size: 0.75rem;
@@ -104,6 +111,14 @@ body {
     text-transform: uppercase;
 }
 
+.grid-2 { 
+    display: grid; 
+    grid-template-columns: repeat(2, minmax(0, 1fr)); 
+    gap: 0.75rem; 
+}
+/* ========================================================
+   BLOQUE 4: BOTONES DE ACCIÓN E INTERACCIONES
+   ======================================================== */
 .btn-buscar {
     background-color: #1f2937;
     color: #ffffff;
@@ -134,7 +149,9 @@ body {
 .btn-guardar:hover {
     background-color: var(--color-guinda-light);
 }
-
+/* ========================================================
+   BLOQUE 5: DATOS Y RENDERIZADO VISUAL DEL GAFETE
+   ======================================================== */
 .marco-fotografia {
     width: 10.5rem;
     height: 13.5rem;
@@ -185,21 +202,23 @@ body {
     color: #111827;
     margin: 0.2rem 0 0;
 }
-
-.logos-salud-barra {
-    background-color: #ffffff;
-    border-top: 1px solid #e5e7eb;
-    padding: 0.95rem 1.25rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.65rem;
-    font-weight: 700;
+/* ========================================================
+   BLOQUE 6: NUEVO CINTILLO GRÁFICO, OVERLAYS Y FIRMA
+   ======================================================== */
+.footer-institucional-img {
+    width: 100%;
+    height: 70px; /* Altura responsiva para pantallas móviles */
+    background-image: url("https://i.postimg.cc/vZgg4vyj/Banner-tricolor-mexicano-con-escudo-central.png"); /* REEMPLAZAR CON TU URL REAL */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     flex-shrink: 0;
+    border-top: 1px solid #e5e7eb;
 }
 
-.hidden { display: none !important; }
-.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+.hidden { 
+    display: none !important; 
+}
 
 .overlay-carga {
     position: fixed;
@@ -244,15 +263,13 @@ body {
     color: var(--color-texto-oscuro);
 }
 
-@keyframes girarSpinner {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* FIX CRÍTICO PARA EL ÁREA DE FIRMA TÁCTIL EN TABLETS */
 #canvasFirma {
     touch-action: none !important;
     user-select: none;
     -webkit-user-select: none;
 }
 
+@keyframes girarSpinner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
