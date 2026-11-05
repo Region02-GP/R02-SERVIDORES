@@ -29,10 +29,8 @@
                 <button type="button" id="btnAcceder" class="btn-guardar">🔍 Validar Identidad</button>
             </div>
 
-            <!-- NUEVO FOOTER DE IMAGEN -->
             <div class="footer-institucional-img"></div>
         </div>
-
         <!-- PANTALLA 2: FORMULARIO REGISTRO -->
         <div id="pantalla2" class="tarjeta-control hidden">
             <div class="banner-institucional-img"></div>
@@ -91,63 +89,51 @@
                 <button type="submit" class="btn-guardar">💾 Guardar Registro</button>
             </form>
 
-            <!-- NUEVO FOOTER DE IMAGEN -->
             <div class="footer-institucional-img"></div>
         </div>
+        <!-- PANTALLA 3: CREDENCIAL / GAFETE FINAL -->
+        <div id="pantalla3" class="tarjeta-control hidden" style="background-color: #fcfaf6; min-height: 42rem;">
+            <div style="position: relative; width: 100%; height: 100%;">
+                
+                <!-- Render de la plantilla física de fondo sin IDs duplicados -->
+                <img src="https://postimg.cc" style="width: 100%; height: auto; display: block; position: absolute; top: 0; left: 0; z-index: 1;">
 
-       <!-- PANTALLA 3: CREDENCIAL / GAFETE FINAL -->
-        <p id="credCompleto">-</p>
-<p id="credPuesto">-</p>
-<p id="credZona">-</p>
-<p id="credIdentificacion">-</p>
-
-<div id="pantalla3" class="tarjeta-control hidden" style="background-color: #fcfaf6; min-height: 42rem;">
-    <!-- Contenedor relativo para encimar los textos e imágenes sobre la plantilla física -->
-    <div style="position: relative; width: 100%; height: 100%;">
-        
-        <!-- Render nativo de tu imagen de fondo -->
-        <img src="https://postimg.cc" style="width: 100%; height: auto; display: block; position: absolute; top: 0; left: 0; z-index: 1;">
-
-        <!-- Capa de contenidos superiores -->
-        <div class="cuerpo-credencial" style="align-items: center; padding-top: 5.4rem; gap: 0.5rem; position: relative; z-index: 2; width: 100%; box-sizing: border-box;">
-            
-            <!-- Recuadro para la fotografía del brigadista -->
-            <div class="marco-fotografia" style="width: 10.2rem; height: 12.8rem; margin-top: 0.2rem; border: 2px solid #ddc9a3; border-radius: 0.8rem; background-color: #e5e7eb; overflow: hidden;">
-                <img id="credFoto" src="" style="width: 100%; height: 100%; object-fit: cover;">
+                <!-- Capa interactiva encimada sobre la imagen -->
+                <div class="cuerpo-credencial" style="align-items: center; padding-top: 5.4rem; gap: 0.5rem; position: relative; z-index: 2; width: 100%; box-sizing: border-box;">
+                    
+                    <div class="marco-fotografia" style="width: 10.2rem; height: 12.8rem; margin-top: 0.2rem; border: 2px solid #ddc9a3; border-radius: 0.8rem; background-color: #e5e7eb; overflow: hidden;">
+                        <img id="credFoto" src="" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    
+                    <div class="datos-gafete-contenedor" style="margin-top: 0.8rem; width: 100%; padding: 0 1.25rem; box-sizing: border-box;">
+                        
+                        <div style="height: 2.6rem; display: flex; align-items: center; justify-content: center; width: 100%;">
+                            <p id="credCompleto" style="color: #ffffff; font-size: 1.1rem; font-weight: 800; margin: 0; text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); text-align: center; width: 100%; font-family: sans-serif;">-</p>
+                        </div>
+                        
+                        <div style="text-align: left; padding-left: 4.6rem; display: flex; flex-direction: column; gap: 1.42rem; color: #1f2937; margin-top: 2.1rem;">
+                            <div style="height: 1.2rem; display: flex; align-items: center;">
+                                <p id="credPuesto" style="font-size: 0.95rem; font-weight: 700; margin: 0; text-transform: uppercase; font-family: sans-serif;">-</p>
+                            </div>
+                            <div style="height: 1.2rem; display: flex; align-items: center;">
+                                <p id="credZona" style="font-size: 0.9rem; font-weight: 700; margin: 0; text-transform: uppercase; font-family: sans-serif;">-</p>
+                            </div>
+                            <div style="height: 1.2rem; display: flex; align-items: center;">
+                                <p id="credIdentificacion" style="font-size: 1rem; font-family: monospace; font-weight: 700; margin: 0; letter-spacing: 0.03em;">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <!-- Contenedor alineador de textos nominativos -->
-            <div class="datos-gafete-contenedor" style="margin-top: 0.8rem; width: 100%; padding: 0 1.25rem; box-sizing: border-box;">
-                
-                <!-- Nombre del brigadista acoplado al recuadro guinda central -->
-                <div style="height: 2.6rem; display: flex; align-items: center; justify-content: center; width: 100%;">
-                    <p id="credCompleto" style="color: #ffffff; font-size: 1.1rem; font-weight: 800; margin: 0; text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); text-align: center; width: 100%; font-family: sans-serif;">-</p>
-                </div>
-                
-                <!-- Campos dinámicos alineados con los tres iconos inferiores de la plantilla -->
-                <div style="text-align: left; padding-left: 4.6rem; display: flex; flex-direction: column; gap: 1.42rem; color: #1f2937; margin-top: 2.1rem;">
-                    <div style="height: 1.2rem; display: flex; align-items: center;">
-                        <p id="credPuesto" style="font-size: 0.95rem; font-weight: 700; margin: 0; text-transform: uppercase; font-family: sans-serif;">-</p>
-                    </div>
-                    <div style="height: 1.2rem; display: flex; align-items: center;">
-                        <p id="credZona" style="font-size: 0.9rem; font-weight: 700; margin: 0; text-transform: uppercase; font-family: sans-serif;">-</p>
-                    </div>
-                    <div style="height: 1.2rem; display: flex; align-items: center;">
-                        <p id="credIdentificacion" style="font-size: 1rem; font-family: monospace; font-weight: 700; margin: 0; letter-spacing: 0.03em;">-</p>
-                    </div>
-                </div>
+            <div style="padding: 1rem 1.25rem; display: flex; gap: 0.5rem; flex-shrink: 0; position: relative; z-index: 10; background-color: #fcfaf6; border-top: 1px solid #e5e7eb;">
+                <button type="button" id="btnEditarPerfil" class="btn-buscar" style="flex: 1; padding: 0.75rem 0;">✏️ Modificar</button>
+                <button type="button" id="btnDescargarPDF" class="btn-guardar" style="flex: 1; margin: 0; padding: 0.75rem 0; background-color: #15803d;">🖼️ Guardar</button>
+                <button type="button" id="btnCerrar" class="btn-buscar" style="background-color: #6b7280; padding: 0.75rem 1rem;">◀ Salir</button>
             </div>
         </div>
-    </div>
-    
-    <!-- Botonera inferior libre con aislamiento de capas -->
-    <div style="padding: 1rem 1.25rem; display: flex; gap: 0.5rem; flex-shrink: 0; position: relative; z-index: 10; background-color: #fcfaf6; border-top: 1px solid #e5e7eb;">
-        <button type="button" id="btnEditarPerfil" class="btn-buscar" style="flex: 1; padding: 0.75rem 0;">✏️ Modificar</button>
-        <button type="button" id="btnDescargarPDF" class="btn-guardar" style="flex: 1; margin: 0; padding: 0.75rem 0; background-color: #15803d;">🖼️ Guardar</button>
-        <button type="button" id="btnCerrar" class="btn-buscar" style="background-color: #6b7280; padding: 0.75rem 1rem;">◀ Salir</button>
-    </div>
-</div>
 
+    </div>
     <!-- VENTANA FLOTANTE PARA FIRMA -->
     <div id="modalFirmaPantallaCompleta" class="overlay-carga hidden" style="background-color: rgba(17, 24, 39, 0.98); z-index: 10005; padding: 1rem; box-sizing: border-box; display: flex; flex-direction: column;">
         <div style="width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; overflow: hidden; position: relative;">
@@ -174,4 +160,6 @@
     </div>
 
     <script src="app.js"></script>
+</body>
+</html>
 
