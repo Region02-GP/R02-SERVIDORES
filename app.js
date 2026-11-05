@@ -282,7 +282,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // Esquinar redondeado general (PVC Card style)
+    // Esquinar redondeado general (PVC Card style) para recortar imperfecciones de esquinas
     const cardRadius = 60; 
     ctx.beginPath();
     ctx.moveTo(cardRadius, 0);
@@ -297,17 +297,12 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     ctx.closePath();
     ctx.clip(); 
 
-    // Fondo base del gafete
-    ctx.fillStyle = "#fcfaf6";
-    ctx.fillRect(0, 0, 1276, 2020);
-
-    const imgBanner = new Image();
+    const imgPlantillaFondo = new Image();
     const imgFoto = new Image();
     const imgFirma = new Image();
-    const imgFooter = new Image(); // Nueva instancia agregada para el procesamiento asíncrono
 
     let descargasExitosas = 0;
-    const totalImagenes = 4; // Cambiado a 4 recursos gráficos obligatorios
+    const totalImagenes = 3; // Reducido a 3 ya que el fondo ahora es una sola pieza completa
 
     function verificarCargas() {
         descargasExitosas++;
@@ -316,15 +311,14 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         }
     }
 
-    imgBanner.onload = verificarCargas;
+    imgPlantillaFondo.onload = verificarCargas;
     imgFoto.onload = verificarCargas;
     imgFirma.onload = verificarCargas;
-    imgFooter.onload = verificarCargas;
 
-    imgBanner.onerror = function() {
-        console.warn("⚠️ Fallo al cargar el Banner remoto. Aplicando contingencia de color institucional.");
+    imgPlantillaFondo.onerror = function() {
+        console.error("⚠️ Fallo crítico al cargar la plantilla de fondo remota.");
         ctx.fillStyle = "#611232";
-        ctx.fillRect(0, 0, 1276, 280);
+        ctx.fillRect(0, 0, 1276, 2020);
         verificarCargas();
     };
     
@@ -338,40 +332,27 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         verificarCargas();
     };
 
-    imgFooter.onerror = function() {
-        console.error("⚠️ Fallo crítico al cargar el Footer remoto.");
-        verificarCargas();
-    };
-
-    imgBanner.crossOrigin = "anonymous";
+    imgPlantillaFondo.crossOrigin = "anonymous";
     imgFoto.crossOrigin = "anonymous";
     imgFirma.crossOrigin = "anonymous";
-    imgFooter.crossOrigin = "anonymous";
 
-    // Enlaces de imágenes de recursos
-    imgBanner.src = "https://i.postimg.cc/bwFBd3ch/Servidores-de-la-Nacion-Region-02.png";
+    // ENLACES ASIGNADOS (Se carga tu imagen como base completa de fondo)
+    imgPlantillaFondo.src = "https://postimg.cc"; 
     imgFoto.src = fotoSrc;
     imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-    
-    // REEMPLAZA ESTA URL CON EL ENLACE DE TU NUEVA IMAGEN DE FOOTER
-    imgFooter.src = "https://i.postimg.cc/Prx7gCbM/Banner-tricolor-mexicano-con-escudo-central-(1).png";
+
 // ====================================================================
 // BLOQUE 4 (PARTE 2): ALGORITMO OBJECT-FIT, DIBUJO Y DESCARGA PNG HD
 // ====================================================================
 
     function construirGraficosGafete() {
         try {
-            // Banner superior
-            try {
-                ctx.drawImage(imgBanner, 0, 0, 1276, 280); 
-            } catch(e) {
-                ctx.fillStyle = "#611232";
-                ctx.fillRect(0, 0, 1276, 280);
-            }
+            // 1. Estampar la plantilla de fondo completa en todo el Canvas
+            ctx.drawImage(imgPlantillaFondo, 0, 0, 1276, 2020);
 
-            // Encuadre de fotografía (Object-fit: Cover)
-            const targetX = 458, targetY = 350, targetW = 360, targetH = 480;
-            const fotoRadius = 24; 
+            // 2. Encuadre matemático de fotografía con bordes redondeados estilizados
+            const targetX = 394, targetY = 412, targetW = 490, targetH = 612; // Ajustado al recuadro dorado de tu imagen
+            const fotoRadius = 40; 
 
             ctx.save(); 
             ctx.beginPath();
@@ -386,9 +367,6 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.quadraticCurveTo(targetX, targetY, targetX + fotoRadius, targetY);
             ctx.closePath();
             ctx.clip();
-
-            ctx.fillStyle = "#e5e7eb";
-            ctx.fillRect(targetX, targetY, targetW, targetH);
 
             let imgW = imgFoto.width;
             let imgH = imgFoto.height;
@@ -408,89 +386,41 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.drawImage(imgFoto, srcX, srcY, srcW, srcH, targetX, targetY, targetW, targetH);
             ctx.restore(); 
 
-            // Filete dorado decorativo exterior de foto
-            ctx.strokeStyle = "#ddc9a3";
-            ctx.lineWidth = 6;
-            ctx.beginPath();
-            ctx.moveTo(targetX + fotoRadius, targetY);
-            ctx.lineTo(targetX + targetW - fotoRadius, targetY);
-            ctx.quadraticCurveTo(targetX + targetW, targetY, targetX + targetW, targetY + fotoRadius);
-            ctx.lineTo(targetX + targetW, targetY + targetH - fotoRadius);
-            ctx.quadraticCurveTo(targetX + targetW, targetY + targetH, targetX + targetW - fotoRadius, targetY + targetH);
-            ctx.lineTo(targetX + fotoRadius, targetY + targetH);
-            ctx.quadraticCurveTo(targetX, targetY + targetH, targetX, targetY + targetH - fotoRadius);
-            ctx.lineTo(targetX, targetY + fotoRadius);
-            ctx.quadraticCurveTo(targetX, targetY, targetX + fotoRadius, targetY);
-            ctx.closePath();
-            ctx.stroke();
-
-            // Dibujo de datos e información textual nominativa
-            ctx.fillStyle = "#1f2937"; 
+            // 3. Renderizado de Datos Nominativos sobre la Plantilla Limpia
             ctx.textAlign = "center";   
 
-            ctx.font = "bold 46px sans-serif";
-            ctx.fillText(nombre, canvas.width / 2, 980); 
+            // NOMBRE COMPLETO: Centrado perfectamente dentro del cintillo guinda medio
+            ctx.fillStyle = "#ffffff"; // Texto blanco para legibilidad sobre fondo guinda
+            ctx.font = "bold 44px sans-serif";
+            ctx.fillText(nombre, canvas.width / 2, 1152); 
 
-            ctx.strokeStyle = "#e5e7eb";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(200, 1040);
-            ctx.lineTo(1076, 1040);
-            ctx.stroke();
+            // DATOS EN LÍNEAS (Alineados a la izquierda junto a los íconos de la plantilla)
+            ctx.textAlign = "left";
+            ctx.fillStyle = "#1f2937"; // Gris muy oscuro/negro institucional
 
-            ctx.fillStyle = "#6b7280"; 
-            ctx.font = "600 28px sans-serif";
-            ctx.fillText("PUESTO O CARGO", (canvas.width / 2) - 250, 1100);
-            ctx.fillText("ZONA / REGIÓN", (canvas.width / 2) + 250, 1100);
+            // Línea 1 (Ícono Persona): Puesto o Cargo
+            ctx.font = "bold 38px sans-serif";
+            ctx.fillText(puesto, 290, 1318);
 
-            ctx.fillStyle = "#1f2937";
+            // Línea 2 (Ícono Ubicación): Municipio / Región
             ctx.font = "bold 36px sans-serif";
-            ctx.fillText(puesto, (canvas.width / 2) - 250, 1160);
-            ctx.fillText(zona, (canvas.width / 2) + 250, 1180);
+            ctx.fillText(`${municipio} - ${zona}`, 290, 1450);
 
-            ctx.fillStyle = "#6b7280";
-            ctx.font = "600 28px sans-serif";
-            ctx.fillText("MUNICIPIO ADSCRITO", canvas.width / 2, 1265);
-            
-            ctx.fillStyle = "#1f2937";
-            ctx.font = "bold 36px sans-serif";
-            ctx.fillText(municipio, canvas.width / 2, 1320);
-
-            ctx.fillStyle = "#6b7280";
-            ctx.font = "600 28px sans-serif";
-            ctx.fillText("CURP OFICIAL DEL BRIGADISTA", canvas.width / 2, 1415);
-
-            ctx.fillStyle = "#111827";
+            // Línea 3 (Ícono Maletín): CURP Oficial
             ctx.font = "bold 38px monospace";
-            ctx.fillText(curp, canvas.width / 2, 1475);
+            ctx.fillText(curp, 290, 1582);
 
-            // Estampado asíncrono de firma digital
+            // Estampado de Firma Digital Autorizada en espacio inferior (sobre el escudo)
             if (firmaBase64 && firmaBase64.startsWith("data:image")) {
-                ctx.fillStyle = "#6b7280";
-                ctx.font = "600 24px sans-serif";
-                ctx.fillText("FIRMA DIGITAL AUTORIZADA", canvas.width / 2, 1565);
-                
-                const firmaW = 340;
-                const firmaH = 140;
+                const firmaW = 300;
+                const firmaH = 120;
                 const firmaX = (canvas.width / 2) - (firmaW / 2);
-                const firmaY = 1585;
+                const firmaY = 1680; // Ubicada armónicamente entre los datos y el escudo patrio
                 
                 ctx.drawImage(imgFirma, firmaX, firmaY, firmaW, firmaH);
             }
 
-            // DIBUJO E INTEGRACIÓN GRÁFICA DEL NUEVO FOOTER HD REMOTO EN LA BASE DEL CANVAS
-            const footerHeight = 220; // Espacio asignado en píxeles HD
-            const footerY = canvas.height - footerHeight; // Ubicación exacta (Y: 1800)
-            
-            try {
-                ctx.drawImage(imgFooter, 0, footerY, canvas.width, footerHeight);
-            } catch(eFooter) {
-                console.warn("Fallo el estampado de contingencia gráfica, aplicando color base.");
-                ctx.fillStyle = "#611232";
-                ctx.fillRect(0, footerY, canvas.width, footerHeight);
-            }
-
-            // Descarga automatizada PNG
+            // Descarga automática en formato PNG de alta definición
             const link = document.createElement('a');
             link.download = `CREDENCIAL_${curp}.png`;
             link.href = canvas.toDataURL('image/png', 1.0);
@@ -502,6 +432,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         }
     }
 });
+    
 // ========================================================
 // BLOQUE EXTRA: INICIALIZACIÓN DE FIRMA DIGITAL Y CAPTURA
 // ========================================================
