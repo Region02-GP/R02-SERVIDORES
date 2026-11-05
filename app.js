@@ -192,12 +192,12 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
             };
             img.src = evt.target.result;
         };
-        reader.readAsDataURL(files[0]);
+        reader.readAsDataURL(files);
     }
 });
 
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Evita recargas inesperadas en el navegador móvil o tablet
     
     if (!firmaBase64 || firmaBase64 === "") {
         alert("⚠️ CAMPOS REQUERIDOS:\n\nEs obligatorio estampar tu firma en el recuadro blanco antes de guardar el registro.");
@@ -245,7 +245,6 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             ocultarCarga();
             alert('🎉 ¡Perfil sincronizado correctamente!');
             
-            // Inyección sobre IDs unificados en la pantalla 3
             document.getElementById('credCompleto').innerText = txtNombre.toUpperCase();
             document.getElementById('credPuesto').innerText = txtMunicipio.toUpperCase();
             document.getElementById('credZona').innerText = txtZona.toUpperCase();
@@ -264,9 +263,10 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     } catch (err) {
         console.error(err);
         ocultarCarga();
-        alert('Fallo de sincronización con la base de datos central.');
+        alert('Fallo de sincronización con la base de datos central. Verifica tu Deploy en Google Sheets.');
     }
 });
+
 // ====================================================================
 // BLOQUE 4: CAPTURA DE VARIABLES, RENDER CANVAS HD Y DESCARGA
 // ====================================================================
