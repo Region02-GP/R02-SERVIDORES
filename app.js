@@ -5,6 +5,7 @@
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz8DgfEUyjfzexnKyi-kRBhpjiuApJq-P_WMxPH5UsL1pQ10ghHpIiqAb9v1L2BTHwCqA/exec";
 
+
 let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 let fotoCompletaBase64 = ""; // Foto local capturada
 let fotoUrlActual = ""; // URL de la foto en la base de datos
@@ -47,6 +48,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         
         const datos = await res.json();
 
+        // Control de brigadistas rechazados por el padrón
         if (datos.status === "denied") {
             ocultarCarga();
             alert(`⛔ ACCESO DENEGADO\n\n${datos.message}`);
@@ -55,6 +57,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 
         document.getElementById('nombre_curp').value = curp;
 
+        // Caso A: El brigadista ya tiene registros previos en Sheets
         if (datos.existe) {
             const nom = String(datos.nombre || "").trim(); 
             const mun = String(datos.municipio || "").trim();
@@ -66,6 +69,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             fotoUrlActual = String(datos.foto_url || "").trim();
             firmaBase64 = String(datos.firma_url || "").trim();
 
+            // Inyectar datos en el formulario por si decide modificar
             document.getElementById('nombre').value = nom;
             document.getElementById('municipio').value = mun;
             document.getElementById('puesto').value = pue;
@@ -73,6 +77,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('zona').value = zon;
             document.getElementById('correo').value = cor;
 
+            // Validación interna de datos requeridos (Sin apellidos)
             let camposFaltantes = [];
             if (!nom) camposFaltantes.push("Nombre Completo");
             if (!mun) camposFaltantes.push("Municipio");
@@ -125,6 +130,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             irAPantalla(3);
 
         } else {
+            // Caso B: El brigadista accede por primera vez al sistema
             ocultarCarga();
             alert(`🎉 ¡Validación Exitosa!\n\nCURP localizada en el padrón oficial. Complementa tu perfil para emitir tu credencial.`);
             
@@ -150,7 +156,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         alert('Error en el enlace de red con el módulo de acceso. Verifica que la URL del servidor sea correcta.');
     }
 });
-
 // ========================================================
 // BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO SINCRO
 // ========================================================
@@ -241,7 +246,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             ocultarCarga();
             alert('🎉 ¡Perfil sincronizado correctamente!');
             
-            // Inyección corregida apuntando exactamente a los ID vigentes de la pantalla 3
+            // Inyección sobre IDs unificados en la pantalla 3
             document.getElementById('credCompleto').innerText = txtNombre.toUpperCase();
             document.getElementById('credPuesto').innerText = txtPuesto.toUpperCase();
             document.getElementById('credZona').innerText = `${txtMunicipio.toUpperCase()} - ${txtZona.toUpperCase()}`;
@@ -263,95 +268,123 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         alert('Fallo de sincronización con la base de datos central.');
     }
 });
+// ========================================================
+// BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO SINCRO
+// ========================================================
 
-// ====================================================================
-// BLOQUE 4 (PARTE 1): CAPTURA DE VARIABLES Y CONTROL DE RECURSOS HD
-// ====================================================================
+document.getElementById('inputFoto').addEventListener('change', (e) => {
+    const files = e.target.files; 
+    if (files && files.length > 0) {
+        mostrarCarga("Comprimiendo fotografía a escala celular...");
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 180; 
+                canvas.height = 240;
+                const ctx = canvas.getContext('2d');
+                
+                let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
+                const aspectImg = img.width / img.height;
+                const aspectCanv = 180 / 240;
+                
+                if (aspectImg > aspectCanv) {
+                    srcW = img.height * aspectCanv;
+                    srcX = (img.width - srcW) / 2;
+                } else {
+                    srcH = img.width / aspectCanv;
+                    srcY = (img.height - srcH) / 2;
+                }
 
-document.getElementById('btnDescargarPDF').addEventListener('click', () => {
-    mostrarCarga("Dibujando credencial en alta densidad gráfica...");
+                ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 180, 240);
+                fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                
+                document.getElementById('fotoAviso').classList.remove('hidden');
+                ocultarCarga();
+            };
+            img.src = evt.target.result;
+        };
+        reader.readAsDataURL(files[0]);
+    }
+});
 
-    // Se capturan los datos dinámicos exactamente en el momento de hacer clic
-    const curp = document.getElementById('credIdentificacion').innerText;
-    const nombre = document.getElementById('credCompleto').innerText;
-    const puesto = document.getElementById('credPuesto').innerText;
-    const zona = document.getElementById('credZona').innerText;
-    const fotoSrc = document.getElementById('credFoto').src;
-    const municipio = document.getElementById('municipio').value.trim().toUpperCase() || "NO ESPECIFICADO";
-
-    const canvas = document.createElement('canvas');
-    canvas.width = 1276;   
-    canvas.height = 2020;  
-    const ctx = canvas.getContext('2d');
-
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-
-    // Esquinar redondeado general (PVC Card style) para recortar imperfecciones de esquinas
-    const cardRadius = 60; 
-    ctx.beginPath();
-    ctx.moveTo(cardRadius, 0);
-    ctx.lineTo(canvas.width - cardRadius, 0);
-    ctx.quadraticCurveTo(canvas.width, 0, canvas.width, cardRadius);
-    ctx.lineTo(canvas.width, canvas.height - cardRadius);
-    ctx.quadraticCurveTo(canvas.width, canvas.height, canvas.width - cardRadius, canvas.height);
-    ctx.lineTo(cardRadius, canvas.height);
-    ctx.quadraticCurveTo(0, canvas.height, 0, canvas.height - cardRadius);
-    ctx.lineTo(0, cardRadius);
-    ctx.quadraticCurveTo(0, 0, cardRadius, 0);
-    ctx.closePath();
-    ctx.clip(); 
-
-    const imgPlantillaFondo = new Image();
-    const imgFoto = new Image();
-    const imgFirma = new Image();
-
-    let descargasExitosas = 0;
-    const totalImagenes = 3; // Reducido a 3 ya que el fondo ahora es una sola pieza completa
-
-    function verificarCargas() {
-        descargasExitosas++;
-        if (descargasExitosas === totalImagenes) {
-            setTimeout(construirGraficosGafete, 100);
-        }
+document.getElementById('perfilForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!firmaBase64 || firmaBase64 === "") {
+        alert("⚠️ CAMPOS REQUERIDOS:\n\nEs obligatorio estampar tu firma en el recuadro blanco antes de guardar el registro.");
+        return false;
     }
 
-    imgPlantillaFondo.onload = verificarCargas;
-    imgFoto.onload = verificarCargas;
-    imgFirma.onload = verificarCargas;
+    const curp = document.getElementById('nombre_curp').value;
+    mostrarCarga("Sincronizando información de brigadista...");
 
-    imgPlantillaFondo.onerror = function() {
-        console.error("⚠️ Fallo crítico al cargar la plantilla de fondo remota.");
-        ctx.fillStyle = "#611232";
-        ctx.fillRect(0, 0, 1276, 2020);
-        verificarCargas();
+    let fotoParaEnviar = fotoUrlActual;
+    if (fotoCompletaBase64) {
+        fotoParaEnviar = fotoCompletaBase64;
+    }
+
+    const txtNombre = document.getElementById('nombre').value;
+    const txtMunicipio = document.getElementById('municipio').value;
+    const txtPuesto = document.getElementById('puesto').value;
+    const txtTelefono = document.getElementById('telefono').value;
+    const txtZona = document.getElementById('zona').value;
+    const txtCorreo = document.getElementById('correo').value;
+
+    const payloadCompleto = {
+        action: 'guardar',
+        curp: curp,
+        nombre: txtNombre,
+        municipio: txtMunicipio,
+        puesto: txtPuesto,
+        telefono: txtTelefono,
+        zona: txtZona,
+        correo: txtCorreo,
+        foto_url: fotoParaEnviar,
+        fotoCompletaBase64: fotoCompletaBase64,
+        firmaBase64: firmaBase64 
     };
-    
-    imgFoto.onerror = function() {
-        console.warn("⚠️ La foto del brigadista falló. Aplicando silueta de contingencia.");
-        imgFoto.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADAEYAAACl6ZIsAAAAFElEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAMCXA80AAAG67v3fAAAAAElFTkSuQmCC";
-    };
 
-    imgFirma.onerror = function() {
-        console.warn("⚠️ No se localizó firma digital o falló la carga. Saltando renderizado.");
-        verificarCargas();
-    };
-
-    imgPlantillaFondo.crossOrigin = "anonymous";
-    imgFoto.crossOrigin = "anonymous";
-    imgFirma.crossOrigin = "anonymous";
-
-    // ENLACES ASIGNADOS (Se carga tu imagen como base completa de fondo)
-    imgPlantillaFondo.src = "https://postimg.cc"; 
-    imgFoto.src = fotoSrc;
-    imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-
+    try {
+        const res = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            redirect: 'follow',
+            body: JSON.stringify(payloadCompleto)
+        });
+        const resultado = await res.json();
+        
+        if (resultado.status === "success") {
+            ocultarCarga();
+            alert('🎉 ¡Perfil sincronizado correctamente!');
+            
+            // Inyección sobre IDs unificados en la pantalla 3
+            document.getElementById('credCompleto').innerText = txtNombre.toUpperCase();
+            document.getElementById('credPuesto').innerText = txtPuesto.toUpperCase();
+            document.getElementById('credZona').innerText = `${txtMunicipio.toUpperCase()} - ${txtZona.toUpperCase()}`;
+            document.getElementById('credIdentificacion').innerText = curp;
+            
+            fotoUrlActual = resultado.foto_url || fotoParaEnviar;
+            document.getElementById('credFoto').src = fotoUrlActual;
+            
+            fotoCompletaBase64 = "";
+            document.getElementById('fotoAviso').classList.add('hidden');
+            irAPantalla(3);
+        } else {
+            ocultarCarga();
+            alert('Error: ' + resultado.message);
+        }
+    } catch (err) {
+        console.error(err);
+        ocultarCarga();
+        alert('Fallo de sincronización con la base de datos central.');
+    }
+});
 // ====================================================================
-// BLOQUE 4 (PARTE 1): CAPTURA DE VARIABLES Y CONTROL DE RECURSOS HD
+// BLOQUE 4: CAPTURA DE VARIABLES, RENDER CANVAS HD Y DESCARGA
 // ====================================================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
-    margin: 0;
     mostrarCarga("Dibujando credencial en alta densidad gráfica...");
 
     const curp = document.getElementById('credIdentificacion').innerText;
@@ -403,42 +436,29 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFirma.onload = verificarCargas;
 
     imgPlantillaFondo.onerror = function() {
-        console.error("⚠️ Error cargando plantilla base. Aplicando color institucional de rescate.");
+        console.error("⚠️ Error cargando plantilla base.");
         ctx.fillStyle = "#611232";
         ctx.fillRect(0, 0, 1276, 2020);
         verificarCargas();
     };
-    
-    imgFoto.onerror = function() {
-        console.warn("⚠️ Error en fotografía de brigadista.");
-        imgFoto.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADAEYAAACl6ZIsAAAAFElEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAMCXA80AAAG67v3fAAAAAElFTkSuQmCC";
-    };
+    imgFoto.onerror = () => { verificarCargas(); };
+    imgFirma.onerror = () => { verificarCargas(); };
 
-    imgFirma.onerror = function() {
-        console.warn("⚠️ No se localizó firma autorizada.");
-        verificarCargas();
-    };
-
+    imgPlantillaFondo.crossOrigin = "anonymous";
     imgFoto.crossOrigin = "anonymous";
     imgFirma.crossOrigin = "anonymous";
 
-    // Solución al error de descarga: Carga directa mediante proxy CORS seguro
-    imgPlantillaFondo.crossOrigin = "anonymous";
-    imgPlantillaFondo.src = "https://weserv.nl";
-    
+    // Enlace de imagen procesado por puente CORS seguro
+    imgPlantillaFondo.src = "https://i.postimg.cc/sDrCQYWm/Credencial-oficial-Servidores-de-la-Nacion.png";
     imgFoto.src = fotoSrc;
     imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-// ====================================================================
-// BLOQUE 4 (PARTE 2): ALGORITMO OBJECT-FIT, DIBUJO Y DESCARGA PNG HD
-// ====================================================================
-
     function construirGraficosGafete() {
         try {
-            // 1. Estampar fondo
+            // 1. Dibujar Plantilla Base
             ctx.drawImage(imgPlantillaFondo, 0, 0, 1276, 2020);
 
-            // 2. Encuadre de fotografía
+            // 2. Encuadre de fotografía con bordes suavizados
             const targetX = 394, targetY = 412, targetW = 490, targetH = 612;
             const fotoRadius = 40; 
 
@@ -456,10 +476,9 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.closePath();
             ctx.clip();
 
-            let imgW = imgFoto.width;
-            let imgH = imgFoto.height;
+            let imgW = imgFoto.width || 100;
+            let imgH = imgFoto.height || 100;
             let srcX = 0, srcY = 0, srcW = imgW, srcH = imgH;
-
             const aspectoImagen = imgW / imgH;
             const aspectoContenedor = targetW / targetH;
 
@@ -474,50 +493,146 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.drawImage(imgFoto, srcX, srcY, srcW, srcH, targetX, targetY, targetW, targetH);
             ctx.restore(); 
 
-            // 3. Renderizado de Datos Nominativos sobre la Plantilla Limpia
+            // 3. Estampado de Textos Dinámicos
             ctx.textAlign = "center";   
-
-            // NOMBRE COMPLETO: Centrado perfectamente dentro del cintillo guinda medio
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 44px sans-serif";
             ctx.fillText(nombre, canvas.width / 2, 1152); 
 
-            // DATOS EN LÍNEAS (Alineados a la izquierda junto a los íconos de la plantilla)
             ctx.textAlign = "left";
             ctx.fillStyle = "#1f2937"; 
 
-            // Línea 1 (Ícono Persona): Puesto o Cargo
             ctx.font = "bold 38px sans-serif";
             ctx.fillText(puesto, 290, 1318);
 
-            // Línea 2 (Ícono Ubicación): Municipio / Región
             ctx.font = "bold 36px sans-serif";
-            ctx.fillText(`${municipio} - ${zona}`, 290, 1450);
+            ctx.fillText(zona, 290, 1450);
 
-            // Línea 3 (Ícono Maletín): CURP Oficial
             ctx.font = "bold 38px monospace";
             ctx.fillText(curp, 290, 1582);
 
-            // Estampado de Firma Digital Autorizada en espacio inferior (sobre el escudo)
+            // Estampado de Firma
             if (firmaBase64 && firmaBase64.startsWith("data:image")) {
                 const firmaW = 300;
                 const firmaH = 120;
-                const firmaX = (canvas.width / 2) - (firmaW / 2);
-                const firmaY = 1680;
-                
-                ctx.drawImage(imgFirma, firmaX, firmaY, firmaW, firmaH);
+                ctx.drawImage(imgFirma, (canvas.width/2)-(firmaW/2), 1680, firmaW, firmaH);
             }
 
-            // Descarga automática en formato PNG de alta definición
+            // Descargar Archivo Final
             const link = document.createElement('a');
             link.download = `CREDENCIAL_${curp}.png`;
             link.href = canvas.toDataURL('image/png', 1.0);
             link.click();
         } catch(errorFatal) {
-            console.error("Error en renderizado:", errorFatal);
-            alert("Ocurrió un inconveniente de seguridad con los orígenes de la imagen al exportar.");
+            console.error("Fallo de renderizado:", errorFatal);
         } finally {
             ocultarCarga();
         }
     }
+});
+// ========================================================
+// BLOQUE EXTRA: CONTROLES INTERNOS Y ÁREA DE FIRMA
+// ========================================================
+
+document.getElementById('btnEditarPerfil').addEventListener('click', () => {
+    document.getElementById('p2_titulo').innerText = "Modificar Perfil";
+    document.getElementById('fotoAviso').classList.remove('hidden');
+    document.getElementById('firmaAviso').classList.remove('hidden');
+    irAPantalla(2);
+});
+
+document.getElementById('btnCerrar').addEventListener('click', () => {
+    document.getElementById('p1_curp').value = "";
+    firmaBase64 = "";
+    fotoCompletaBase64 = "";
+    fotoUrlActual = "";
+    document.getElementById('fotoAviso').classList.add('hidden');
+    document.getElementById('firmaAviso').classList.add('hidden');
+    irAPantalla(1);
+});
+
+let canvasFirma, ctxFirma;
+let enTrazo = false;
+
+function inicializarCanvasFirma() {
+    canvasFirma = document.getElementById('canvasFirma');
+    if (!canvasFirma) return;
+    
+    ctxFirma = canvasFirma.getContext('2d');
+    const rect = canvasFirma.parentElement.getBoundingClientRect();
+    canvasFirma.width = rect.width > 0 ? rect.width : window.innerWidth * 0.9;
+    canvasFirma.height = rect.height > 0 ? rect.height : window.innerHeight * 0.6;
+
+    ctxFirma.strokeStyle = "#1e293b"; 
+    ctxFirma.lineWidth = 4;           
+    ctxFirma.lineCap = "round";       
+    ctxFirma.lineJoin = "round";      
+
+    if (canvasFirma.dataset.isInit === "true") return;
+    canvasFirma.dataset.isInit = "true";
+
+    function obtenerPosicion(e) {
+        const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
+        const cRect = canvasFirma.getBoundingClientRect();
+        return {
+            x: (clientX - cRect.left) * (canvasFirma.width / cRect.width),
+            y: (clientY - cRect.top) * (canvasFirma.height / cRect.height)
+        };
+    }
+
+    function iniciarDibujo(e) {
+        e.preventDefault(); 
+        enTrazo = true;
+        const pos = obtenerPosicion(e);
+        ctxFirma.beginPath();
+        ctxFirma.moveTo(pos.x, pos.y);
+    }
+
+    function dibujar(e) {
+        if (!enTrazo) return;
+        e.preventDefault(); 
+        const pos = obtenerPosicion(e);
+        ctxFirma.lineTo(pos.x, pos.y);
+        ctxFirma.stroke();
+    }
+
+    function detenerDibujo() {
+        if (enTrazo) {
+            enTrazo = false;
+            ctxFirma.closePath();
+            firmaBase64 = canvasFirma.toDataURL('image/png');
+        }
+    }
+
+    canvasFirma.addEventListener('mousedown', iniciarDibujo);
+    canvasFirma.addEventListener('mousemove', dibujar);
+    canvasFirma.addEventListener('mouseup', detenerDibujo);
+    canvasFirma.addEventListener('mouseleave', detenerDibujo);
+
+    canvasFirma.addEventListener('touchstart', iniciarDibujo, { passive: false });
+    canvasFirma.addEventListener('touchmove', dibujar, { passive: false });
+    canvasFirma.addEventListener('touchend', detenerDibujo);
+}
+
+document.getElementById('btnAbrirFirmaModal').addEventListener('click', () => {
+    document.getElementById('modalFirmaPantallaCompleta').classList.remove('hidden');
+    setTimeout(inicializarCanvasFirma, 100);
+});
+
+document.getElementById('btnLimpiarFirma').addEventListener('click', () => {
+    if (ctxFirma && canvasFirma) {
+        ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
+        firmaBase64 = "";
+        document.getElementById('firmaAviso').classList.add('hidden');
+    }
+});
+
+document.getElementById('btnAceptarFirma').addEventListener('click', () => {
+    if (!firmaBase64 || firmaBase64 === "") {
+        alert("Por favor, estampe su firma antes de aceptar.");
+        return;
+    }
+    document.getElementById('firmaAviso').classList.remove('hidden');
+    document.getElementById('modalFirmaPantallaCompleta').classList.add('hidden');
 });
