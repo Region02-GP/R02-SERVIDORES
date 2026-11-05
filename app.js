@@ -340,7 +340,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFoto.src = fotoSrc;
     imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-    function construirGraficosGafete() {
+        function construirGraficosGafete() {
         try {
             // 1. Estampar plantilla de fondo completa
             ctx.drawImage(imgPlantillaFondo, 0, 0, 1276, 2020);
@@ -388,26 +388,27 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.font = "bold 44px sans-serif";
             ctx.fillText(nombre, canvas.width / 2, 1152); 
 
-            // DATOS DESCRIPTIVOS CENTRADOS (Distribuidos verticalmente con proporciones simétricas)
+            // DATOS DESCRIPTIVOS REORGANIZADOS Y SUBIDOS SIMÉTRICAMENTE
             ctx.fillStyle = "#1f2937"; 
 
-            // Fila de Municipio
+            // Fila de Municipio (Elevada a coordenada Y: 1300)
             ctx.font = "bold 34px sans-serif";
-            ctx.fillText(`MUNICIPIO: ${municipio}`, canvas.width / 2, 1315);
+            ctx.fillText(`MUNICIPIO: ${municipio}`, canvas.width / 2, 1300);
 
-            // Fila de Zona
+            // Fila de Zona - CORREGIDO: Extrae de forma limpia la variable 'zona' independiente (Y: 1400)
             ctx.font = "bold 34px sans-serif";
-            ctx.fillText(`ZONA: ${puesto}`, canvas.width / 2, 1425); // Usando puesto que almacena zona desde el form
+            ctx.fillText(`ZONA: ${zona}`, canvas.width / 2, 1400);
 
-            // Fila de CURP
+            // Fila de CURP (Elevada a coordenada Y: 1500)
             ctx.font = "bold 38px monospace";
-            ctx.fillText(curp, canvas.width / 2, 1545);
+            ctx.fillText(curp, canvas.width / 2, 1500);
 
-            // Estampado de Firma Digital Autorizada en la base central (sobre el escudo)
+            // Estampado de Firma Digital Autorizada - REACOMODADA MÁS ARRIBA (Y: 1600)
             if (firmaBase64 && firmaBase64.startsWith("data:image")) {
                 const firmaW = 320;
                 const firmaH = 130;
-                ctx.drawImage(imgFirma, (canvas.width / 2) - (firmaW / 2), 1640, firmaW, firmaH);
+                // Colocada de forma segura arriba del escudo base
+                ctx.drawImage(imgFirma, (canvas.width / 2) - (firmaW / 2), 1600, firmaW, firmaH);
             }
 
             // Disparador de descarga PNG
@@ -421,6 +422,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ocultarCarga();
         }
     }
+
 });
 // ========================================================
 // BLOQUE EXTRA: CONTROLES INTERNOS Y ÁREA DE FIRMA
