@@ -40,12 +40,16 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     try {
         const payloadBuscar = { action: 'buscar', curp: curp };
         
-        // CORRECCIÓN: Se eliminó redirect: 'follow' para evitar bloqueos de red/CORS
+               // MODIFICACIÓN DE SEGURIDAD CONTRA ERRORES DE RED (CORS)
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
-            mode: 'cors',
+            redirect: 'follow', // OBLIGATORIO para interceptar el cambio de servidor de Google
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8' // Engaña al navegador para saltar el preflight OPTIONS
+            },
             body: JSON.stringify(payloadBuscar)
         });
+
         
         const datos = await res.json();
 
@@ -236,13 +240,18 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         firmaBase64: firmaBase64 
     };
 
-    try {
+       try {
+        // CORRECCIÓN DE RED: Cambiado a 'text/plain' y redirect 'follow'
         const res = await fetch(WEB_APP_URL, {
             method: 'POST',
             redirect: 'follow',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
             body: JSON.stringify(payloadCompleto)
         });
         const resultado = await res.json();
+
         
         if (resultado.status === "success") {
             ocultarCarga();
