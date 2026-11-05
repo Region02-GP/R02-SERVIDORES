@@ -354,7 +354,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
     
     // REEMPLAZA ESTA URL CON EL ENLACE DE TU NUEVA IMAGEN DE FOOTER
-    imgFooter.src = "https://i.postimg.cc/vZgg4vyj/Banner-tricolor-mexicano-con-escudo-central.png";
+    imgFooter.src = "https://i.postimg.cc/mrDhMNQx/Banner-tricolor-mexicano-con-escudo-central-(1).png";
 // ====================================================================
 // BLOQUE 4 (PARTE 2): ALGORITMO OBJECT-FIT, DIBUJO Y DESCARGA PNG HD
 // ====================================================================
