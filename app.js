@@ -3,7 +3,7 @@
 // ========================================================
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby5bNKH9RkUA4E6DXjrj9mfBFSfYuP-XyfXCjlZRwEQ8Osz9qlR4L-vexndYN4Np9kyeA/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxd5X8JYe7-aheiPhE9p-6s1AS2B-zL9McryRmK5oPViX7yOQtjej0aDZaCen5ASZ0dUw/exec";
 
 let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 let fotoCompletaBase64 = ""; // Foto local capturada
@@ -40,15 +40,15 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     try {
         const payloadBuscar = { action: 'buscar', curp: curp };
         
-               // MODIFICACIÓN DE SEGURIDAD CONTRA ERRORES DE RED (CORS)
-        const res = await fetch(WEB_APP_URL, { 
+ const res = await fetch(WEB_APP_URL, { 
     method: 'POST',
-    redirect: 'follow', 
+    redirect: 'follow', // Conservado obligatoriamente
     headers: {
-        'Content-Type': 'application/json' // Cambiado para emparejar con el parseador del Backend
+        'Content-Type': 'text/plain;charset=utf-8' // Engaña al navegador y evita el preflight CORS
     },
     body: JSON.stringify(payloadBuscar)
 });
+
 
 
         
@@ -247,15 +247,14 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     };
 
        try {
-        // CORRECCIÓN DE RED: Cambiado a 'text/plain' y redirect 'follow'
-        const res = await fetch(WEB_APP_URL, {
-            method: 'POST',
-            redirect: 'follow',
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify(payloadCompleto)
-        });
+      const res = await fetch(WEB_APP_URL, {
+    method: 'POST',
+    redirect: 'follow',
+    headers: {
+        'Content-Type': 'text/plain;charset=utf-8' // Crucial también en el guardado
+    },
+    body: JSON.stringify(payloadCompleto)
+});
         const resultado = await res.json();
 
         
