@@ -5,6 +5,7 @@
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxd5X8JYe7-aheiPhE9p-6s1AS2B-zL9McryRmK5oPViX7yOQtjej0aDZaCen5ASZ0dUw/exec";
 
+
 let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 let fotoCompletaBase64 = ""; // Foto local capturada
 let fotoUrlActual = ""; // URL de la foto en la base de datos
