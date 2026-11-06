@@ -29,14 +29,11 @@ function ocultarCarga() {
     document.getElementById('pantallaCarga').classList.add('hidden');
 }
 // ========================================================
-// BLOQUE 2: VALIDADOR DE IDENTIDAD (ACCESO) - CORREGIDO
+// BLOQUE 2: VALIDADOR DE IDENTIDAD (ACCESO) - RESTAURADO Y CORREGIDO
 // ========================================================
 
 document.getElementById('btnAcceder').addEventListener('click', async () => {
-    const curpInput = document.getElementById('p1_curp');
-    if (!curpInput) return alert('Error interno: No se encontró el campo p1_curp en el HTML');
-    
-    const curp = curpInput.value.trim().toUpperCase();
+    const curp = document.getElementById('p1_curp').value.trim().toUpperCase();
     if (!curp) return alert('Por favor, ingresa una CURP válida');
 
     mostrarCarga("Verificando identidad en el padrón autorizado...");
@@ -44,6 +41,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     try {
         const payloadBuscar = { action: 'buscar', curp: curp };
         
+        // Mantenemos la estructura de red idéntica a tu versión funcional
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
             redirect: 'follow', 
@@ -55,34 +53,37 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 
         const datos = await res.json();
 
+        // Control de brigadistas rechazados por el padrón
         if (datos.status === "denied") {
             ocultarCarga();
             alert(`⛔ ACCESO DENEGADO\n\n${datos.message}`);
             return;
         }
 
-        // Validación preventiva antes de asignar valores
-        const nombreCurpInput = document.getElementById('nombre_curp');
-        if (nombreCurpInput) nombreCurpInput.value = curp;
+        document.getElementById('nombre_curp').value = curp;
 
+        // Caso A: El brigadista ya tiene registros previos en Sheets
         if (datos.existe) {
-            const nom = String(datos.nombre || "").trim(); 
-            const mun = String(datos.municipio || "").trim();
-            const pue = String(datos.puesto || "").trim();
-            const tel = String(datos.telefono || "").trim();
-            const zon = String(datos.zona || "").trim(); 
-            const cor = String(datos.correo || "").trim();
+            // Restauramos la asignación directa y rápida original
+            const nom = datos.nombre ? String(datos.nombre).trim() : ""; 
+            const mun = datos.municipio ? String(datos.municipio).trim() : "";
+            const pue = datos.puesto ? String(datos.puesto).trim() : "";
+            const tel = datos.telefono ? String(datos.telefono).trim() : "";
+            const zon = datos.zona ? String(datos.zona).trim() : ""; 
+            const cor = datos.correo ? String(datos.correo).trim() : "";
             
-            fotoUrlActual = String(datos.foto_url || "").trim();
-            firmaBase64 = String(datos.firma_url || "").trim();
+            fotoUrlActual = datos.foto_url ? String(datos.foto_url).trim() : "";
+            firmaBase64 = datos.firma_url ? String(datos.firma_url).trim() : "";
 
-            if(document.getElementById('nombre')) document.getElementById('nombre').value = nom;
-            if(document.getElementById('municipio')) document.getElementById('municipio').value = mun;
-            if(document.getElementById('puesto')) document.getElementById('puesto').value = pue;
-            if(document.getElementById('telefono')) document.getElementById('telefono').value = tel;
-            if(document.getElementById('zona')) document.getElementById('zona').value = zon;
-            if(document.getElementById('correo')) document.getElementById('correo').value = cor;
+            // Inyectar datos directamente en los controles del formulario
+            document.getElementById('nombre').value = nom;
+            document.getElementById('municipio').value = mun;
+            document.getElementById('puesto').value = pue;
+            document.getElementById('telefono').value = tel;
+            document.getElementById('zona').value = zon;
+            document.getElementById('correo').value = cor;
 
+            // Validación de campos obligatorios ligera original
             let camposFaltantes = [];
             if (!nom) camposFaltantes.push("Nombre Completo");
             if (!mun) camposFaltantes.push("Municipio");
@@ -91,40 +92,42 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             if (!zon) camposFaltantes.push("Zona");
             if (!cor) camposFaltantes.push("Correo");
             
-            if (!fotoUrlActual || fotoUrlActual.length < 50 || fotoUrlActual.includes('placeholder')) {
+            if (!fotoUrlActual || fotoUrlActual.length < 50) {
                 camposFaltantes.push("Fotografía Oficial");
             }
-            if (!firmaBase64 || firmaBase64 === "" || firmaBase64 === "null" || firmaBase64.length < 50) {
+            if (!firmaBase64 || firmaBase64.length < 50) {
                 camposFaltantes.push("Firma Digital Obligatoria");
             }
 
             if (camposFaltantes.length > 0) {
                 ocultarCarga();
                 alert(`⚠️ PERFIL INCOMPLETO.\n\nCompleta los campos pendientes para desbloquear tu credencial:\n• ${camposFaltantes.join('\n• ')}`);
-                if(document.getElementById('p2_titulo')) document.getElementById('p2_titulo').innerText = "Completar Registro";
-                if(document.getElementById('fotoAviso')) document.getElementById('fotoAviso').classList.add('hidden');
+                document.getElementById('p2_titulo').innerText = "Completar Registro";
+                document.getElementById('fotoAviso').classList.add('hidden');
                 
-                setTimeout(() => { inicializarCanvasFirma(); }, 150);
+                setTimeout(() => {
+                    inicializarCanvasFirma();
+                }, 150);
+                
                 irAPantalla(2); 
                 return; 
             }
 
-            if(document.getElementById('credCompleto')) document.getElementById('credCompleto').innerText = nom.toUpperCase();
-            if(document.getElementById('credPuesto')) document.getElementById('credPuesto').innerText = mun.toUpperCase();
-            if(document.getElementById('credZona')) document.getElementById('credZona').innerText = zon.toUpperCase();
-            if(document.getElementById('credIdentificacion')) document.getElementById('credIdentificacion').innerText = curp;
-            if(document.getElementById('credFoto')) document.getElementById('credFoto').src = fotoUrlActual;
+            // Sincronización limpia con la Pantalla 3
+            document.getElementById('credCompleto').innerText = nom.toUpperCase();
+            document.getElementById('credPuesto').innerText = mun.toUpperCase();
+            document.getElementById('credZona').innerText = zon.toUpperCase();
+            document.getElementById('credIdentificacion').innerText = curp;
+            document.getElementById('credFoto').src = fotoUrlActual;
             
             setTimeout(() => {
                 inicializarCanvasFirma();
                 if (firmaBase64 && firmaBase64.startsWith("data:image")) {
-                    if(document.getElementById('firmaAviso')) document.getElementById('firmaAviso').classList.remove('hidden');
+                    document.getElementById('firmaAviso').classList.remove('hidden');
                     const imgFirmaPrevia = new Image();
                     imgFirmaPrevia.onload = function() {
-                        if(ctxFirma && canvasFirma) {
-                            ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
-                            ctxFirma.drawImage(imgFirmaPrevia, 0, 0);
-                        }
+                        ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
+                        ctxFirma.drawImage(imgFirmaPrevia, 0, 0);
                     };
                     imgFirmaPrevia.src = firmaBase64;
                 }
@@ -134,29 +137,30 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             irAPantalla(3);
 
         } else {
+            // Caso B: El brigadista accede por primera vez al sistema
             ocultarCarga();
             alert(`🎉 ¡Validación Exitosa!\n\nCURP localizada en el padrón oficial. Complementa tu perfil para emitir tu credencial.`);
             
-            if(document.getElementById('p2_titulo')) document.getElementById('p2_titulo').innerText = "Nuevo Registro";
-            if(document.getElementById('perfilForm')) document.getElementById('perfilForm').reset();
-            if(document.getElementById('nombre_curp')) document.getElementById('nombre_curp').value = curp;
+            document.getElementById('p2_titulo').innerText = "Nuevo Registro";
+            document.getElementById('perfilForm').reset();
+            document.getElementById('nombre_curp').value = curp;
             
-            if(document.getElementById('nombre')) document.getElementById('nombre').value = String(datos.nombre_oficial || "").toUpperCase();
-            if(document.getElementById('municipio')) document.getElementById('municipio').value = String(datos.municipio_oficial || "").toUpperCase();
+            document.getElementById('nombre').value = datos.nombre_oficial ? String(datos.nombre_oficial).toUpperCase() : "";
+            document.getElementById('municipio').value = datos.municipio_oficial ? String(datos.municipio_oficial).toUpperCase() : "";
             
             fotoUrlActual = "";
             fotoCompletaBase64 = "";
             firmaBase64 = "";
-            if(document.getElementById('fotoAviso')) document.getElementById('fotoAviso').classList.add('hidden');
-            if(document.getElementById('firmaAviso')) document.getElementById('firmaAviso').classList.add('hidden');
+            document.getElementById('fotoAviso').classList.add('hidden');
+            document.getElementById('firmaAviso').classList.add('hidden');
             
             setTimeout(inicializarCanvasFirma, 150);
             irAPantalla(2);
         }
     } catch (err) {
-        console.error("Detalle técnico del error:", err); // Imprime el error real en consola
+        console.error(err);
         ocultarCarga();
-        alert('Fallo detectado: ' + err.message + '\n\nRevisa si todos los IDs en tu HTML coinciden con las variables de app.js.');
+        alert('Error en el enlace de red con el módulo de acceso. Verifica que la URL del servidor sea correcta.');
     }
 });
 
