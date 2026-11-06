@@ -3,7 +3,7 @@
 // ========================================================
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwjMgKjYQUkF6UDC61hofpRl0ggSw4oSmCmt0pvEAA0EsX-Chn-ryHdO72qtGBHNf-Yyg/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby5bNKH9RkUA4E6DXjrj9mfBFSfYuP-XyfXCjlZRwEQ8Osz9qlR4L-vexndYN4Np9kyeA/exec";
 
 let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 let fotoCompletaBase64 = ""; // Foto local capturada
@@ -42,13 +42,14 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         
                // MODIFICACIÓN DE SEGURIDAD CONTRA ERRORES DE RED (CORS)
         const res = await fetch(WEB_APP_URL, { 
-            method: 'POST',
-            redirect: 'follow', // OBLIGATORIO para interceptar el cambio de servidor de Google
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8' // Engaña al navegador para saltar el preflight OPTIONS
-            },
-            body: JSON.stringify(payloadBuscar)
-        });
+    method: 'POST',
+    redirect: 'follow', 
+    headers: {
+        'Content-Type': 'application/json' // Cambiado para emparejar con el parseador del Backend
+    },
+    body: JSON.stringify(payloadBuscar)
+});
+
 
         
         const datos = await res.json();
