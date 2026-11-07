@@ -16,7 +16,7 @@
 body {
     /* Filtro suavizado al 35% para máxima nitidez de la imagen de fondo */
     background-image: linear-gradient(rgba(244, 241, 234, 0.35), rgba(244, 241, 234, 0.35)), 
-                      url("https://postimg.cc");
+                      url("https://i.postimg.cc/WbrgKM9n/Fondo-crema-con-motivos-mesoamericanos-sutiles.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
