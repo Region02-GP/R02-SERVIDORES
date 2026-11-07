@@ -205,8 +205,9 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
     }
 });
 
+// REEMPLAZAR EN app.js: Bloque del Evento 'submit' (Línea 193 a 248 aprox.)
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
-    e.preventDefault(); // Evita recargas inesperadas en el navegador móvil o tablet
+    e.preventDefault(); 
     
     if (!firmaBase64 || firmaBase64 === "") {
         alert("⚠️ CAMPOS REQUERIDOS:\n\nEs obligatorio estampar tu firma en el recuadro blanco antes de guardar el registro.");
@@ -221,12 +222,13 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         fotoParaEnviar = fotoCompletaBase64;
     }
 
-    const txtNombre = document.getElementById('nombre').value;
-    const txtMunicipio = document.getElementById('municipio').value;
-    const txtPuesto = document.getElementById('puesto').value;
-    const txtTelefono = document.getElementById('telefono').value;
-    const txtZona = document.getElementById('zona').value;
-    const txtCorreo = document.getElementById('correo').value;
+    // Captura segura previniendo elementos nulos en el DOM
+    const txtNombre = document.getElementById('nombre')?.value || "";
+    const txtMunicipio = document.getElementById('municipio')?.value || "";
+    const txtPuesto = document.getElementById('puesto')?.value || "";
+    const txtTelefono = document.getElementById('telefono')?.value || "";
+    const txtZona = document.getElementById('zona')?.value || "";
+    const txtCorreo = document.getElementById('correo')?.value || "";
 
     const payloadCompleto = {
         action: 'guardar',
@@ -242,18 +244,17 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         firmaBase64: firmaBase64 
     };
 
-       try {
-      const res = await fetch(WEB_APP_URL, {
-    method: 'POST',
-    redirect: 'follow',
-    headers: {
-        'Content-Type': 'text/plain;charset=utf-8' // Crucial también en el guardado
-    },
-    body: JSON.stringify(payloadCompleto)
-});
+    try {
+        const res = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify(payloadCompleto)
+        });
         const resultado = await res.json();
 
-        
         if (resultado.status === "success") {
             ocultarCarga();
             alert('🎉 ¡Perfil sincronizado correctamente!');
@@ -279,6 +280,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         alert('Fallo de sincronización con la base de datos central. Verifica tu Deploy en Google Sheets.');
     }
 });
+
 
 // ====================================================================
 // BLOQUE 4: CAPTURA DE VARIABLES, RENDER CANVAS HD Y DESCARGA
