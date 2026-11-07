@@ -11,8 +11,15 @@
     --color-texto-mutado: #6b7280;
 }
 
+/* REEMPLAZAR EN styles.css - BLOQUE 1 */
 body {
-    background-color: var(--color-fondo-app);
+    /* Reemplaza la URL de abajo por el enlace de tu imagen de fondo real */
+    background-image: linear-gradient(rgba(244, 241, 234, 0.85), rgba(244, 241, 234, 0.85)), 
+                      url("https://i.postimg.cc/LXkqg9Dk/fondo.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Mantiene el fondo estático al hacer scroll */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--color-texto-oscuro);
     margin: 0;
