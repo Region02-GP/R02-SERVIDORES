@@ -12,20 +12,22 @@
 }
 
 /* REEMPLAZAR EN styles.css - BLOQUE 1 */
+/* REEMPLAZAR EN styles.css - BLOQUE 1 (FONDO MÁS NÍTIDO) */
 body {
-    /* Reemplaza la URL de abajo por el enlace de tu imagen de fondo real */
-    background-image: linear-gradient(rgba(244, 241, 234, 0.85), rgba(244, 241, 234, 0.85)), 
-                      url("https://i.postimg.cc/LXkqg9Dk/fondo.png");
+    /* Filtro suavizado al 35% para máxima nitidez de la imagen de fondo */
+    background-image: linear-gradient(rgba(244, 241, 234, 0.35), rgba(244, 241, 234, 0.35)), 
+                      url("https://postimg.cc");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed; /* Mantiene el fondo estático al hacer scroll */
+    background-attachment: fixed; /* Evita que el fondo se mueva al hacer scroll */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--color-texto-oscuro);
     margin: 0;
     padding: 0;
     min-height: 100vh;
 }
+
 
 .contenedor-principal-flujo {
     display: flex;
