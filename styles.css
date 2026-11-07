@@ -277,12 +277,4 @@ body {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-/* Agregar al final de styles.css para ajustar Tablets y PC */
-@media (min-width: 768px) {
-    #pantalla2.tarjeta-control {
-        max-width: 48rem !important; /* Da espacio suficiente para ver los campos lado a lado */
-    }
-    #pantalla2 #perfilForm {
-        gap: 1.5rem;
-    }
-}
+v
