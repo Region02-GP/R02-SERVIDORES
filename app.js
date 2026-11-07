@@ -113,13 +113,16 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
                 return; 
             }
 
-            // Sincronización limpia con la Pantalla 3
+                        // Busca este bloque en app.js e inyecta la línea del teléfono:
             document.getElementById('credCompleto').innerText = nom.toUpperCase();
             document.getElementById('credPuesto').innerText = mun.toUpperCase();
             document.getElementById('credZona').innerText = zon.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
             document.getElementById('credFoto').src = fotoUrlActual;
             
+            // => AGREGA ESTA LÍNEA AQUÍ:
+            document.getElementById('credTelefono').innerText = tel;
+
             setTimeout(() => {
                 inicializarCanvasFirma();
                 if (firmaBase64 && firmaBase64.startsWith("data:image")) {
