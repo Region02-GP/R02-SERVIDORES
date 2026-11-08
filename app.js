@@ -571,12 +571,12 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
     irAPantalla(1);
 });
 
+// REEMPLAZAR COMPLETAMENTE ESTA FUNCIÓN AL FINAL DE TU app.js (Línea 582 aprox.)
 async function cargarEstadisticasDirectas() {
     mostrarCarga("Estructurando indicadores consolidados...");
     
-  // REEMPLAZAR ÚNICAMENTE LA LÍNEA 581 EN TU app.js
-const urlConsulta = `https://google.com{GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(NOMBRE_PESTANA)}`;
-
+    // URL FIJA CORREGIDA: Apunta directamente a docs.google.com e inyecta tu ID verificado de Sheets sin llaves
+    const urlConsulta = "https://google.com";
     
     try {
         const respuesta = await fetch(urlConsulta);
@@ -593,7 +593,7 @@ const urlConsulta = `https://google.com{GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&she
         // Limpieza de caracteres de escape y filtrado de registros reales (omitir cabecera)
         const registrosLimpios = filas.slice(1).map(f => {
             return f.map(celda => celda.replace(/^"(.*)"$/, '$1').trim());
-        }).filter(f => f.length > 5 && f[4] !== ""); // Valida registros que tengan cargado al brigadista
+        }).filter(f => f.length > 5 && f !== ""); // Valida registros que tengan cargado al brigadista
 
         // Captura del total general consolidado
         const totalRegistrados = registrosLimpios.length;
