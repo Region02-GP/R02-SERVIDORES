@@ -554,15 +554,14 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 });
 
 // ========================================================
-// BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA DIRECTA
+// BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================
 
-// => REEMPLAZA ESTO CON EL ID LARGO DE TU HOJA DE CÁLCULO DE GOOGLE:
+// 1. Variables de enlace con tu documento real verificado
 const GOOGLE_SHEET_ID = "1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8";
-// Nombre exacto de la pestaña donde se guardan las filas de los brigadistas registrados:
 const NOMBRE_PESTANA = "VCXC"; 
 
-// Disparador para cargar y brincar a la Pantalla 4
+// Disparador para la navegación hacia la Pantalla 4
 document.getElementById('btnVerEstadisticas').addEventListener('click', cargarEstadisticasDirectas);
 
 // Botones de salida de la Pantalla 4
@@ -572,48 +571,54 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
     irAPantalla(1);
 });
 
-// REEMPLAZAR ÚNICAMENTE ESTA FUNCIÓN AL FINAL DE TU app.js
 async function cargarEstadisticasDirectas() {
     mostrarCarga("Estructurando indicadores consolidados...");
     
-    // URL limpia y exacta para conectarse a Google Sheets como archivo plano
+    // Petición directa usando formato de codificación universal para evitar rupturas por caracteres especiales
     const urlConsulta = `https://google.com{GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(NOMBRE_PESTANA)}`;
     
     try {
         const respuesta = await fetch(urlConsulta);
+        if (!respuesta.ok) throw new Error("Rechazo de comunicación con el servidor de Google");
+        
         const textoCSV = await respuesta.text();
         
-        // Convertimos el CSV plano en filas legibles de JavaScript
+        // Expresión regular avanzada para segmentar filas respetando las comas de coordenadas y fechas
         const filas = textoCSV.split("\n").map(fila => {
-            return fila.split(",").map(celda => celda.replace(/^"(.*)"$/, '$1').trim());
+            if (!fila) return [];
+            return fila.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || fila.split(",");
         });
 
-        // Filtramos renglones vacíos y quitamos la cabecera
-        const registrosBrigadistas = filas.slice(1).filter(f => f && f[0] && f[0].trim() !== "");
-        
-        const totalRegistrados = registrosBrigadistas.length;
+        // Limpieza de caracteres de escape y filtrado de registros reales (omitir cabecera)
+        const registrosLimpios = filas.slice(1).map(f => {
+            return f.map(celda => celda.replace(/^"(.*)"$/, '$1').trim());
+        }).filter(f => f.length > 5 && f[4] !== ""); // Valida registros que tengan cargado al brigadista
+
+        // Captura del total general consolidado
+        const totalRegistrados = registrosLimpios.length;
         document.getElementById('estTotal').innerText = totalRegistrados;
 
-        // Agrupación de registros por la columna de Municipios (Índice 2)
-        const conteoPorMunicipio = {};
-        registrosBrigadistas.forEach(fila => {
-            // Evaluamos la columna 2 del Sheets (Municipio)
-            const municipio = (fila && fila[2]) ? fila[2].toUpperCase() : "NO ESPECIFICADO";
-            conteoPorMunicipio[municipio] = (conteoPorMunicipio[municipio] || 0) + 1;
+        // Conteo y agrupación por el Nombre del Brigadista (Columna E -> Índice 4 del arreglo)
+        const conteoPorBrigadista = {};
+        registrosLimpios.forEach(fila => {
+            const brigadista = fila[4] ? fila[4].toUpperCase() : "NO ESPECIFICADO";
+            if (brigadista !== "SERVIDOR" && brigadista !== "") {
+                conteoPorBrigadista[brigadista] = (conteoPorBrigadista[brigadista] || 0) + 1;
+            }
         });
 
-        // Limpiar el contenedor antes de dibujar
+        // Dibujado dinámico de indicadores en la interfaz
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = "";
 
-            Object.keys(conteoPorMunicipio).sort().forEach(mun => {
-                const cantidad = conteoPorMunicipio[mun];
+            Object.keys(conteoPorBrigadista).sort().forEach(nombreBrigadista => {
+                const cantidadRegistros = conteoPorBrigadista[nombreBrigadista];
                 const renglon = document.createElement('div');
                 renglon.style.cssText = "display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(97, 18, 50, 0.2); padding: 0.6rem 0.8rem; border-radius: 0.4rem; background-color: rgba(255,255,255,0.85); box-sizing: border-box; width: 100%;";
                 renglon.innerHTML = `
-                    <span style="font-size: 0.85rem; font-weight: 700; color: #1f2937;">${mun}</span>
-                    <span style="font-size: 0.9rem; font-weight: 800; color: var(--color-guinda); background-color: rgba(97, 18, 50, 0.1); padding: 2px 8px; border-radius: 10px;">${cantidad}</span>
+                    <span style="font-size: 0.82rem; font-weight: 700; color: #1f2937; text-transform: uppercase;">${nombreBrigadista}</span>
+                    <span style="font-size: 0.9rem; font-weight: 800; color: var(--color-guinda); background-color: rgba(97, 18, 50, 0.1); padding: 2px 8px; border-radius: 10px;">${cantidadRegistros}</span>
                 `;
                 contenedor.appendChild(renglon);
             });
@@ -625,7 +630,8 @@ async function cargarEstadisticasDirectas() {
     } catch (error) {
         console.error("Error consultando la API de Google Sheets:", error);
         ocultarCarga();
-        alert("No se pudieron extraer los indicadores estadísticos. Verifica que tu archivo de Google Sheets esté compartido como Lector.");
+        alert("No se pudieron extraer los indicadores estadísticos. Verifica la conexión de red.");
     }
 }
+
 
