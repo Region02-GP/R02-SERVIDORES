@@ -298,7 +298,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
 });
 
 // ====================================================================
-// BLOQUE 4: CAPTURA DE VARIABLES, RENDER CANVAS HD Y DESCARGA
+// BLOQUE 4: CAPTURA DE VARIABLES, RENDER CANVAS HD Y DESCARGA (CORREGIDO)
 // ====================================================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
@@ -309,7 +309,10 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     const puesto = document.getElementById('credPuesto').innerText;
     const zona = document.getElementById('credZona').innerText;
     const fotoSrc = document.getElementById('credFoto').src;
-    const municipio = document.getElementById('municipio').value.trim().toUpperCase() || "NO ESPECIFICADO";
+    
+    // CORRECCIÓN: Captura el valor del Municipio directo de la interfaz del gafete (credPuesto) 
+    // para evitar buscar inputs desalineados en el DOM tras el registro.
+    const municipio = document.getElementById('credPuesto').innerText.trim().toUpperCase() || "NO ESPECIFICADO";
 
     const canvas = document.createElement('canvas');
     canvas.width = 1276;   
@@ -358,8 +361,13 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         ctx.fillRect(0, 0, 1276, 2020);
         verificarCargas();
     };
-    imgFoto.onerror = () => { verificarCargas(); };
-    imgFirma.onerror = () => { verificarCargas(); };
+    imgFoto.onerror = function() { 
+        console.error("⚠️ Error cargando fotografía en Canvas.");
+        verificarCargas(); 
+    };
+    imgFirma.onerror = function() { 
+        verificarCargas(); 
+    };
 
     imgPlantillaFondo.crossOrigin = "anonymous";
     imgFoto.crossOrigin = "anonymous";
@@ -367,10 +375,18 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
 
     // Enlace de imagen procesado por puente CORS seguro
     imgPlantillaFondo.src = "https://i.postimg.cc/269Fp7Df/Cartel-oficial-Servidores-de-la-Nacion.png";
-    imgFoto.src = fotoSrc;
+    
+    // CORRECCIÓN CLAVE: Si la variable local fotoCompletaBase64 contiene la imagen, 
+    // úsala prioritariamente para saltar el bloqueo de seguridad de internet (CORS).
+    if (typeof fotoCompletaBase64 !== 'undefined' && fotoCompletaBase64 && fotoCompletaBase64.startsWith("data:image")) {
+        imgFoto.src = fotoCompletaBase64;
+    } else {
+        imgFoto.src = fotoSrc;
+    }
+    
     imgFirma.src = firmaBase64 || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-        function construirGraficosGafete() {
+    function construirGraficosGafete() {
         try {
             // 1. Estampar plantilla de fondo completa
             ctx.drawImage(imgPlantillaFondo, 0, 0, 1276, 2020);
@@ -452,8 +468,8 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ocultarCarga();
         }
     }
-
 });
+
 // ========================================================
 // BLOQUE EXTRA: CONTROLES INTERNOS Y ÁREA DE FIRMA
 // ========================================================
