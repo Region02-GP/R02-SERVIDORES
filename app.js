@@ -656,13 +656,18 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 const GOOGLE_SHEET_ID = "1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8";
 const NOMBRE_PESTANA = "VCXC"; 
 
+// BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y CORRIGE / AGREGA ESTAS LÍNEAS:
+
+// => DISPARADOR ESENCIAL: Vincula el botón de la barra con la función de carga
 document.getElementById('btnVerEstadisticas').addEventListener('click', cargarEstadisticasDirectas);
 
+// Botones de salida de la Pantalla 4 intactos
 document.getElementById('btnEstVolver').addEventListener('click', () => irAPantalla(3));
 document.getElementById('btnEstSalir').addEventListener('click', () => {
     document.getElementById('p1_curp').value = "";
     irAPantalla(1);
 });
+
 
 // REEMPLAZAR ÚNICAMENTE LA FUNCIÓN EN TU app.js
 async function cargarEstadisticasDirectas() {
