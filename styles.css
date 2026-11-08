@@ -130,7 +130,7 @@ body {
    BLOQUE 4: BOTONES DE ACCIÓN E INTERACCIONES
    ======================================================== */
 .btn-buscar {
-    background-color: #1f2937;
+    background-color: #621132;
     color: #ffffff;
     padding: 0.85rem 1.25rem;
     border-radius: 0.5rem;
@@ -142,7 +142,7 @@ body {
 
 .btn-guardar {
     width: 100%;
-    background-color: var(--color-guinda);
+    background-color: #621132;
     color: #ffffff;
     padding: 1rem;
     border-radius: 0.5rem;
@@ -157,7 +157,7 @@ body {
 }
 
 .btn-guardar:hover {
-    background-color: var(--color-guinda-light);
+    background-color: #621132;
 }
 /* ========================================================
    BLOQUE 5: DATOS Y RENDERIZADO VISUAL DEL GAFETE
@@ -165,7 +165,7 @@ body {
 .marco-fotografia {
     width: 10.5rem;
     height: 13.5rem;
-    background-color: #e5e7eb;
+    background-color: #621132;
     border: 3px solid #ffffff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     overflow: hidden;
@@ -261,7 +261,7 @@ body {
     width: 3rem;
     height: 3rem;
     border: 4px solid #e5e7eb;
-    border-top: 4px solid var(--color-guinda);
+    border-top: 4px solid #621132;
     border-radius: 50%;
     animation: girarSpinner 0.8s linear infinite;
 }
