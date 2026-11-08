@@ -271,19 +271,20 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
                 if (document.getElementById('btnWhatsappBrigadista')) document.getElementById('btnWhatsappBrigadista').style.display = "none";
             }
             
-            // CORRECCIÓN PRIORITARIA: Renderizar Base64 en el elemento antes de destruirlo
+            // => CORRECCIÓN DEFINITIVA DE LA IMAGEN EN PANTALLA:
+            // Sincronizamos la foto en la credencial ANTES de vaciar la variable de memoria
             if (document.getElementById('credFoto')) {
                 if (fotoCompletaBase64 && fotoCompletaBase64.startsWith("data:image")) {
-                    // El origen Base64 local no causa errores CORS en html2canvas al descargar el archivo
                     document.getElementById('credFoto').src = fotoCompletaBase64;
                 } else {
                     document.getElementById('credFoto').src = resultado.foto_url || fotoParaEnviar;
                 }
             }
             
-            // Sincronización final de variables globales
+            // Una vez inyectado en el HTML, actualizamos y limpiamos las variables globales de forma segura
             fotoUrlActual = resultado.foto_url || fotoParaEnviar;
-            fotoCompletaBase64 = "";
+            fotoCompletaBase64 = ""; 
+            
             document.getElementById('fotoAviso')?.classList.add('hidden');
             irAPantalla(3);
         } else {
