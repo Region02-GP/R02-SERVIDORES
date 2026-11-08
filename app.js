@@ -179,13 +179,13 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 // BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO SINCRO
 // ========================================================
 
-// CÓDIGO CON EL ERROR ACTUAL EN TU APP.JS:
-// REEMPLAZAR EN TU APP.JS
+// REEMPLAZAR COMPLETAMENTE EL EVENTO 'inputFoto' EN TU app.js
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const files = e.target.files; 
     if (files && files.length > 0) {
         mostrarCarga("Comprimiendo fotografía a escala celular...");
         const reader = new FileReader();
+        
         reader.onload = function(evt) {
             const img = new Image();
             img.onload = function() {
@@ -193,6 +193,10 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
                 canvas.width = 180; 
                 canvas.height = 240;
                 const ctx = canvas.getContext('2d');
+                
+                // Asegurar renderizado suave en cualquier hardware móvil
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
                 
                 let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
                 const aspectImg = img.width / img.height;
@@ -206,23 +210,40 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
                     srcY = (img.height - srcH) / 2;
                 }
 
-                ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 180, 240);
-                fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.6);
-                
-                // Captura tolerante a errores de diseño en el DOM
-                const aviso = document.getElementById('fotoAviso');
-                if (aviso) {
-                    aviso.classList.remove('hidden');
+                try {
+                    // Dibujado seguro en el lienzo aislado
+                    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 180, 240);
+                    fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                    
+                    const aviso = document.getElementById('fotoAviso');
+                    if (aviso) aviso.classList.remove('hidden');
+                } catch (canvasError) {
+                    console.error("Fallo preventivo en render de canvas:", canvasError);
+                    // Solución alternativa directa si el hardware bloquea toDataURL
+                    fotoCompletaBase64 = evt.target.result;
+                } finally {
+                    // Obliga al cargador a quitarse pase lo que pase con la foto
+                    ocultarCarga();
                 }
-                
-                // Desbloquea la pantalla de inmediato
+            };
+            
+            img.onerror = function() {
+                console.error("Error al estructurar el objeto de imagen base.");
                 ocultarCarga();
             };
+            
             img.src = evt.target.result;
         };
+        
+        reader.onerror = function() {
+            console.error("Error en la lectura del archivo físico.");
+            ocultarCarga();
+        };
+        
         reader.readAsDataURL(files);
     }
 });
+
 
 
 
