@@ -313,14 +313,37 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         });
         const resultado = await res.json();
 
+              // BUSCA ESTE BLOQUE EN EL EVENTO 'submit' DE TU app.js Y REEMPLÁZALO:
         if (resultado.status === "success") {
             ocultarCarga();
             alert('🎉 ¡Perfil sincronizado correctamente!');
             
+            // Sincronización visual en tiempo real con la Pantalla 3
             document.getElementById('credCompleto').innerText = txtNombre.toUpperCase();
             document.getElementById('credPuesto').innerText = txtMunicipio.toUpperCase();
             document.getElementById('credZona').innerText = txtZona.toUpperCase();
             document.getElementById('credIdentificacion').innerText = curp;
+            
+            // => CORRECCIÓN CLAVE: Inyectar el teléfono modificado al elemento de la Credencial
+            if (document.getElementById('credTelefono')) {
+                document.getElementById('credTelefono').innerText = txtTelefono;
+            }
+
+            // => CORRECCIÓN DE ENLACES: Actualizar dinámicamente los botones de llamadas y WhatsApp
+            if (txtTelefono && txtTelefono.trim() !== "") {
+                const numeroLimpio = txtTelefono.replace(/\s+/g, '');
+                if (document.getElementById('btnLlamarBrigadista')) {
+                    document.getElementById('btnLlamarBrigadista').href = "tel:" + numeroLimpio;
+                    document.getElementById('btnLlamarBrigadista').style.display = "inline-flex";
+                }
+                if (document.getElementById('btnWhatsappBrigadista')) {
+                    document.getElementById('btnWhatsappBrigadista').href = "whatsapp://send?phone=52" + numeroLimpio;
+                    document.getElementById('btnWhatsappBrigadista').style.display = "inline-flex";
+                }
+            } else {
+                if (document.getElementById('btnLlamarBrigadista')) document.getElementById('btnLlamarBrigadista').style.display = "none";
+                if (document.getElementById('btnWhatsappBrigadista')) document.getElementById('btnWhatsappBrigadista').style.display = "none";
+            }
             
             fotoUrlActual = resultado.foto_url || fotoParaEnviar;
             document.getElementById('credFoto').src = fotoUrlActual;
@@ -328,15 +351,8 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             fotoCompletaBase64 = "";
             document.getElementById('fotoAviso').classList.add('hidden');
             irAPantalla(3);
-        } else {
-            ocultarCarga();
-            alert('Error: ' + resultado.message);
         }
-    } catch (err) {
-        console.error(err);
-        ocultarCarga();
-        alert('Fallo de sincronización con la base de datos central. Verifica tu Deploy en Google Sheets.');
-    }
+
 });
 
 
