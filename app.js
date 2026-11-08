@@ -271,15 +271,17 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
                 if (document.getElementById('btnWhatsappBrigadista')) document.getElementById('btnWhatsappBrigadista').style.display = "none";
             }
             
-            // Asignación segura del origen de pixeles en pantalla previniendo demoras del servidor
+            // CORRECCIÓN PRIORITARIA: Renderizar Base64 en el elemento antes de destruirlo
             if (document.getElementById('credFoto')) {
                 if (fotoCompletaBase64 && fotoCompletaBase64.startsWith("data:image")) {
+                    // El origen Base64 local no causa errores CORS en html2canvas al descargar el archivo
                     document.getElementById('credFoto').src = fotoCompletaBase64;
                 } else {
                     document.getElementById('credFoto').src = resultado.foto_url || fotoParaEnviar;
                 }
             }
             
+            // Sincronización final de variables globales
             fotoUrlActual = resultado.foto_url || fotoParaEnviar;
             fotoCompletaBase64 = "";
             document.getElementById('fotoAviso')?.classList.add('hidden');
@@ -294,7 +296,6 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         alert('Fallo de sincronización con la base de datos central. Verifica tu Deploy en Google Sheets.');
     }
 });
-
 
 // ====================================================================
 // BLOQUE 4: CAPTURA DE VARIABLES, RENDER CANVAS HD Y DESCARGA
