@@ -568,13 +568,12 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
     irAPantalla(1);
 });
 
-// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN EN app.js (AJUSTADA PARA CUENTAS EXTERNAS)
+// REEMPLAZAR ÚNICAMENTE LA FUNCIÓN EN TU app.js
 async function cargarEstadisticasDirectas() {
     mostrarCarga("Estructurando indicadores consolidados...");
     
-    // URL DE EXPORTACIÓN PÚBLICA: Brinca el bloqueo de inicio de sesión de Google de cuentas ajenas
-   // REEMPLAZAR ÚNICAMENTE LA LÍNEA 579 EN TU app.js
-const urlConsulta = "https://google.com";
+    // URL DE EXPORTACIÓN PÚBLICA CORREGIDA: Trae los datos de forma directa sin importar la cuenta dueña
+    const urlConsulta = `https://google.com{GOOGLE_SHEET_ID}/export?format=csv&sheet=${encodeURIComponent(NOMBRE_PESTANA)}`;
 
     try {
         const respuesta = await fetch(urlConsulta);
@@ -632,4 +631,3 @@ const urlConsulta = "https://google.com";
         alert("No se pudieron extraer los indicadores. Asegúrate de abrir una pestaña de incógnito para purgar las credenciales viejas.");
     }
 }
-
