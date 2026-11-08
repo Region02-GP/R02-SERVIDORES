@@ -568,30 +568,35 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
     irAPantalla(1);
 });
 
+// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN EN app.js (AJUSTADA PARA CUENTAS EXTERNAS)
 async function cargarEstadisticasDirectas() {
     mostrarCarga("Estructurando indicadores consolidados...");
     
-    // LINEA CORREGIDA Y ACTIVA:
-    const urlConsulta = `https://google.com{GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(NOMBRE_PESTANA)}`;
+    // URL DE EXPORTACIÓN PÚBLICA: Brinca el bloqueo de inicio de sesión de Google de cuentas ajenas
+    const urlConsulta = `https://google.com{GOOGLE_SHEET_ID}/export?format=csv&sheet=${encodeURIComponent(NOMBRE_PESTANA)}`;
     
     try {
         const respuesta = await fetch(urlConsulta);
-        if (!respuesta.ok) throw new Error("Rechazo de comunicación con el servidor de Google");
+        if (!respuesta.ok) throw new Error("Rechazo de comunicación por protección de cuenta Google");
         
         const textoCSV = await respuesta.text();
         
+        // Separador tolerante a comas internas de coordenadas en tu archivo VCXC
         const filas = textoCSV.split("\n").map(fila => {
             if (!fila) return [];
             return fila.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || fila.split(",");
         });
 
+        // Filtrado omitiendo cabeceras e hileras vacías
         const registrosLimpios = filas.slice(1).map(f => {
             return f.map(celda => celda.replace(/^"(.*)"$/, '$1').trim());
         }).filter(f => f.length > 5 && f !== "");
 
+        // Conteo general consolidado en pantalla
         const totalRegistrados = registrosLimpios.length;
         document.getElementById('estTotal').innerText = totalRegistrados;
 
+        // Agrupación por Nombre del Brigadista (Columna E -> Índice 4 del CSV)
         const conteoPorBrigadista = {};
         registrosLimpios.forEach(fila => {
             const brigadista = fila[4] ? fila[4].toUpperCase() : "NO ESPECIFICADO";
@@ -600,6 +605,7 @@ async function cargarEstadisticasDirectas() {
             }
         });
 
+        // Inyección dinámica de filas informativas
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = "";
@@ -620,9 +626,9 @@ async function cargarEstadisticasDirectas() {
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error consultando la API de Google Sheets:", error);
+        console.error("Error consultando el CSV público:", error);
         ocultarCarga();
-        alert("No se pudieron extraer los indicadores estadísticos. Verifica la conexión de red.");
+        alert("No se pudieron extraer los indicadores. Asegúrate de abrir una pestaña de incógnito para purgar las credenciales viejas.");
     }
 }
 
