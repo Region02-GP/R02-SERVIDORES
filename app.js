@@ -113,7 +113,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
                 return; 
             }
 
-                     // Busca donde se asignan los datos de la credencial en tu app.js y añade la línea del botón:
+                      // Busca donde se asignan los datos de la credencial en tu app.js y actualízalo con el bloque de WhatsApp:
             document.getElementById('credCompleto').innerText = nom.toUpperCase();
             document.getElementById('credPuesto').innerText = mun.toUpperCase();
             document.getElementById('credZona').innerText = zon.toUpperCase();
@@ -122,12 +122,19 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             
             document.getElementById('credTelefono').innerText = tel;
             
-            // => AÑADE ESTA LÍNEA AQUÍ PARA ASIGNAR EL PROTOCOLO DE LLAMADA DE FORMA SEGURA:
             if (tel && tel.trim() !== "") {
-                document.getElementById('btnLlamarBrigadista').href = "tel:" + tel.replace(/\s+/g, '');
+                const numeroLimpio = tel.replace(/\s+/g, '');
+                
+                // => ASIGNACIÓN DEL PROTOCOLO DE LLAMADAS NATIVAS:
+                document.getElementById('btnLlamarBrigadista').href = "tel:" + numeroLimpio;
                 document.getElementById('btnLlamarBrigadista').style.display = "inline-flex";
+                
+                // => NUEVA ASIGNACIÓN DEL ENLACE DIRECTO A LA API DE WHATSAPP:
+                document.getElementById('btnWhatsappBrigadista').href = "https://wa.me" + numeroLimpio;
+                document.getElementById('btnWhatsappBrigadista').style.display = "inline-flex";
             } else {
                 document.getElementById('btnLlamarBrigadista').style.display = "none";
+                document.getElementById('btnWhatsappBrigadista').style.display = "none";
             }
 
 
