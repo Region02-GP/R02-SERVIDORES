@@ -129,13 +129,22 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
                 document.getElementById('btnLlamarBrigadista').href = "tel:" + numeroLimpio;
                 document.getElementById('btnLlamarBrigadista').style.display = "inline-flex";
                 
-                // => NUEVA ASIGNACIÓN DEL ENLACE DIRECTO A LA API DE WHATSAPP:
-                document.getElementById('btnWhatsappBrigadista').href = "https://wa.me" + numeroLimpio;
+                          // REEMPLAZAR ÚNICAMENTE LA ASIGNACIÓN DE WHATSAPP EN TU app.js
+            if (tel && tel.trim() !== "") {
+                const numeroLimpio = tel.replace(/\s+/g, '');
+                
+                // Marcado telefónico nativo intacto
+                document.getElementById('btnLlamarBrigadista').href = "tel:" + numeroLimpio;
+                document.getElementById('btnLlamarBrigadista').style.display = "inline-flex";
+                
+                // CORRECCIÓN: Protocolo universal nativo para abrir la aplicación directamente
+                document.getElementById('btnWhatsappBrigadista').href = "whatsapp://send?phone=52" + numeroLimpio;
                 document.getElementById('btnWhatsappBrigadista').style.display = "inline-flex";
             } else {
                 document.getElementById('btnLlamarBrigadista').style.display = "none";
                 document.getElementById('btnWhatsappBrigadista').style.display = "none";
             }
+
 
 
             setTimeout(() => {
