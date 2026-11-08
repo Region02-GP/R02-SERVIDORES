@@ -574,8 +574,9 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 async function cargarEstadisticasDirectas() {
     mostrarCarga("Estructurando indicadores consolidados...");
     
-    // Petición directa usando formato de codificación universal para evitar rupturas por caracteres especiales
-    const urlConsulta = `https://google.com{GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(NOMBRE_PESTANA)}`;
+  // REEMPLAZAR ÚNICAMENTE LA LÍNEA 581 EN TU app.js
+const urlConsulta = `https://google.com{GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(NOMBRE_PESTANA)}`;
+
     
     try {
         const respuesta = await fetch(urlConsulta);
