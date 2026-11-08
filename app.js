@@ -671,79 +671,66 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 
 // REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Procesando volumen de datos consolidados...");
+    mostrarCarga("Solicitando consolidación remota a Google...");
     
-    // Ruta directa de exportación para leer el CSV crudo completo sin límite de filas
-    const urlConsulta = "https://google.com";
+    // Consulta SQL remota: Le pide a Google contar la columna E agrupada por nombres
+    const querySQL = encodeURIComponent("SELECT E, COUNT(E) WHERE E IS NOT NULL AND E != 'SERVIDOR' GROUP BY E LABEL COUNT(E) ''");
+    const urlConsulta = `https://google.com{querySQL}`;
     
     try {
         const respuesta = await fetch(urlConsulta);
-        if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
+        if (!respuesta.ok) throw new Error("Error en servidor remoto");
         
         const textoCSV = await respuesta.text();
+        const lineas = textoCSV.split(/\r?\n/).filter(l => l.trim() !== "");
         
-        // 1. Dividir de forma estricta por saltos de línea (compatible con hojas grandes)
-        const lineas = textoCSV.split(/\r?\n/);
-        
-        const conteoEncuestas = {};
         let totalGeneralEncuestas = 0;
-
-        // Omitimos la línea 0 (cabeceras) y recorremos toda la hoja de cálculo
-        for (let i = 1; i < lineas.length; i++) {
-            const linea = lineas[i].trim();
-            if (!linea) continue; // Salta líneas totalmente vacías
-
-            // 2. Expresión regular avanzada para separar las columnas por comas, 
-            // pero ignorando las comas que están dentro de comillas (coordenadas Lat/Long)
-            const columnas = linea.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || linea.split(",");
-            
-            // Columna E es el índice 4 (SERVIDOR)
-            if (columnas && columnas[4]) {
-                // Limpiamos comillas de escape de Google y espacios extras
-                const brigadista = columnas[4].replace(/^"(.*)"$/, '$1').trim().toUpperCase();
-                
-                // Filtramos palabras reservadas de la cabecera y vacíos
-                if (brigadista && brigadista !== "SERVIDOR" && brigadista !== "") {
-                    conteoEncuestas[brigadista] = (conteoEncuestas[brigadista] || 0) + 1;
-                    totalGeneralEncuestas++;
-                }
-            }
-        }
-
-        // Inyectamos el total general exacto en el indicador superior
-        document.getElementById('estTotal').innerText = totalGeneralEncuestas;
-
-        // 3. Dibujado dinámico e inmediato en la interfaz
         const contenedor = document.getElementById('contenedorMunicipios');
+        
         if (contenedor) {
             contenedor.innerHTML = "";
 
-            // Ordenamos alfabéticamente a los brigadistas para una lectura limpia
-            Object.keys(conteoEncuestas).sort().forEach(brigadista => {
-                const numeroEncuestas = conteoEncuestas[brigadista];
-                const renglon = document.createElement('div');
-                renglon.style.cssText = "display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(97, 18, 50, 0.2); padding: 0.6rem 0.8rem; border-radius: 0.4rem; background-color: rgba(255,255,255,0.85); box-sizing: border-box; width: 100%; margin-bottom: 0.2rem;";
+            // Recorremos el resumen compacto devuelto por Google
+            lineas.forEach(linea => {
+                // Limpiamos comillas que introduce Google en las cadenas text
+                const columnas = linea.split(",").map(c => c.replace(/^"(.*)"$/, '$1').trim());
                 
-                renglon.innerHTML = `
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="font-size: 0.82rem; font-weight: 700; color: #1f2937; text-transform: uppercase;">${brigadista}</span>
-                        <span style="font-size: 0.68rem; color: var(--color-texto-mutado); font-weight: 500; margin-top: 1px;">BRIGADISTA ACTIVO</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.4rem;">
-                        <span style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);"># ENCUESTAS:</span>
-                        <span style="font-size: 0.95rem; font-weight: 800; color: var(--color-guinda); background-color: rgba(97, 18, 50, 0.1); padding: 3px 10px; border-radius: 12px;">${numeroEncuestas}</span>
-                    </div>
-                `;
-                contenedor.appendChild(renglon);
+                if (columnas.length >= 2) {
+                    const brigadista = columnas[0].toUpperCase();
+                    const numeroEncuestas = parseInt(columnas[1], 10) || 0;
+                    
+                    // Doble validación de seguridad sobre el texto de cabeceras
+                    if (brigadista && brigadista !== "SERVIDOR" && brigadista !== "FECHA" && numeroEncuestas > 0) {
+                        totalGeneralEncuestas += numeroEncuestas;
+                        
+                        const renglon = document.createElement('div');
+                        renglon.style.cssText = "display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(97, 18, 50, 0.2); padding: 0.6rem 0.8rem; border-radius: 0.4rem; background-color: rgba(255,255,255,0.85); box-sizing: border-box; width: 100%; margin-bottom: 0.2rem;";
+                        
+                        renglon.innerHTML = `
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-size: 0.82rem; font-weight: 700; color: #1f2937; text-transform: uppercase;">${brigadista}</span>
+                                <span style="font-size: 0.68rem; color: var(--color-texto-mutado); font-weight: 500; margin-top: 1px;">BRIGADISTA ACTIVO</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                <span style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);"># ENCUESTAS:</span>
+                                <span style="font-size: 0.95rem; font-weight: 800; color: var(--color-guinda); background-color: rgba(97, 18, 50, 0.1); padding: 3px 10px; border-radius: 12px;">${numeroEncuestas}</span>
+                            </div>
+                        `;
+                        contenedor.appendChild(renglon);
+                    }
+                }
             });
         }
+
+        // Sincroniza el total general exacto sumado de todos los bloques
+        document.getElementById('estTotal').innerText = totalGeneralEncuestas;
 
         ocultarCarga();
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error procesando conteo de encuestas masivo:", error);
+        console.error("Error en procesamiento SQL remoto:", error);
         ocultarCarga();
-        alert("No se pudieron totalizar los registros de las encuestas en este momento.");
+        alert("Ocurrió un retraso en la red de Google. Inténtalo de nuevo en unos segundos.");
     }
 }
