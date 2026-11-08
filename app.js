@@ -669,13 +669,12 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 });
 
 
-// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
+// REEMPLAZAR ÚNICAMENTE LAS PRIMERAS LÍNEAS DE LA FUNCIÓN EN TU app.js (Línea 681 aprox.)
 async function cargarEstadisticasDirectas() {
     mostrarCarga("Solicitando consolidación remota a Google...");
     
-    // Consulta SQL remota: Le pide a Google contar la columna E agrupada por nombres
-    const querySQL = encodeURIComponent("SELECT E, COUNT(E) WHERE E IS NOT NULL AND E != 'SERVIDOR' GROUP BY E LABEL COUNT(E) ''");
-    const urlConsulta = `https://google.com{querySQL}`;
+    // URL FIJA Y DIRECTA: Envía la orden SELECT E, COUNT(E) directo a docs.google.com sin llaves ni variables que fallen
+    const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing''";
     
     try {
         const respuesta = await fetch(urlConsulta);
