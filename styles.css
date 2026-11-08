@@ -297,3 +297,10 @@ body {
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8), -1px -1px 2px rgba(255, 255, 255, 0.8);
 }
 
+/* Añadir al final de styles.css */
+#pantalla3.tarjeta-control {
+    background-color: transparent !important;
+}
+#pantalla3 .cuerpo-credencial {
+    background-color: transparent !important;
+}
