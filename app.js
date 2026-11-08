@@ -550,3 +550,80 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
     document.getElementById('modalFirmaPantallaCompleta').classList.add('hidden');
 });
 
+// ========================================================
+// BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA DIRECTA
+// ========================================================
+
+// => REEMPLAZA ESTO CON EL ID LARGO DE TU HOJA DE CÁLCULO DE GOOGLE:
+const GOOGLE_SHEET_ID = "COLOCA_AQUÍ_EL_ID_DE_TU_HOJA_DE_CALCULO";
+// Nombre exacto de la pestaña donde se guardan las filas de los brigadistas registrados:
+const NOMBRE_PESTANA = "Sheet1"; 
+
+// Disparador para cargar y brincar a la Pantalla 4
+document.getElementById('btnVerEstadisticas').addEventListener('click', cargarEstadisticasDirectas);
+
+// Botones de salida de la Pantalla 4
+document.getElementById('btnEstVolver').addEventListener('click', () => irAPantalla(3));
+document.getElementById('btnEstSalir').addEventListener('click', () => {
+    document.getElementById('p1_curp').value = "";
+    irAPantalla(1);
+});
+
+async function cargarEstadisticasDirectas() {
+    mostrarCarga("Estructurando indicadores consolidados...");
+    
+    // URL de la API de visualización nativa de Google en modo consulta de texto plano (CSV)
+    const urlConsulta = `https://google.com{1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?gid=0#gid=0}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(VCXC)}`;
+    
+    try {
+        const respuesta = await fetch(urlConsulta);
+        const textoCSV = await respuesta.text();
+        
+        // Convertimos el CSV plano en filas legibles de JavaScript
+        const filas = textoCSV.split("\n").map(fila => {
+            // Limpia comillas dobles que agrega Google Sheets por defecto en las cadenas
+            return fila.split(",").map(celda => celda.replace(/^"(.*)"$/, '$1').trim());
+        });
+
+        // La primera fila [0] contiene las cabeceras (CURP, Nombre, Municipio...)
+        // Validamos que existan registros ignorando la cabecera
+        const registrosBrigadistas = filas.slice(1).filter(f => f[0] && f[0] !== "");
+        
+        const totalRegistrados = registrosBrigadistas.length;
+        document.getElementById('estTotal').innerText = totalRegistrados;
+
+        // Mapeo simétrico para agrupar brigadistas por su Municipio (Columna 2 en base a índice 0, 1, 2)
+        const conteoPorMunicipio = {};
+        registrosBrigadistas.forEach(fila => {
+            const municipio = fila[2] ? fila[2].toUpperCase() : "NO ESPECIFICADO";
+            conteoPorMunicipio[municipio] = (conteoPorMunicipio[municipio] || 0) + 1;
+        });
+
+        // Limpiar contenedor e inyectar renglones estilizados en contornos guindas
+        const contenedor = document.getElementById('contenedorMunicipios');
+        contenedor.innerHTML = "";
+
+        Object.keys(conteoPorMunicipio).sort().forEach(mun => {
+            const cantidad = conteoPorMunicipio[mun];
+            const renglon = document.createElement('div');
+            renglon.style.cssText = "display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(97, 18, 50, 0.2); padding: 0.6rem 0.8rem; border-radius: 0.4rem; background-color: rgba(255,255,255,0.85); box-sizing: border-box; width: 100%;";
+            renglon.innerHTML = `
+                <span style="font-size: 0.85rem; font-weight: 700; color: #1f2937;">${mun}</span>
+                <span style="font-size: 0.9rem; font-weight: 800; color: var(--color-guinda); background-color: rgba(97, 18, 50, 0.1); padding: 2px 8px; border-radius: 10px;">${cantidad}</span>
+            `;
+            contenedor.appendChild(renglon);
+        });
+
+        ocultarCarga();
+        // Registramos dinámicamente la Pantalla 4 en tu flujo
+        document.getElementById('pantalla1').classList.add('hidden');
+        document.getElementById('pantalla2').classList.add('hidden');
+        document.getElementById('pantalla3').classList.add('hidden');
+        document.getElementById('pantalla4').classList.remove('hidden');
+
+    } catch (error) {
+        console.error("Error consultando la API de Google Sheets:", error);
+        ocultarCarga();
+        alert("No se pudieron extraer los indicadores estadísticos. Verifica que el archivo de Google Sheets esté compartido como Lector.");
+    }
+}
