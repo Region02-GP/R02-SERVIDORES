@@ -676,11 +676,14 @@ async function cargarEstadisticasDirectas() {
     // URL FIJA Y DIRECTA: Envía la orden SELECT E, COUNT(E) directo a docs.google.com sin llaves ni variables que fallen
     const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing''";
     
+   
     try {
         const respuesta = await fetch(urlConsulta);
         if (!respuesta.ok) throw new Error("Error en servidor remoto");
         
         const textoCSV = await respuesta.text();
+        
+        // Separamos el texto por saltos de línea y quitamos renglones vacíos
         const lineas = textoCSV.split(/\r?\n/).filter(l => l.trim() !== "");
         
         let totalGeneralEncuestas = 0;
@@ -689,17 +692,17 @@ async function cargarEstadisticasDirectas() {
         if (contenedor) {
             contenedor.innerHTML = "";
 
-            // Recorremos el resumen compacto devuelto por Google
-            lineas.forEach(linea => {
-                // Limpiamos comillas que introduce Google en las cadenas text
+            // Recorremos las líneas devueltas por Google
+            lineas.forEach((linea, indice) => {
+                // Separamos por comas limpiando las comillas dobles que agrega Google Sheets
                 const columnas = linea.split(",").map(c => c.replace(/^"(.*)"$/, '$1').trim());
                 
                 if (columnas.length >= 2) {
                     const brigadista = columnas[0].toUpperCase();
                     const numeroEncuestas = parseInt(columnas[1], 10) || 0;
                     
-                    // Doble validación de seguridad sobre el texto de cabeceras
-                    if (brigadista && brigadista !== "SERVIDOR" && brigadista !== "FECHA" && numeroEncuestas > 0) {
+                    // FILTRO DE SEGURIDAD: Omitir la primera línea si contiene los títulos de cabecera de Google
+                    if (brigadista && brigadista !== "SERVIDOR" && brigadista !== "SERVIDOR PUBLICO" && brigadista !== "NAME" && numeroEncuestas > 0) {
                         totalGeneralEncuestas += numeroEncuestas;
                         
                         const renglon = document.createElement('div');
@@ -721,15 +724,16 @@ async function cargarEstadisticasDirectas() {
             });
         }
 
-        // Sincroniza el total general exacto sumado de todos los bloques
+        // Imprime la sumatoria total exacta en el recuadro superior
         document.getElementById('estTotal').innerText = totalGeneralEncuestas;
 
         ocultarCarga();
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error en procesamiento SQL remoto:", error);
+        console.error("Error en procesamiento de datos unificados:", error);
         ocultarCarga();
-        alert("Ocurrió un retraso en la red de Google. Inténtalo de nuevo en unos segundos.");
+        alert("Ocurrió un retraso al procesar las celdas. Inténtalo de nuevo en unos segundos.");
     }
 }
+
