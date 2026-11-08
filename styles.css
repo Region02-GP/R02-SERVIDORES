@@ -67,14 +67,16 @@ body {
     flex-shrink: 0;
 }
 
+/* REEMPLAZAR EN styles.css - BLOQUE 2 */
 .encabezado-institucional {
-    background-color: #982236;
+    background-color: transparent !important; /* Totalmente transparente */
     padding: 0.75rem 1.25rem;
     text-align: center;
-    color: #ffffff !important;
+    color: var(--color-guinda) !important; /* Letras guindas oficiales */
     flex-shrink: 0;
-    border-bottom: 3px solid var(--color-dorado);
+    border-bottom: none; /* Remueve la línea para una transparencia limpia */
 }
+
 
 .cuerpo-credencial {
     padding: 1.5rem;
