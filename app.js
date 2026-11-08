@@ -10,13 +10,16 @@ let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 let fotoCompletaBase64 = ""; // Foto local capturada
 let fotoUrlActual = ""; // URL de la foto en la base de datos
 
-// Función para alternar entre las tres pantallas principales
+// REEMPLAZAR LA FUNCIÓN EN TU app.js (BLOQUE 1)
 function irAPantalla(num) {
     document.getElementById('pantalla1').classList.add('hidden');
     document.getElementById('pantalla2').classList.add('hidden');
     document.getElementById('pantalla3').classList.add('hidden');
+    document.getElementById('pantalla4').classList.add('hidden'); // <-- Nueva línea agregada
+    
     document.getElementById('pantalla' + num).classList.remove('hidden');
 }
+
 
 // Muestra el overlay de procesamiento
 function mostrarCarga(texto) {
