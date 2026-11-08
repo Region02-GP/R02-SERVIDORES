@@ -107,67 +107,58 @@
         </div>
 
 
-                   <!-- PANTALLA 3: CREDENCIAL / GAFETE FINAL (ESTILO UNIFICADO CON PANTALLAS 1 Y 2) -->
-        <!-- REEMPLAZAR ÚNICAMENTE LA ETIQUETA DE APERTURA DE LA PANTALLA 3 EN index.html -->
-<div id="pantalla3" class="tarjeta-control hidden" style="background-color: rgba(252, 250, 246, 0.45) !important; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); max-width: 100%; width: 100%; max-width: 28rem !important; margin: 1.5rem auto; box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.4);">
-
-            <div class="encabezado-institucional">
-                <h1 class="titulo-principal" style="font-size: 1.4rem; font-weight: 800; margin: 0; color: var(--color-guinda);">Credencial Digital</h1>
-                <p class="subtitulo-patria" style="margin: 4px 0 0 0;">BRIGADISTA AUTORIZADO</p>
-            </div>
-
-            <div class="cuerpo-credencial" style="gap: 1.2rem; padding: 1.5rem; box-sizing: border-box; align-items: center; width: 100%;">
+                        <!-- PANTALLA 3: CREDENCIAL / GAFETE FINAL (FONDO GRÁFICO DIRECTO) -->
+        <div id="pantalla3" class="tarjeta-control hidden" style="background-image: url('https://postimg.cc'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 44rem; max-width: 28rem !important; margin: 1.5rem auto; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25); border: 1px solid #ddc9a3; border-radius: 1.25rem;">
+            
+            <!-- Encabezado con padding invisible superior para librar el escudo del fondo gráfico -->
+            <div class="cuerpo-credencial" style="gap: 0.5rem; padding: 5.5rem 1.5rem 1.5rem 1.5rem; box-sizing: border-box; align-items: center; width: 100%; background: transparent;">
                 
                 <!-- Fotografía Oficial -->
-                <div class="marco-fotografia" style="width: 10.5rem; height: 13.5rem; border: 3px solid #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); border-radius: 0.5rem; overflow: hidden; background-color: #e5e7eb; flex-shrink: 0;">
+                <div class="marco-fotografia" style="width: 10.2rem; height: 12.8rem; border: 2px solid #ddc9a3; border-radius: 0.8rem; overflow: hidden; background-color: #e5e7eb; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
                     <img id="credFoto" src="" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 
-                <!-- Datos Nominativos Formateados -->
-                <div class="datos-gafete-contenedor" style="width: 100%; text-align: left; display: flex; flex-direction: column; gap: 0.8rem;">
+                <!-- Datos Nominativos Flotantes Centrados e Integrados -->
+                <div class="datos-gafete-contenedor" style="width: 100%; text-align: center; display: flex; flex-direction: column; gap: 0.4rem; background: transparent; margin-top: 0.5rem;">
                     
-                    <div>
-                        <label class="campo-etiqueta" style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);">Nombre Completo</label>
-                        <p id="credCompleto" style="font-size: 1.2rem; font-weight: 800; color: var(--color-texto-oscuro); margin: 0.2rem 0 0 0; text-transform: uppercase;">-</p>
+                    <!-- Nombre Completo colocado exactamente sobre la franja guinda del fondo -->
+                    <div style="height: 2.8rem; display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 0.5rem;">
+                        <p id="credCompleto" style="color: #ffffff; font-size: 1.15rem; font-weight: 800; margin: 0; text-transform: uppercase; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); text-align: center; width: 100%; font-family: sans-serif;">-</p>
                     </div>
 
-                    <!-- Fila doble: Municipio y Zona -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%;">
+                    <!-- Datos Descriptivos con sombreado blanco sutil para perfecta lectura -->
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; color: #1f2937; font-family: sans-serif; margin-top: 1.2rem;">
                         <div>
-                            <label class="campo-etiqueta" style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);">Municipio</label>
-                            <p id="credPuesto" style="font-size: 1rem; font-weight: 700; color: var(--color-texto-oscuro); margin: 0.2rem 0 0 0; text-transform: uppercase;">-</p>
+                            <p style="font-size: 0.78rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">Municipio</p>
+                            <p id="credPuesto" style="font-size: 1rem; font-weight: 700; margin: 2px 0 0 0; text-transform: uppercase;">-</p>
                         </div>
                         <div>
-                            <label class="campo-etiqueta" style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);">Zona / Región</label>
-                            <p id="credZona" style="font-size: 1rem; font-weight: 700; color: var(--color-texto-oscuro); margin: 0.2rem 0 0 0; text-transform: uppercase;">-</p>
+                            <p style="font-size: 0.78rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">Zona</p>
+                            <p id="credZona" style="font-size: 1rem; font-weight: 700; margin: 2px 0 0 0; text-transform: uppercase;">-</p>
                         </div>
-                    </div>
-
-                    <div>
-                        <label class="campo-etiqueta" style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);">CURP Oficial</label>
-                        <p id="credIdentificacion" style="font-size: 1.05rem; font-family: monospace; font-weight: 700; color: #111827; margin: 0.2rem 0 0 0; letter-spacing: 0.05em;">-</p>
-                    </div>
-
-                    <div>
-                        <label class="campo-etiqueta" style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);">Teléfono Celular</label>
-                        <p id="credTelefono" style="font-size: 1.05rem; font-family: monospace; font-weight: 700; color: var(--color-guinda); margin: 0.2rem 0 0 0;">-</p>
+                        <div>
+                            <p style="font-size: 0.78rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">CURP Oficial</p>
+                            <p id="credIdentificacion" style="font-size: 1.05rem; font-family: monospace; font-weight: 700; margin: 2px 0 0 0; letter-spacing: 0.03em;">-</p>
+                        </div>
+                        <div>
+                            <p style="font-size: 0.78rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">Teléfono Celular</p>
+                            <p id="credTelefono" style="font-size: 1.05rem; font-family: monospace; font-weight: 700; margin: 2px 0 0 0; color: #15803d;">-</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Botones de Acción dentro del Flujo -->
-                <div style="width: 100%; display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.5rem;">
-                    <button type="button" id="btnDescargarPDF" class="btn-guardar" style="width: 100%; margin: 0; background-color: #15803d; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);">🖼️ Guardar Credencial HD</button>
-                    
+                <!-- Botonera de Control Inferior Sólida fuera del área de diseño -->
+                <div style="width: 100%; display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.5rem; background-color: #ffffff; padding: 0.8rem; border-radius: 0.75rem; box-sizing: border-box; border: 1px solid #e5e7eb;">
+                    <button type="button" id="btnDescargarPDF" class="btn-guardar" style="width: 100%; margin: 0; background-color: #15803d;">🖼️ Guardar Credencial HD</button>
                     <div style="display: flex; gap: 0.5rem; width: 100%;">
-                        <button type="button" id="btnEditarPerfil" class="btn-buscar" style="flex: 1; padding: 0.85rem; font-size: 0.9rem; background-color: #1f2937;">✏️ Modificar Datos</button>
-                        <button type="button" id="btnCerrar" class="btn-buscar" style="flex: 1; padding: 0.85rem; font-size: 0.9rem; background-color: #6b7280;">◀ Salir</button>
+                        <button type="button" id="btnEditarPerfil" class="btn-buscar" style="flex: 1; padding: 0.75rem 0; font-size: 0.85rem; background-color: #1f2937;">✏️ Modificar</button>
+                        <button type="button" id="btnCerrar" class="btn-buscar" style="flex: 1; padding: 0.75rem 0; font-size: 0.85rem; background-color: #6b7280;">◀ Salir</button>
                     </div>
                 </div>
-
+   <div class="footer-institucional-img"></div>
             </div>
-
-            <div class="footer-institucional-img"></div>
         </div>
+
 
 
     <!-- VENTANA FLOTANTE PARA FIRMA -->
