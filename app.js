@@ -41,7 +41,6 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     try {
         const payloadBuscar = { action: 'buscar', curp: curp };
         
-        // Mantenemos la estructura de red idéntica a tu versión funcional
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
             redirect: 'follow', 
@@ -53,18 +52,17 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 
         const datos = await res.json();
 
-        // Control de brigadistas rechazados por el padrón
         if (datos.status === "denied") {
             ocultarCarga();
             alert(`⛔ ACCESO DENEGADO\n\n${datos.message}`);
             return;
         }
 
-        document.getElementById('nombre_curp').value = curp;
+        if (document.getElementById('nombre_curp')) {
+            document.getElementById('nombre_curp').value = curp;
+        }
 
-        // Caso A: El brigadista ya tiene registros previos en Sheets
         if (datos.existe) {
-            // Restauramos la asignación directa y rápida original
             const nom = datos.nombre ? String(datos.nombre).trim() : ""; 
             const mun = datos.municipio ? String(datos.municipio).trim() : "";
             const pue = datos.puesto ? String(datos.puesto).trim() : "";
@@ -75,15 +73,13 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             fotoUrlActual = datos.foto_url ? String(datos.foto_url).trim() : "";
             firmaBase64 = datos.firma_url ? String(datos.firma_url).trim() : "";
 
-            // Inyectar datos directamente en los controles del formulario
-            document.getElementById('nombre').value = nom;
-            document.getElementById('municipio').value = mun;
-            document.getElementById('puesto').value = pue;
-            document.getElementById('telefono').value = tel;
-            document.getElementById('zona').value = zon;
-            document.getElementById('correo').value = cor;
+            if (document.getElementById('nombre')) document.getElementById('nombre').value = nom;
+            if (document.getElementById('municipio')) document.getElementById('municipio').value = mun;
+            if (document.getElementById('puesto')) document.getElementById('puesto').value = pue;
+            if (document.getElementById('telefono')) document.getElementById('telefono').value = tel;
+            if (document.getElementById('zona')) document.getElementById('zona').value = zon;
+            if (document.getElementById('correo')) document.getElementById('correo').value = cor;
 
-            // Validación de campos obligatorios ligera original
             let camposFaltantes = [];
             if (!nom) camposFaltantes.push("Nombre Completo");
             if (!mun) camposFaltantes.push("Municipio");
@@ -102,59 +98,55 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             if (camposFaltantes.length > 0) {
                 ocultarCarga();
                 alert(`⚠️ PERFIL INCOMPLETO.\n\nCompleta los campos pendientes para desbloquear tu credencial:\n• ${camposFaltantes.join('\n• ')}`);
-                document.getElementById('p2_titulo').innerText = "Completar Registro";
-                document.getElementById('fotoAviso').classList.add('hidden');
+                
+                if (document.getElementById('p2_titulo')) {
+                    document.getElementById('p2_titulo').innerText = "Completar Registro";
+                }
+                document.getElementById('fotoAviso')?.classList.add('hidden');
                 
                 setTimeout(() => {
-                    inicializarCanvasFirma();
+                    if (typeof inicializarCanvasFirma === 'function') inicializarCanvasFirma();
                 }, 150);
                 
                 irAPantalla(2); 
                 return; 
             }
 
-                      // Busca donde se asignan los datos de la credencial en tu app.js y actualízalo con el bloque de WhatsApp:
-            document.getElementById('credCompleto').innerText = nom.toUpperCase();
-            document.getElementById('credPuesto').innerText = mun.toUpperCase();
-            document.getElementById('credZona').innerText = zon.toUpperCase();
-            document.getElementById('credIdentificacion').innerText = curp;
-            document.getElementById('credFoto').src = fotoUrlActual;
+            if (document.getElementById('credCompleto')) document.getElementById('credCompleto').innerText = nom.toUpperCase();
+            if (document.getElementById('credPuesto')) document.getElementById('credPuesto').innerText = mun.toUpperCase();
+            if (document.getElementById('credZona')) document.getElementById('credZona').innerText = zon.toUpperCase();
+            if (document.getElementById('credIdentificacion')) document.getElementById('credIdentificacion').innerText = curp;
+            if (document.getElementById('credFoto')) document.getElementById('credFoto').src = fotoUrlActual;
             
-            document.getElementById('credTelefono').innerText = tel;
-            
-            if (tel && tel.trim() !== "") {
-                const numeroLimpio = tel.replace(/\s+/g, '');
-                
-                // => ASIGNACIÓN DEL PROTOCOLO DE LLAMADAS NATIVAS:
-                document.getElementById('btnLlamarBrigadista').href = "tel:" + numeroLimpio;
-                document.getElementById('btnLlamarBrigadista').style.display = "inline-flex";
-                
-                          // REEMPLAZAR ÚNICAMENTE LA ASIGNACIÓN DE WHATSAPP EN TU app.js
-            if (tel && tel.trim() !== "") {
-                const numeroLimpio = tel.replace(/\s+/g, '');
-                
-                // Marcado telefónico nativo intacto
-                document.getElementById('btnLlamarBrigadista').href = "tel:" + numeroLimpio;
-                document.getElementById('btnLlamarBrigadista').style.display = "inline-flex";
-                
-                // CORRECCIÓN: Protocolo universal nativo para abrir la aplicación directamente
-                document.getElementById('btnWhatsappBrigadista').href = "whatsapp://send?phone=52" + numeroLimpio;
-                document.getElementById('btnWhatsappBrigadista').style.display = "inline-flex";
-            } else {
-                document.getElementById('btnLlamarBrigadista').style.display = "none";
-                document.getElementById('btnWhatsappBrigadista').style.display = "none";
+            if (document.getElementById('credTelefono')) {
+                document.getElementById('credTelefono').innerText = tel;
             }
 
-
-
+            if (tel && tel.trim() !== "") {
+                const numeroLimpio = tel.replace(/\s+/g, '');
+                if (document.getElementById('btnLlamarBrigadista')) {
+                    document.getElementById('btnLlamarBrigadista').href = "tel:" + numeroLimpio;
+                    document.getElementById('btnLlamarBrigadista').style.display = "inline-flex";
+                }
+                if (document.getElementById('btnWhatsappBrigadista')) {
+                    document.getElementById('btnWhatsappBrigadista').href = "whatsapp://send?phone=52" + numeroLimpio;
+                    document.getElementById('btnWhatsappBrigadista').style.display = "inline-flex";
+                }
+            } else {
+                if (document.getElementById('btnLlamarBrigadista')) document.getElementById('btnLlamarBrigadista').style.display = "none";
+                if (document.getElementById('btnWhatsappBrigadista')) document.getElementById('btnWhatsappBrigadista').style.display = "none";
+            }
+            
             setTimeout(() => {
-                inicializarCanvasFirma();
+                if (typeof inicializarCanvasFirma === 'function') inicializarCanvasFirma();
                 if (firmaBase64 && firmaBase64.startsWith("data:image")) {
-                    document.getElementById('firmaAviso').classList.remove('hidden');
+                    document.getElementById('firmaAviso')?.classList.remove('hidden');
                     const imgFirmaPrevia = new Image();
                     imgFirmaPrevia.onload = function() {
-                        ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
-                        ctxFirma.drawImage(imgFirmaPrevia, 0, 0);
+                        if (ctxFirma && canvasFirma) {
+                            ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
+                            ctxFirma.drawImage(imgFirmaPrevia, 0, 0);
+                        }
                     };
                     imgFirmaPrevia.src = firmaBase64;
                 }
@@ -164,24 +156,29 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             irAPantalla(3);
 
         } else {
-            // Caso B: El brigadista accede por primera vez al sistema
             ocultarCarga();
             alert(`🎉 ¡Validación Exitosa!\n\nCURP localizada en el padrón oficial. Complementa tu perfil para emitir tu credencial.`);
             
-            document.getElementById('p2_titulo').innerText = "Nuevo Registro";
-            document.getElementById('perfilForm').reset();
-            document.getElementById('nombre_curp').value = curp;
+            if (document.getElementById('p2_titulo')) {
+                document.getElementById('p2_titulo').innerText = "Nuevo Registro";
+            }
+            document.getElementById('perfilForm')?.reset();
+            if (document.getElementById('nombre_curp')) {
+                document.getElementById('nombre_curp').value = curp;
+            }
             
-            document.getElementById('nombre').value = datos.nombre_oficial ? String(datos.nombre_oficial).toUpperCase() : "";
-            document.getElementById('municipio').value = datos.municipio_oficial ? String(datos.municipio_oficial).toUpperCase() : "";
+            if (document.getElementById('nombre')) document.getElementById('nombre').value = datos.nombre_oficial ? String(datos.nombre_oficial).toUpperCase() : "";
+            if (document.getElementById('municipio')) document.getElementById('municipio').value = datos.municipio_oficial ? String(datos.municipio_oficial).toUpperCase() : "";
             
             fotoUrlActual = "";
             fotoCompletaBase64 = "";
             firmaBase64 = "";
-            document.getElementById('fotoAviso').classList.add('hidden');
-            document.getElementById('firmaAviso').classList.add('hidden');
+            document.getElementById('fotoAviso')?.classList.add('hidden');
+            document.getElementById('firmaAviso')?.classList.add('hidden');
             
-            setTimeout(inicializarCanvasFirma, 150);
+            setTimeout(() => {
+                if (typeof inicializarCanvasFirma === 'function') inicializarCanvasFirma();
+            }, 150);
             irAPantalla(2);
         }
     } catch (err) {
