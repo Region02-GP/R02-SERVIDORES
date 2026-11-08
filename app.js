@@ -189,81 +189,9 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 });
 
 // ========================================================
-// BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO SINCRO
+// BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO SINCRO (CORREGIDO)
 // ========================================================
 
-// REEMPLAZAR COMPLETAMENTE EL EVENTO 'inputFoto' EN TU app.js
-// REEMPLAZAR EL EVENTO 'inputFoto' EN TU app.js (Línea 243 aprox.)
-document.getElementById('inputFoto').addEventListener('change', (e) => {
-    const files = e.target.files; 
-    
-    // VALIDACIÓN DE SEGURIDAD CLAVE: Si no hay archivos reales seleccionados, 
-    // cancela el proceso inmediatamente y evita que truene el FileReader.
-    if (!files || files.length === 0 || !files[0]) {
-        console.warn("Selección de fotografía cancelada por el usuario.");
-        return; 
-    }
-
-    mostrarCarga("Comprimiendo fotografía a escala celular...");
-    const reader = new FileReader();
-    
-    reader.onload = function(evt) {
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 180; 
-            canvas.height = 240;
-            const ctx = canvas.getContext('2d');
-            
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
-            
-            let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
-            const aspectImg = img.width / img.height;
-            const aspectCanv = 180 / 240;
-            
-            if (aspectImg > aspectCanv) {
-                srcW = img.height * aspectCanv;
-                srcX = (img.width - srcW) / 2;
-            } else {
-                srcH = img.width / aspectCanv;
-                srcY = (img.height - srcH) / 2;
-            }
-
-            try {
-                ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 180, 240);
-                fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.6);
-                
-                const aviso = document.getElementById('fotoAviso');
-                if (aviso) aviso.classList.remove('hidden');
-            } catch (canvasError) {
-                console.error("Fallo preventivo en render de canvas:", canvasError);
-                fotoCompletaBase64 = evt.target.result;
-            } finally {
-                ocultarCarga();
-            }
-        };
-        
-        img.onerror = function() {
-            console.error("Error al estructurar el objeto de imagen base.");
-            ocultarCarga();
-        };
-        
-        img.src = evt.target.result;
-    };
-    
-    reader.onerror = function() {
-        console.error("Error en la lectura del archivo físico.");
-        ocultarCarga();
-    };
-    
-    // Pasa el archivo individual directo garantizado [0]
-    reader.readAsDataURL(files[0]);
-});
-
-
-
-// REEMPLAZAR EN app.js: Bloque del Evento 'submit' (Línea 193 a 248 aprox.)
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     e.preventDefault(); 
     
@@ -280,7 +208,6 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         fotoParaEnviar = fotoCompletaBase64;
     }
 
-    // Captura segura previniendo elementos nulos en el DOM
     const txtNombre = document.getElementById('nombre')?.value || "";
     const txtMunicipio = document.getElementById('municipio')?.value || "";
     const txtPuesto = document.getElementById('puesto')?.value || "";
@@ -313,23 +240,19 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
         });
         const resultado = await res.json();
 
-              // BUSCA ESTE BLOQUE EN EL EVENTO 'submit' DE TU app.js Y REEMPLÁZALO:
         if (resultado.status === "success") {
             ocultarCarga();
             alert('🎉 ¡Perfil sincronizado correctamente!');
             
-            // Sincronización visual en tiempo real con la Pantalla 3
-            document.getElementById('credCompleto').innerText = txtNombre.toUpperCase();
-            document.getElementById('credPuesto').innerText = txtMunicipio.toUpperCase();
-            document.getElementById('credZona').innerText = txtZona.toUpperCase();
-            document.getElementById('credIdentificacion').innerText = curp;
+            if (document.getElementById('credCompleto')) document.getElementById('credCompleto').innerText = txtNombre.toUpperCase();
+            if (document.getElementById('credPuesto')) document.getElementById('credPuesto').innerText = txtMunicipio.toUpperCase();
+            if (document.getElementById('credZona')) document.getElementById('credZona').innerText = txtZona.toUpperCase();
+            if (document.getElementById('credIdentificacion')) document.getElementById('credIdentificacion').innerText = curp;
             
-            // => CORRECCIÓN CLAVE: Inyectar el teléfono modificado al elemento de la Credencial
             if (document.getElementById('credTelefono')) {
                 document.getElementById('credTelefono').innerText = txtTelefono;
             }
 
-            // => CORRECCIÓN DE ENLACES: Actualizar dinámicamente los botones de llamadas y WhatsApp
             if (txtTelefono && txtTelefono.trim() !== "") {
                 const numeroLimpio = txtTelefono.replace(/\s+/g, '');
                 if (document.getElementById('btnLlamarBrigadista')) {
@@ -346,13 +269,20 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
             }
             
             fotoUrlActual = resultado.foto_url || fotoParaEnviar;
-            document.getElementById('credFoto').src = fotoUrlActual;
+            if (document.getElementById('credFoto')) document.getElementById('credFoto').src = fotoUrlActual;
             
             fotoCompletaBase64 = "";
-            document.getElementById('fotoAviso').classList.add('hidden');
+            document.getElementById('fotoAviso')?.classList.add('hidden');
             irAPantalla(3);
+        } else {
+            ocultarCarga();
+            alert('Error: ' + resultado.message);
         }
-
+    } catch (err) {
+        console.error(err);
+        ocultarCarga();
+        alert('Fallo de sincronización con la base de datos central. Verifica tu Deploy en Google Sheets.');
+    }
 });
 
 
