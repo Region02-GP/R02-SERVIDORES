@@ -179,6 +179,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 // BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO SINCRO
 // ========================================================
 
+// CÓDIGO CON EL ERROR ACTUAL EN TU APP.JS:
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const files = e.target.files; 
     if (files && files.length > 0) {
@@ -187,26 +188,13 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
         reader.onload = function(evt) {
             const img = new Image();
             img.onload = function() {
-                const canvas = document.createElement('canvas');
-                canvas.width = 180; 
-                canvas.height = 240;
-                const ctx = canvas.getContext('2d');
-                
-                let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
-                const aspectImg = img.width / img.height;
-                const aspectCanv = 180 / 240;
-                
-                if (aspectImg > aspectCanv) {
-                    srcW = img.height * aspectCanv;
-                    srcX = (img.width - srcW) / 2;
-                } else {
-                    srcH = img.width / aspectCanv;
-                    srcY = (img.height - srcH) / 2;
-                }
+                // ... (proceso de dibujado del canvas) ...
 
                 ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 180, 240);
                 fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.6);
                 
+                // ❌ AQUÍ SE QUEDA ATORADO: El ID 'fotoAviso' no se encuentra o está duplicado,
+                // impidiendo que el código avance a la siguiente línea que oculta el cargador.
                 document.getElementById('fotoAviso').classList.remove('hidden');
                 ocultarCarga();
             };
@@ -215,6 +203,7 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
         reader.readAsDataURL(files);
     }
 });
+
 
 // REEMPLAZAR EN app.js: Bloque del Evento 'submit' (Línea 193 a 248 aprox.)
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
