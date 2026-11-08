@@ -147,10 +147,20 @@
                         <p id="credIdentificacion" style="font-size: 1.05rem; font-family: monospace; font-weight: 700; color: #111827; margin: 0.2rem 0 0 0; letter-spacing: 0.05em;">-</p>
                     </div>
 
-                    <div>
-                        <label class="campo-etiqueta" style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);">Teléfono Celular</label>
-                        <p id="credTelefono" style="font-size: 1.05rem; font-family: monospace; font-weight: 700; color: var(--color-guinda); margin: 0.2rem 0 0 0;">-</p>
-                    </div>
+                    <!-- REEMPLAZAR ÚNICAMENTE EL BLOQUE DEL TELÉFONO EN LA PANTALLA 3 DE index.html -->
+<div>
+    <p style="font-size: 0.8rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">Teléfono</p>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 2px;">
+        <!-- Elemento de texto original intacto -->
+        <p id="credTelefono" style="font-size: 1.05rem; font-family: monospace; font-weight: 700; margin: 0; color: #15803d;">-</p>
+        
+        <!-- Nuevo Botón de Llamada Rápida Directa -->
+        <a id="btnLlamarBrigadista" href="#" style="display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; background-color: #15803d; color: #ffffff; border-radius: 50%; text-decoration: none; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: transform 0.2s;" title="Llamar al Brigadista">
+            📞
+        </a>
+    </div>
+</div>
+
                 </div>
 
                 <!-- Botones de Acción dentro del Flujo -->
