@@ -631,3 +631,4 @@ async function cargarEstadisticasDirectas() {
         alert("No se pudieron extraer los indicadores. Asegúrate de abrir una pestaña de incógnito para purgar las credenciales viejas.");
     }
 }
+// Forzar despliegue de estadisticas VCXC cuenta externa - Noviembre 2026
