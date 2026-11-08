@@ -669,50 +669,56 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 });
 
 
-// REEMPLAZAR ÚNICAMENTE LA FUNCIÓN EN TU app.js
-async function cargarEstadisticasDirectas() {
-    mostrarCarga("Estructurando indicadores consolidados...");
-    
-    // Busca esta línea al final de tu app.js y déjala exactamente así:
-const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
 // REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
-
+async function cargarEstadisticasDirectas() {
+    mostrarCarga("Procesando volumen de datos consolidados...");
+    
+    // Ruta directa de exportación para leer el CSV crudo completo sin límite de filas
+    const urlConsulta = "https://google.com";
+    
     try {
         const respuesta = await fetch(urlConsulta);
         if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
         
         const textoCSV = await respuesta.text();
         
-        // Segmentación de renglones aislando comas especiales
-        const filas = textoCSV.split("\n").map(fila => {
-            if (!fila) return [];
-            return fila.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || fila.split(",");
-        });
-
-        // Omitimos la cabecera (Fila 1 con los títulos) y filtramos líneas vacías
-        const registrosValidos = filas.slice(1).map(f => {
-            return f.map(celda => celda.replace(/^"(.*)"$/, '$1').trim());
-        }).filter(f => f.length > 4 && f !== "");
-
-        // Conteo del total consolidado de encuestas levantadas en el documento
-        const totalEncuestas = registrosValidos.length;
-        document.getElementById('estTotal').innerText = totalEncuestas;
-
-        // Totalización de la columna E (Índice 4: SERVIDOR)
+        // 1. Dividir de forma estricta por saltos de línea (compatible con hojas grandes)
+        const lineas = textoCSV.split(/\r?\n/);
+        
         const conteoEncuestas = {};
-        registrosValidos.forEach(fila => {
-            const nombreBrigadista = fila[4] ? fila[4].toUpperCase() : "";
-            // Filtramos para evitar meter los nombres vacíos o la palabra repetida de la cabecera
-            if (nombreBrigadista && nombreBrigadista !== "SERVIDOR") {
-                conteoEncuestas[nombreBrigadista] = (conteoEncuestas[nombreBrigadista] || 0) + 1;
-            }
-        });
+        let totalGeneralEncuestas = 0;
 
-        // Inyección visual en el contenedor de la interfaz
+        // Omitimos la línea 0 (cabeceras) y recorremos toda la hoja de cálculo
+        for (let i = 1; i < lineas.length; i++) {
+            const linea = lineas[i].trim();
+            if (!linea) continue; // Salta líneas totalmente vacías
+
+            // 2. Expresión regular avanzada para separar las columnas por comas, 
+            // pero ignorando las comas que están dentro de comillas (coordenadas Lat/Long)
+            const columnas = linea.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || linea.split(",");
+            
+            // Columna E es el índice 4 (SERVIDOR)
+            if (columnas && columnas[4]) {
+                // Limpiamos comillas de escape de Google y espacios extras
+                const brigadista = columnas[4].replace(/^"(.*)"$/, '$1').trim().toUpperCase();
+                
+                // Filtramos palabras reservadas de la cabecera y vacíos
+                if (brigadista && brigadista !== "SERVIDOR" && brigadista !== "") {
+                    conteoEncuestas[brigadista] = (conteoEncuestas[brigadista] || 0) + 1;
+                    totalGeneralEncuestas++;
+                }
+            }
+        }
+
+        // Inyectamos el total general exacto en el indicador superior
+        document.getElementById('estTotal').innerText = totalGeneralEncuestas;
+
+        // 3. Dibujado dinámico e inmediato en la interfaz
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = "";
 
+            // Ordenamos alfabéticamente a los brigadistas para una lectura limpia
             Object.keys(conteoEncuestas).sort().forEach(brigadista => {
                 const numeroEncuestas = conteoEncuestas[brigadista];
                 const renglon = document.createElement('div');
@@ -736,7 +742,7 @@ const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error procesando conteo de encuestas:", error);
+        console.error("Error procesando conteo de encuestas masivo:", error);
         ocultarCarga();
         alert("No se pudieron totalizar los registros de las encuestas en este momento.");
     }
