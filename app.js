@@ -574,49 +574,58 @@ async function cargarEstadisticasDirectas() {
     
     // Busca esta línea al final de tu app.js y déjala exactamente así:
 const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
+// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 
     try {
         const respuesta = await fetch(urlConsulta);
-        if (!respuesta.ok) throw new Error("Rechazo de comunicación por protección de cuenta Google");
+        if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
         
         const textoCSV = await respuesta.text();
         
-        // Separador tolerante a comas internas de coordenadas en tu archivo VCXC
+        // Segmentación de renglones aislando comas especiales
         const filas = textoCSV.split("\n").map(fila => {
             if (!fila) return [];
             return fila.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || fila.split(",");
         });
 
-        // Filtrado omitiendo cabeceras e hileras vacías
-        const registrosLimpios = filas.slice(1).map(f => {
+        // Omitimos la cabecera (Fila 1 con los títulos) y filtramos líneas vacías
+        const registrosValidos = filas.slice(1).map(f => {
             return f.map(celda => celda.replace(/^"(.*)"$/, '$1').trim());
-        }).filter(f => f.length > 5 && f !== "");
+        }).filter(f => f.length > 4 && f !== "");
 
-        // Conteo general consolidado en pantalla
-        const totalRegistrados = registrosLimpios.length;
-        document.getElementById('estTotal').innerText = totalRegistrados;
+        // Conteo del total consolidado de encuestas levantadas en el documento
+        const totalEncuestas = registrosValidos.length;
+        document.getElementById('estTotal').innerText = totalEncuestas;
 
-        // Agrupación por Nombre del Brigadista (Columna E -> Índice 4 del CSV)
-        const conteoPorBrigadista = {};
-        registrosLimpios.forEach(fila => {
-            const brigadista = fila[4] ? fila[4].toUpperCase() : "NO ESPECIFICADO";
-            if (brigadista !== "SERVIDOR" && brigadista !== "") {
-                conteoPorBrigadista[brigadista] = (conteoPorBrigadista[brigadista] || 0) + 1;
+        // Totalización de la columna E (Índice 4: SERVIDOR)
+        const conteoEncuestas = {};
+        registrosValidos.forEach(fila => {
+            const nombreBrigadista = fila[4] ? fila[4].toUpperCase() : "";
+            // Filtramos para evitar meter los nombres vacíos o la palabra repetida de la cabecera
+            if (nombreBrigadista && nombreBrigadista !== "SERVIDOR") {
+                conteoEncuestas[nombreBrigadista] = (conteoEncuestas[nombreBrigadista] || 0) + 1;
             }
         });
 
-        // Inyección dinámica de filas informativas
+        // Inyección visual en el contenedor de la interfaz
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = "";
 
-            Object.keys(conteoPorBrigadista).sort().forEach(nombreBrigadista => {
-                const cantidadRegistros = conteoPorBrigadista[nombreBrigadista];
+            Object.keys(conteoEncuestas).sort().forEach(brigadista => {
+                const numeroEncuestas = conteoEncuestas[brigadista];
                 const renglon = document.createElement('div');
-                renglon.style.cssText = "display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(97, 18, 50, 0.2); padding: 0.6rem 0.8rem; border-radius: 0.4rem; background-color: rgba(255,255,255,0.85); box-sizing: border-box; width: 100%;";
+                renglon.style.cssText = "display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(97, 18, 50, 0.2); padding: 0.6rem 0.8rem; border-radius: 0.4rem; background-color: rgba(255,255,255,0.85); box-sizing: border-box; width: 100%; margin-bottom: 0.2rem;";
+                
                 renglon.innerHTML = `
-                    <span style="font-size: 0.82rem; font-weight: 700; color: #1f2937; text-transform: uppercase;">${nombreBrigadista}</span>
-                    <span style="font-size: 0.9rem; font-weight: 800; color: var(--color-guinda); background-color: rgba(97, 18, 50, 0.1); padding: 2px 8px; border-radius: 10px;">${cantidadRegistros}</span>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-size: 0.82rem; font-weight: 700; color: #1f2937; text-transform: uppercase;">${brigadista}</span>
+                        <span style="font-size: 0.68rem; color: var(--color-texto-mutado); font-weight: 500; margin-top: 1px;">BRIGADISTA ACTIVO</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <span style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);"># ENCUESTAS:</span>
+                        <span style="font-size: 0.95rem; font-weight: 800; color: var(--color-guinda); background-color: rgba(97, 18, 50, 0.1); padding: 3px 10px; border-radius: 12px;">${numeroEncuestas}</span>
+                    </div>
                 `;
                 contenedor.appendChild(renglon);
             });
@@ -626,9 +635,8 @@ const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error consultando el CSV público:", error);
+        console.error("Error procesando conteo de encuestas:", error);
         ocultarCarga();
-        alert("No se pudieron extraer los indicadores. Asegúrate de abrir una pestaña de incógnito para purgar las credenciales viejas.");
+        alert("No se pudieron totalizar los registros de las encuestas en este momento.");
     }
 }
-// Forzar despliegue de estadisticas VCXC cuenta externa - Noviembre 2026
