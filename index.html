@@ -190,29 +190,26 @@
 
         </div>
 
-               <!-- Botones de Acción dentro del Flujo (Rediseño Transparente Guinda) -->
-        <div style="width: 100%; display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.8rem; box-sizing: border-box; padding: 0 0.5rem;">
+        <!-- BARRA DE NAVEGACIÓN INFERIOR (ESTILO NAV-BAR DE APLICACIÓN MÓVIL) -->
+        <div style="position: absolute; bottom: 0; left: 0; width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-top: 2px solid #611232; box-sizing: border-box; z-index: 100; border-bottom-left-radius: 1.25rem; border-bottom-right-radius: 1.25rem; overflow: hidden;">
             
-            <!-- Botón 1: Guardar Credencial HD (Transparente con Contorno Guinda) -->
-            <button type="button" id="btnDescargarPDF" style="width: 100%; margin: 0; background-color: transparent !important; color: #611232; border: 2px solid #611232; padding: 0.85rem; font-size: 0.9rem; font-weight: 700; border-radius: 0.5rem; cursor: pointer; box-shadow: none; box-sizing: border-box; display: block;">
-                🖼️ Guardar Credencial HD
+            <!-- Opción 1: Guardar Credencial HD (Pestaña Izquierda) -->
+            <button type="button" id="btnDescargarPDF" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.2); padding: 0.9rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+                <span style="font-size: 1.2rem;">🖼️</span> Guardar
             </button>
             
-            <!-- Fila Doble Perfectamente Alineada -->
-            <div style="display: flex; gap: 0.5rem; width: 100%; box-sizing: border-box;">
-                
-                <!-- Botón 2: Modificar Datos (Transparente con Contorno Guinda) -->
-                <button type="button" id="btnEditarPerfil" style="flex: 1; background-color: transparent !important; color: #611232; border: 2px solid #611232; padding: 0.85rem; font-size: 0.9rem; font-weight: 700; border-radius: 0.5rem; cursor: pointer; box-sizing: border-box;">
-                    ✏️ Modificar Datos
-                </button>
-                
-                <!-- Botón 3: Salir (Transparente con Contorno Guinda) -->
-                <button type="button" id="btnCerrar" style="flex: 1; background-color: transparent !important; color: #611232; border: 2px solid #611232; padding: 0.85rem; font-size: 0.9rem; font-weight: 700; border-radius: 0.5rem; cursor: pointer; box-sizing: border-box;">
-                    ◀ Salir
-                </button>
-                
-            </div>
+            <!-- Opción 2: Modificar Datos (Pestaña Central) -->
+            <button type="button" id="btnEditarPerfil" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.2); padding: 0.9rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+                <span style="font-size: 1.2rem;">✏️</span> Modificar
+            </button>
+            
+            <!-- Opción 3: Salir (Pestaña Derecha) -->
+            <button type="button" id="btnCerrar" style="flex: 1; background: transparent !important; color: #611232; border: none; padding: 0.9rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+                <span style="font-size: 1.2rem;">◀</span> Salir
+            </button>
+            
         </div>
+
 
 
     </div>
