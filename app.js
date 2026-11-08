@@ -573,8 +573,9 @@ async function cargarEstadisticasDirectas() {
     mostrarCarga("Estructurando indicadores consolidados...");
     
     // URL DE EXPORTACIÓN PÚBLICA: Brinca el bloqueo de inicio de sesión de Google de cuentas ajenas
-    const urlConsulta = `https://google.com{GOOGLE_SHEET_ID}/export?format=csv&sheet=${encodeURIComponent(NOMBRE_PESTANA)}`;
-    
+   // REEMPLAZAR ÚNICAMENTE LA LÍNEA 579 EN TU app.js
+const urlConsulta = "https://google.com";
+
     try {
         const respuesta = await fetch(urlConsulta);
         if (!respuesta.ok) throw new Error("Rechazo de comunicación por protección de cuenta Google");
