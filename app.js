@@ -271,9 +271,16 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
                 if (document.getElementById('btnWhatsappBrigadista')) document.getElementById('btnWhatsappBrigadista').style.display = "none";
             }
             
-            fotoUrlActual = resultado.foto_url || fotoParaEnviar;
-            if (document.getElementById('credFoto')) document.getElementById('credFoto').src = fotoUrlActual;
+            // Asignación segura del origen de pixeles en pantalla previniendo demoras del servidor
+            if (document.getElementById('credFoto')) {
+                if (fotoCompletaBase64 && fotoCompletaBase64.startsWith("data:image")) {
+                    document.getElementById('credFoto').src = fotoCompletaBase64;
+                } else {
+                    document.getElementById('credFoto').src = resultado.foto_url || fotoParaEnviar;
+                }
+            }
             
+            fotoUrlActual = resultado.foto_url || fotoParaEnviar;
             fotoCompletaBase64 = "";
             document.getElementById('fotoAviso')?.classList.add('hidden');
             irAPantalla(3);
