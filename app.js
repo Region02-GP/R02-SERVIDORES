@@ -195,6 +195,77 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 // BLOQUE 3: COMPRESIÓN FOTOGRÁFICA Y ENVÍO SINCRO (CORREGIDO)
 // ========================================================
 
+// --- EVENTO DE CAPTURA Y COMPRESIÓN DE LA FOTO ---
+document.getElementById('inputFoto').addEventListener('change', (e) => {
+    const files = e.target.files; 
+    
+    if (!files || files.length === 0) {
+        console.warn("Selección de fotografía cancelada por el usuario.");
+        return; 
+    }
+
+    mostrarCarga("Comprimiendo fotografía a escala celular...");
+    const reader = new FileReader();
+    
+    reader.onload = function(evt) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 180; 
+            canvas.height = 240;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
+            const aspectImg = img.width / img.height;
+            const aspectCanv = 180 / 240;
+            
+            if (aspectImg > aspectCanv) {
+                srcW = img.height * aspectCanv;
+                srcX = (img.width - srcW) / 2;
+            } else {
+                srcH = img.width / aspectCanv;
+                srcY = (img.height - srcH) / 2;
+            }
+
+            try {
+                ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 180, 240);
+                fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                
+                const aviso = document.getElementById('fotoAviso');
+                if (aviso) aviso.classList.remove('hidden');
+                
+                const previsualizarFotoForm = document.getElementById('credFoto');
+                if (previsualizarFotoForm) {
+                    previsualizarFotoForm.src = fotoCompletaBase64;
+                }
+            } catch (canvasError) {
+                console.error("Fallo preventivo en render de canvas:", canvasError);
+                fotoCompletaBase64 = evt.target.result;
+            } finally {
+                ocultarCarga();
+            }
+        };
+        
+        img.onerror = function() {
+            console.error("Error al configurar objeto de imagen.");
+            ocultarCarga();
+        };
+        img.src = evt.target.result;
+    };
+    
+    reader.onerror = function() {
+        console.error("Error leyendo archivo físico.");
+        ocultarCarga();
+    };
+    
+    // Inyecta el primer archivo indexado válido en lugar de la lista completa
+    reader.readAsDataURL(files[0]);
+});
+
+// --- EVENTO SUBMIT DEL FORMULARIO (GUARDAR REGISTRO) ---
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     e.preventDefault(); 
     
