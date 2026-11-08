@@ -180,70 +180,73 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
 // ========================================================
 
 // REEMPLAZAR COMPLETAMENTE EL EVENTO 'inputFoto' EN TU app.js
+// REEMPLAZAR EL EVENTO 'inputFoto' EN TU app.js (Línea 243 aprox.)
 document.getElementById('inputFoto').addEventListener('change', (e) => {
     const files = e.target.files; 
-    if (files && files.length > 0) {
-        mostrarCarga("Comprimiendo fotografía a escala celular...");
-        const reader = new FileReader();
-        
-        reader.onload = function(evt) {
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                canvas.width = 180; 
-                canvas.height = 240;
-                const ctx = canvas.getContext('2d');
-                
-                // Asegurar renderizado suave en cualquier hardware móvil
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                
-                let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
-                const aspectImg = img.width / img.height;
-                const aspectCanv = 180 / 240;
-                
-                if (aspectImg > aspectCanv) {
-                    srcW = img.height * aspectCanv;
-                    srcX = (img.width - srcW) / 2;
-                } else {
-                    srcH = img.width / aspectCanv;
-                    srcY = (img.height - srcH) / 2;
-                }
+    
+    // VALIDACIÓN DE SEGURIDAD CLAVE: Si no hay archivos reales seleccionados, 
+    // cancela el proceso inmediatamente y evita que truene el FileReader.
+    if (!files || files.length === 0 || !files[0]) {
+        console.warn("Selección de fotografía cancelada por el usuario.");
+        return; 
+    }
 
-                try {
-                    // Dibujado seguro en el lienzo aislado
-                    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 180, 240);
-                    fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.6);
-                    
-                    const aviso = document.getElementById('fotoAviso');
-                    if (aviso) aviso.classList.remove('hidden');
-                } catch (canvasError) {
-                    console.error("Fallo preventivo en render de canvas:", canvasError);
-                    // Solución alternativa directa si el hardware bloquea toDataURL
-                    fotoCompletaBase64 = evt.target.result;
-                } finally {
-                    // Obliga al cargador a quitarse pase lo que pase con la foto
-                    ocultarCarga();
-                }
-            };
+    mostrarCarga("Comprimiendo fotografía a escala celular...");
+    const reader = new FileReader();
+    
+    reader.onload = function(evt) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 180; 
+            canvas.height = 240;
+            const ctx = canvas.getContext('2d');
             
-            img.onerror = function() {
-                console.error("Error al estructurar el objeto de imagen base.");
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
+            const aspectImg = img.width / img.height;
+            const aspectCanv = 180 / 240;
+            
+            if (aspectImg > aspectCanv) {
+                srcW = img.height * aspectCanv;
+                srcX = (img.width - srcW) / 2;
+            } else {
+                srcH = img.width / aspectCanv;
+                srcY = (img.height - srcH) / 2;
+            }
+
+            try {
+                ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 180, 240);
+                fotoCompletaBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                
+                const aviso = document.getElementById('fotoAviso');
+                if (aviso) aviso.classList.remove('hidden');
+            } catch (canvasError) {
+                console.error("Fallo preventivo en render de canvas:", canvasError);
+                fotoCompletaBase64 = evt.target.result;
+            } finally {
                 ocultarCarga();
-            };
-            
-            img.src = evt.target.result;
+            }
         };
         
-        reader.onerror = function() {
-            console.error("Error en la lectura del archivo físico.");
+        img.onerror = function() {
+            console.error("Error al estructurar el objeto de imagen base.");
             ocultarCarga();
         };
         
-        reader.readAsDataURL(files);
-    }
+        img.src = evt.target.result;
+    };
+    
+    reader.onerror = function() {
+        console.error("Error en la lectura del archivo físico.");
+        ocultarCarga();
+    };
+    
+    // Pasa el archivo individual directo garantizado [0]
+    reader.readAsDataURL(files[0]);
 });
-
 
 
 
