@@ -108,62 +108,56 @@
 
         <!-- PANTALLA 3: CREDENCIAL / GAFETE FINAL (CON BANNER, FOOTER Y FONDO INTEGRADO) -->
        <div id="pantalla3" class="tarjeta-control hidden" style="background-image: url('https://i.postimg.cc/WbrgKM9n/Fondo-crema-con-motivos-mesoamericanos-sutiles.png'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 44rem; max-width: 28rem !important; margin: 1.5rem auto; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25); border: 1px solid #ddc9a3; border-radius: 1.25rem;">            
-            <!-- 1. El Banner Institucional Superior Sigue Aquí -->
-            <div class="banner-institucional-img"></div>
-            <div class="encabezado-institucional">
-                <h1 class="titulo-principal" style="font-size: 1.3rem; font-weight: 800; margin: 0; color: var(--color-guinda);">Credencial Digital</h1>
-                <p class="subtitulo-patria" style="margin: 2px 0 0 0;">BRIGADISTA AUTORIZADO</p>
-            </div>
-
-            <!-- 2. Cuerpo Central con la Imagen de Fondo Directa del Cartel -->
-            <div class="cuerpo-credencial" style="background-image: url('https://postimg.cc'); background-size: cover; background-position: center; background-repeat: no-repeat; gap: 0.5rem; padding: 2rem 1.5rem 1.5rem 1.5rem; box-sizing: border-box; align-items: center; width: 100%; flex-grow: 1;">
+                <div style="position: relative; width: 100%; height: 100%;">
                 
-                <!-- Fotografía Oficial -->
-                <div class="marco-fotografia" style="width: 10.2rem; height: 12.8rem; border: 2px solid #ddc9a3; border-radius: 0.8rem; overflow: hidden; background-color: #e5e7eb; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-top: 0.5rem;">
-                    <img id="credFoto" src="" style="width: 100%; height: 100%; object-fit: cover;">
+                <!-- 1. Banner Institucional Superior Nativo Reincorporado -->
+                <div class="banner-institucional-img"></div>
+                <div class="encabezado-institucional">
+                    <p class="subtitulo-patria">IDENTIFICACIÓN DE BRIGADISTAS</p>
                 </div>
-                
-                <!-- Datos Nominativos Flotantes Centrados -->
-                <div class="datos-gafete-contenedor" style="width: 100%; text-align: center; display: flex; flex-direction: column; gap: 0.4rem; background: transparent; margin-top: 0.5rem;">
+
+                <div class="cuerpo-credencial" style="align-items: center; padding-top: 5.4rem; gap: 0.5rem; position: relative; z-index: 2; width: 100%; box-sizing: border-box;">
                     
-                    <!-- Nombre Completo sobre la franja guinda del fondo -->
-                    <div style="height: 2.8rem; display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 0.5rem;">
-                        <p id="credCompleto" style="color: #ffffff; font-size: 1.15rem; font-weight: 800; margin: 0; text-transform: uppercase; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); text-align: center; width: 100%; font-family: sans-serif;">-</p>
+                    <div class="marco-fotografia" style="width: 10.2rem; height: 12.8rem; margin-top: 0.2rem; border: 2px solid #ddc9a3; border-radius: 0.8rem; background-color: #e5e7eb; overflow: hidden;">
+                        <img id="credFoto" src="" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
-
-                    <!-- Datos Descriptivos con sombreado blanco sutil para perfecta lectura -->
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem; color: #1f2937; font-family: sans-serif; margin-top: 1.2rem;">
-                        <div>
-                            <p style="font-size: 0.78rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">Municipio</p>
-                            <p id="credPuesto" style="font-size: 1rem; font-weight: 700; margin: 2px 0 0 0; text-transform: uppercase;">-</p>
+                    
+                    <div class="datos-gafete-contenedor" style="margin-top: 0.8rem; width: 100%; padding: 0 1.25rem; box-sizing: border-box;">
+                        
+                        <div style="height: 2.6rem; display: flex; align-items: center; justify-content: center; width: 100%;">
+                            <p id="credCompleto" style="color: #ffffff; font-size: 1.1rem; font-weight: 800; margin: 0; text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); text-align: center; width: 100%; font-family: sans-serif;">-</p>
                         </div>
-                        <div>
-                            <p style="font-size: 0.78rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">Zona</p>
-                            <p id="credZona" style="font-size: 1rem; font-weight: 700; margin: 2px 0 0 0; text-transform: uppercase;">-</p>
+                        
+                        <div style="text-align: center; display: flex; flex-direction: column; gap: 0.6rem; color: #1f2937; margin-top: 2rem; font-family: sans-serif;">
+                            <div>
+                                <p style="font-size: 0.8rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">Municipio</p>
+                                <p id="credPuesto" style="font-size: 1rem; font-weight: 700; margin: 2px 0 0 0; text-transform: uppercase;">-</p>
+                            </div>
+                            <div>
+                                <p style="font-size: 0.8rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">Zona</p>
+                                <p id="credZona" style="font-size: 1rem; font-weight: 700; margin: 2px 0 0 0; text-transform: uppercase;">-</p>
+                            </div>
+                            <div>
+                                <p style="font-size: 0.8rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">CURP Oficial</p>
+                                <p id="credIdentificacion" style="font-size: 1.05rem; font-family: monospace; font-weight: 700; margin: 2px 0 0 0; letter-spacing: 0.03em;">-</p>
+                            </div>
+                            <!-- Nueva fila de teléfono acoplada limpiamente al formato original -->
+                            <div>
+                                <p style="font-size: 0.8rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">Teléfono</p>
+                                <p id="credTelefono" style="font-size: 1.05rem; font-family: monospace; font-weight: 700; margin: 2px 0 0 0; color: #15803d;">-</p>
+                            </div>
                         </div>
-                        <div>
-                            <p style="font-size: 0.78rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">CURP Oficial</p>
-                            <p id="credIdentificacion" style="font-size: 1.05rem; font-family: monospace; font-weight: 700; margin: 2px 0 0 0; letter-spacing: 0.03em;">-</p>
-                        </div>
-                        <div>
-                            <p style="font-size: 0.78rem; font-weight: bold; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase;">Teléfono Celular</p>
-                            <p id="credTelefono" style="font-size: 1.05rem; font-family: monospace; font-weight: 700; margin: 2px 0 0 0; color: #15803d;">-</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Botonera de Control Inferior Sólida -->
-                <div style="width: 100%; display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.5rem; background-color: #ffffff; padding: 0.8rem; border-radius: 0.75rem; box-sizing: border-box; border: 1px solid #e5e7eb; position: relative; z-index: 10;">
-                    <button type="button" id="btnDescargarPDF" class="btn-guardar" style="width: 100%; margin: 0; background-color: #15803d;">🖼️ Guardar Credencial HD</button>
-                    <div style="display: flex; gap: 0.5rem; width: 100%;">
-                        <button type="button" id="btnEditarPerfil" class="btn-buscar" style="flex: 1; padding: 0.75rem 0; font-size: 0.85rem; background-color: #1f2937;">✏️ Modificar</button>
-                        <button type="button" id="btnCerrar" class="btn-buscar" style="flex: 1; padding: 0.75rem 0; font-size: 0.85rem; background-color: #6b7280;">◀ Salir</button>
                     </div>
                 </div>
-
+            </div>
+            
+            <div style="padding: 1rem 1.25rem; display: flex; gap: 0.5rem; flex-shrink: 0; position: relative; z-index: 10; background-color: #fcfaf6; border-top: 1px solid #e5e7eb;">
+                <button type="button" id="btnEditarPerfil" class="btn-buscar" style="flex: 1; padding: 0.75rem 0;">✏️ Modificar</button>
+                <button type="button" id="btnDescargarPDF" class="btn-guardar" style="flex: 1; margin: 0; padding: 0.75rem 0; background-color: #15803d;">🖼️ Guardar</button>
+                <button type="button" id="btnCerrar" class="btn-buscar" style="background-color: #6b7280; padding: 0.75rem 1rem;">◀ Salir</button>
             </div>
 
-            <!-- 3. El Footer Institucional Tricolor Sigue Aquí -->
+            <!-- 2. Pie de Página Tricolor Nativo Reincorporado -->
             <div class="footer-institucional-img"></div>
         </div>
 
