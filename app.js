@@ -572,8 +572,8 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 async function cargarEstadisticasDirectas() {
     mostrarCarga("Estructurando indicadores consolidados...");
     
-    // URL DE EXPORTACIÓN PÚBLICA CORREGIDA: Trae los datos de forma directa sin importar la cuenta dueña
-    const urlConsulta = `https://google.com{GOOGLE_SHEET_ID}/export?format=csv&sheet=${encodeURIComponent(NOMBRE_PESTANA)}`;
+    // Busca esta línea al final de tu app.js y déjala exactamente así:
+const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
 
     try {
         const respuesta = await fetch(urlConsulta);
