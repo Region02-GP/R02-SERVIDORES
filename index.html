@@ -106,22 +106,27 @@
             <div class="footer-institucional-img"></div>
         </div>
 
+        <!-- PANTALLA 3: CREDENCIAL / GAFETE FINAL (CON BANNER, FOOTER Y FONDO INTEGRADO) -->
+       <div id="pantalla3" class="tarjeta-control hidden" style="background-image: url('https://i.postimg.cc/WbrgKM9n/Fondo-crema-con-motivos-mesoamericanos-sutiles.png'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 44rem; max-width: 28rem !important; margin: 1.5rem auto; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25); border: 1px solid #ddc9a3; border-radius: 1.25rem;">            
+            <!-- 1. El Banner Institucional Superior Sigue Aquí -->
+            <div class="banner-institucional-img"></div>
+            <div class="encabezado-institucional">
+                <h1 class="titulo-principal" style="font-size: 1.3rem; font-weight: 800; margin: 0; color: var(--color-guinda);">Credencial Digital</h1>
+                <p class="subtitulo-patria" style="margin: 2px 0 0 0;">BRIGADISTA AUTORIZADO</p>
+            </div>
 
-                        <!-- PANTALLA 3: CREDENCIAL / GAFETE FINAL (FONDO GRÁFICO DIRECTO) -->
-        <div id="pantalla3" class="tarjeta-control hidden" style="background-image: url('https://postimg.cc'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 44rem; max-width: 28rem !important; margin: 1.5rem auto; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25); border: 1px solid #ddc9a3; border-radius: 1.25rem;">
-            
-            <!-- Encabezado con padding invisible superior para librar el escudo del fondo gráfico -->
-            <div class="cuerpo-credencial" style="gap: 0.5rem; padding: 5.5rem 1.5rem 1.5rem 1.5rem; box-sizing: border-box; align-items: center; width: 100%; background: transparent;">
+            <!-- 2. Cuerpo Central con la Imagen de Fondo Directa del Cartel -->
+            <div class="cuerpo-credencial" style="background-image: url('https://postimg.cc'); background-size: cover; background-position: center; background-repeat: no-repeat; gap: 0.5rem; padding: 2rem 1.5rem 1.5rem 1.5rem; box-sizing: border-box; align-items: center; width: 100%; flex-grow: 1;">
                 
                 <!-- Fotografía Oficial -->
-                <div class="marco-fotografia" style="width: 10.2rem; height: 12.8rem; border: 2px solid #ddc9a3; border-radius: 0.8rem; overflow: hidden; background-color: #e5e7eb; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <div class="marco-fotografia" style="width: 10.2rem; height: 12.8rem; border: 2px solid #ddc9a3; border-radius: 0.8rem; overflow: hidden; background-color: #e5e7eb; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-top: 0.5rem;">
                     <img id="credFoto" src="" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 
-                <!-- Datos Nominativos Flotantes Centrados e Integrados -->
+                <!-- Datos Nominativos Flotantes Centrados -->
                 <div class="datos-gafete-contenedor" style="width: 100%; text-align: center; display: flex; flex-direction: column; gap: 0.4rem; background: transparent; margin-top: 0.5rem;">
                     
-                    <!-- Nombre Completo colocado exactamente sobre la franja guinda del fondo -->
+                    <!-- Nombre Completo sobre la franja guinda del fondo -->
                     <div style="height: 2.8rem; display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 0.5rem;">
                         <p id="credCompleto" style="color: #ffffff; font-size: 1.15rem; font-weight: 800; margin: 0; text-transform: uppercase; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); text-align: center; width: 100%; font-family: sans-serif;">-</p>
                     </div>
@@ -147,17 +152,21 @@
                     </div>
                 </div>
 
-                <!-- Botonera de Control Inferior Sólida fuera del área de diseño -->
-                <div style="width: 100%; display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.5rem; background-color: #ffffff; padding: 0.8rem; border-radius: 0.75rem; box-sizing: border-box; border: 1px solid #e5e7eb;">
+                <!-- Botonera de Control Inferior Sólida -->
+                <div style="width: 100%; display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.5rem; background-color: #ffffff; padding: 0.8rem; border-radius: 0.75rem; box-sizing: border-box; border: 1px solid #e5e7eb; position: relative; z-index: 10;">
                     <button type="button" id="btnDescargarPDF" class="btn-guardar" style="width: 100%; margin: 0; background-color: #15803d;">🖼️ Guardar Credencial HD</button>
                     <div style="display: flex; gap: 0.5rem; width: 100%;">
                         <button type="button" id="btnEditarPerfil" class="btn-buscar" style="flex: 1; padding: 0.75rem 0; font-size: 0.85rem; background-color: #1f2937;">✏️ Modificar</button>
                         <button type="button" id="btnCerrar" class="btn-buscar" style="flex: 1; padding: 0.75rem 0; font-size: 0.85rem; background-color: #6b7280;">◀ Salir</button>
                     </div>
                 </div>
-   <div class="footer-institucional-img"></div>
+
             </div>
+
+            <!-- 3. El Footer Institucional Tricolor Sigue Aquí -->
+            <div class="footer-institucional-img"></div>
         </div>
+
 
 
 
