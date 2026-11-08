@@ -218,6 +218,43 @@
     <div class="footer-institucional-img"></div>
 </div>
 
+        <!-- PANTALLA 4: ESTADÍSTICAS GENERALES -->
+        <div id="pantalla4" class="tarjeta-control hidden" style="background-image: url('https://i.postimg.cc/WbrgKM9n/Fondo-crema-con-motivos-mesoamericanos-sutiles.png'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 44rem; max-width: 28rem !important; margin: 1.5rem auto; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25); border: 1px solid #e2e8f0; border-radius: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+            
+            <div class="banner-institucional-img"></div>
+            
+            <div class="encabezado-institucional" style="background-color: transparent !important; border-bottom: none; position: relative; z-index: 10;">
+                <h1 class="titulo-principal" style="font-size: 1.4rem; font-weight: 800; margin: 0; color: var(--color-guinda); text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);">Módulo Estadístico</h1>
+                <p class="subtitulo-patria" style="margin: 4px 0 0 0; text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);">PADRÓN Y COBERTURA EN TIEMPO REAL</p>
+            </div>
+
+            <div class="cuerpo-credencial" style="gap: 1rem; padding: 1.5rem; box-sizing: border-box; width: 100%; flex-grow: 1; display: flex; flex-direction: column;">
+                
+                <!-- Tarjeta Principal: Total General -->
+                <div style="width: 100%; border: 2px solid #611232; border-radius: 0.5rem; padding: 1rem; text-align: center; background-color: rgba(255,255,255,0.65); box-sizing: border-box;">
+                    <p style="font-size: 0.75rem; font-weight: 700; color: var(--color-texto-mutado); margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Total de Brigadistas Registrados</p>
+                    <p id="estTotal" style="font-size: 2.2rem; font-weight: 800; color: var(--color-guinda); margin: 0.3rem 0 0 0;">0</p>
+                </div>
+
+                <!-- Desglose por Municipios -->
+                <p style="font-size: 0.75rem; font-weight: 700; color: var(--color-texto-mutado); margin: 0.5rem 0 0 0; text-transform: uppercase; letter-spacing: 0.05em;">Cobertura por Municipio</p>
+                <div id="contenedorMunicipios" style="width: 100%; display: flex; flex-direction: column; gap: 0.5rem; max-height: 14rem; overflow-y: auto; padding-right: 0.2rem; box-sizing: border-box;">
+                    <!-- Los renglones estadísticos se inyectarán aquí dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Barra de Navegación de Pantalla 4 -->
+            <div style="width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.9); border-top: 2px solid #611232; border-bottom: 1px solid #e5e7eb; box-sizing: border-box; z-index: 10; overflow: hidden; margin-top: auto; flex-shrink: 0;">
+                <button type="button" id="btnEstVolver" style="flex: 1; background: transparent !important; color: #611232; border: none; padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+                    <span style="font-size: 1.1rem;">🪪</span> Credencial
+                </button>
+                <button type="button" id="btnEstSalir" style="flex: 1; background: transparent !important; color: #611232; border: none; padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+                    <span style="font-size: 1.1rem;">◀</span> Salir
+                </button>
+            </div>
+
+            <div class="footer-institucional-img"></div>
+        </div>
 
     <!-- VENTANA FLOTANTE PARA FIRMA -->
     <div id="modalFirmaPantallaCompleta" class="overlay-carga hidden" style="background-color: rgba(17, 24, 39, 0.98); z-index: 10005; padding: 1rem; box-sizing: border-box; display: flex; flex-direction: column;">
