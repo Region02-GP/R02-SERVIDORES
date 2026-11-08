@@ -558,7 +558,7 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // ========================================================
 
 // => REEMPLAZA ESTO CON EL ID LARGO DE TU HOJA DE CÁLCULO DE GOOGLE:
-const GOOGLE_SHEET_ID = "1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
+const GOOGLE_SHEET_ID = "1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8";
 // Nombre exacto de la pestaña donde se guardan las filas de los brigadistas registrados:
 const NOMBRE_PESTANA = "VCXC"; 
 
