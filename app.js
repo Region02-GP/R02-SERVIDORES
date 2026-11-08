@@ -557,26 +557,22 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================
 
-// 1. Variables de enlace con tu documento real verificado
 const GOOGLE_SHEET_ID = "1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8";
 const NOMBRE_PESTANA = "VCXC"; 
 
-// Disparador para la navegación hacia la Pantalla 4
 document.getElementById('btnVerEstadisticas').addEventListener('click', cargarEstadisticasDirectas);
 
-// Botones de salida de la Pantalla 4
 document.getElementById('btnEstVolver').addEventListener('click', () => irAPantalla(3));
 document.getElementById('btnEstSalir').addEventListener('click', () => {
     document.getElementById('p1_curp').value = "";
     irAPantalla(1);
 });
 
-// REEMPLAZAR COMPLETAMENTE ESTA FUNCIÓN AL FINAL DE TU app.js (Línea 582 aprox.)
 async function cargarEstadisticasDirectas() {
     mostrarCarga("Estructurando indicadores consolidados...");
     
-    // URL FIJA CORREGIDA: Apunta directamente a docs.google.com e inyecta tu ID verificado de Sheets sin llaves
-    const urlConsulta = "https://google.com";
+    // LINEA CORREGIDA Y ACTIVA:
+    const urlConsulta = `https://google.com{GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(NOMBRE_PESTANA)}`;
     
     try {
         const respuesta = await fetch(urlConsulta);
@@ -584,22 +580,18 @@ async function cargarEstadisticasDirectas() {
         
         const textoCSV = await respuesta.text();
         
-        // Expresión regular avanzada para segmentar filas respetando las comas de coordenadas y fechas
         const filas = textoCSV.split("\n").map(fila => {
             if (!fila) return [];
             return fila.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || fila.split(",");
         });
 
-        // Limpieza de caracteres de escape y filtrado de registros reales (omitir cabecera)
         const registrosLimpios = filas.slice(1).map(f => {
             return f.map(celda => celda.replace(/^"(.*)"$/, '$1').trim());
-        }).filter(f => f.length > 5 && f !== ""); // Valida registros que tengan cargado al brigadista
+        }).filter(f => f.length > 5 && f !== "");
 
-        // Captura del total general consolidado
         const totalRegistrados = registrosLimpios.length;
         document.getElementById('estTotal').innerText = totalRegistrados;
 
-        // Conteo y agrupación por el Nombre del Brigadista (Columna E -> Índice 4 del arreglo)
         const conteoPorBrigadista = {};
         registrosLimpios.forEach(fila => {
             const brigadista = fila[4] ? fila[4].toUpperCase() : "NO ESPECIFICADO";
@@ -608,7 +600,6 @@ async function cargarEstadisticasDirectas() {
             }
         });
 
-        // Dibujado dinámico de indicadores en la interfaz
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = "";
@@ -634,5 +625,4 @@ async function cargarEstadisticasDirectas() {
         alert("No se pudieron extraer los indicadores estadísticos. Verifica la conexión de red.");
     }
 }
-
 
