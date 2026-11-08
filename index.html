@@ -15,7 +15,7 @@
     
             <div class="banner-institucional-img"></div>
             <div class="encabezado-institucional">
-                <p class="subtitulo-patria">IDENTIFICACIÓN DE BRIGADISTAS</p>
+                <p class="subtitulo-patria">IDENTIFICACIÓN DE SERVIDORES</p>
             </div>
             
             <div class="cuerpo-credencial" style="justify-content: center; gap: 2rem; overflow: hidden;">
@@ -91,20 +91,28 @@
                 </div>
                 
                 <!-- Captura de Fotografía -->
-                <div style="display: flex; flex-direction: column; align-items: center; padding: 0.15rem 0; flex-shrink: 0; width: 100%;">
-                    <label style="cursor: pointer; background-color: #e5e7eb; padding: 0.65rem 1.25rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 700; width: 100%; text-align: center; box-sizing: border-box;">
-                        📸 Tomar o Seleccionar Fotografía
-                        <input type="file" id="inputFoto" accept="image/*;capture=camera" style="display: none;">
-                    </label>
-                    <span id="fotoAviso" style="font-size: 0.75rem; color: #059669; font-weight: 600; margin-top: 0.2rem;" class="hidden">✓ Imagen lista para guardar</span>
+                               <!-- Contenedor Multimedia Unificado: Fotografía y Firma Lado a Lado -->
+                <div style="display: flex; gap: 0.75rem; width: 100%; margin: 0.5rem 0; box-sizing: border-box;">
+                    
+                    <!-- Botón 1: Tomar o Seleccionar Fotografía (Estilo Guinda) -->
+                    <div style="flex: 1; display: flex; flex-direction: column;">
+                        <label style="cursor: pointer; background-color: var(--color-guinda); color: #ffffff; padding: 0.75rem 0.5rem; border: none; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 700; width: 100%; text-align: center; box-sizing: border-box; display: inline-block;">
+                            📸 Fotografía
+                            <input type="file" id="inputFoto" accept="image/*;capture=camera" style="display: none;">
+                        </label>
+                        <span id="fotoAviso" style="font-size: 0.72rem; color: #059669; font-weight: 600; margin-top: 0.2rem; text-align: center;" class="hidden">✓ Imagen lista</span>
+                    </div>
+
+                    <!-- Botón 2: Trazar o Modificar Firma (Estilo Guinda Unificado) -->
+                    <div style="flex: 1; display: flex; flex-direction: column;">
+                        <button type="button" id="btnAbrirFirmaModal" style="width: 100%; background-color: var(--color-guinda); color: #ffffff; padding: 0.75rem 0.5rem; font-size: 0.85rem; font-weight: 700; border: none; border-radius: 0.5rem; cursor: pointer; text-align: center; box-sizing: border-box; height: 100%;">
+                            🖋️ Digitalizar Firma
+                        </button>
+                        <span id="firmaAviso" style="font-size: 0.72rem; color: #059669; font-weight: 600; margin-top: 0.2rem; text-align: center;" class="hidden">✓ Firma lista</span>
+                    </div>
+
                 </div>
 
-                <!-- Captura de Firma Digital -->
-                <div style="display: flex; flex-direction: column; gap: 0.3rem; width: 100%; margin: 0.2rem 0; box-sizing: border-box;">
-                    <label class="campo-etiqueta">Firma Digital del Brigadista</label>
-                    <button type="button" id="btnAbrirFirmaModal" class="btn-buscar" style="width: 100%; background-color: #1f2937; padding: 0.65rem; font-size: 0.85rem;">🖋️ Trazar / Modificar Firma</button>
-                    <span id="firmaAviso" style="font-size: 0.75rem; color: #059669; font-weight: 600; text-align: center;" class="hidden">✓ Firma capturada correctamente</span>
-                </div>
 
                 <!-- Botón de Guardado Corregido (btn-guardar) -->
                 <button type="submit" class="btn-guardar" style="width: 100%; margin-top: 0.5rem; margin-bottom: 0.5rem;">💾 Guardar Registro</button>
