@@ -703,8 +703,8 @@ async function cargarEstadisticasDirectas() {
         return;
     }
 
-    // URL de exportación de tu propiedad, libre de bloqueos de perfiles externos de Google
-    const urlConsulta = `https://google.com{GOOGLE_SHEET_ID_PROPIA}/export?format=csv&sheet=${encodeURIComponent(NOMBRE_PESTANA_PROPIA)}`;
+   // REEMPLAZAR ÚNICAMENTE LA LÍNEA 710 EN TU app.js
+const urlConsulta = `https://google.com{GOOGLE_SHEET_ID_PROPIA}/export?format=csv&sheet=${encodeURIComponent(NOMBRE_PESTANA_PROPIA)}`;
     
     try {
         const respuesta = await fetch(urlConsulta);
