@@ -670,14 +670,26 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 
 // REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Escaneando padrón masivo en tiempo real (+30k registros)...");
+    mostrarCarga("Procesando padrón masivo (+30k registros)...");
     
-    // Captura el nombre exacto del brigadista ingresado en el formulario (Pantalla 2)
-    const nombreBuscado = document.getElementById('nombre')?.value.trim().toUpperCase();
+    // Captura el nombre del brigadista directamente del campo de la Pantalla 2
+    let nombreBuscado = document.getElementById('nombre')?.value || "";
     
-    if (!nombreBuscado) {
+    // Función auxiliar interna para limpiar acentos y caracteres especiales de control
+    const normalizarTexto = (texto) => {
+        if (!texto) return "";
+        return String(texto)
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "") // Remueve acentos dinámicamente
+            .trim()
+            .toUpperCase();
+    };
+
+    const nombreFormateado = normalizarTexto(nombreBuscado);
+
+    if (!nombreFormateado) {
         ocultarCarga();
-        alert("⚠️ Por favor, asegúrate de que el campo de Nombre Completo no esté vacío.");
+        alert("⚠️ Por favor, asegúrate de que el campo de Nombre Completo tenga datos.");
         return;
     }
 
@@ -697,13 +709,22 @@ async function cargarEstadisticasDirectas() {
 
         // Recorremos las más de 30,000 líneas saltando la cabecera
         for (let i = 1; i < lineas.length; i++) {
-            const lineaEnCrudo = lineas[i].toUpperCase().trim();
-            if (!lineaEnCrudo) continue;
+            const linea = lineas[i].trim();
+            if (!linea) continue;
 
-            // Estrategia de Escaneo Directo: Si el nombre del brigadista aparece 
-            // textualmente en la línea, sumamos la encuesta de inmediato.
-            if (lineaEnCrudo.includes(nombreBuscado)) {
-                conteoTotalBrigadista++;
+            // Separador Avanzado: Segmenta por comas ignorando las que están dentro de comillas (Lat/Long)
+            const columnas = linea.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            
+            // Evaluamos la columna E (índice 4: SERVIDOR)
+            if (columnas && columnas.length > 4) {
+                // Limpiamos comillas de escape de Google y normalizamos el texto de la celda
+                let brigadistaFila = columnas[4].replace(/^"(.*)"$/, '$1');
+                brigadistaFila = normalizarTexto(brigadistaFila);
+                
+                // Comparación estricta libre de errores de acentos o espacios
+                if (brigadistaFila === nombreFormateado) {
+                    conteoTotalBrigadista++;
+                }
             }
         }
 
@@ -713,12 +734,12 @@ async function cargarEstadisticasDirectas() {
             elemTotal.innerText = conteoTotalBrigadista;
         }
 
-        // Mensaje estético en el contenedor de abajo
+        // Mensaje estético en el contenedor inferior
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
                 <div style="text-align: center; padding: 2rem 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Capturas de ${nombreBuscado} Sincronizadas
+                    📊 Capturas de ${nombreFormateado} Sincronizadas
                 </div>
             `;
         }
@@ -727,7 +748,7 @@ async function cargarEstadisticasDirectas() {
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error en escaneo masivo por concordancia de texto:", error);
+        console.error("Error en procesamiento masivo tolerante por índice:", error);
         ocultarCarga();
         alert("No se pudieron totalizar las encuestas debido al volumen de datos. Inténtalo de nuevo.");
     }
