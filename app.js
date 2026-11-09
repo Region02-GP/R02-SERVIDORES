@@ -704,7 +704,9 @@ async function cargarEstadisticasDirectas() {
     }
 
    // REEMPLAZAR ÚNICAMENTE LA LÍNEA 710 EN TU app.js
-const urlConsulta = `https://google.com{GOOGLE_SHEET_ID_PROPIA}/export?format=csv&sheet=${encodeURIComponent(NOMBRE_PESTANA_PROPIA)}`;
+// REEMPLAZAR ÚNICAMENTE LA LÍNEA DE LA URL CONSULTA EN TU app.js:
+const urlConsulta = "https://docs.google.com/spreadsheets/d/1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM/edit?usp=sharing";
+
     
     try {
         const respuesta = await fetch(urlConsulta);
