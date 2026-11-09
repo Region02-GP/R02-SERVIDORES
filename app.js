@@ -668,52 +668,64 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 });
 
 
-// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
+/// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Solicitando consolidación remota a Google (+30k registros)...");
+    mostrarCarga("Calculando volumen de encuestas masivas en tiempo real...");
     
-    // ESTRATEGIA DE ACCESO INMUNE: Recuperamos la CURP autorizada del elemento de la credencial
-    const curpBrigadista = document.getElementById('credIdentificacion')?.innerText.trim().toUpperCase();
+    // Captura el nombre fijo inyectado en la credencial que nunca se borra
+    const nombreGafete = document.getElementById('credCompleto')?.innerText || "";
     
-    if (!curpBrigadista || curpBrigadista === "-" || curpBrigadista.length < 10) {
+    // Función de limpieza absoluta para eliminar acentos, espacios dobles y caracteres especiales
+    const normalizarParaBusqueda = (texto) => {
+        if (!texto) return "";
+        return String(texto)
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "") // Remueve acentos dinámicamente
+            .replace(/[^A-Z0-9\s]/g, "")     // Deja solo letras y números limpios
+            .replace(/\s+/g, " ")            // Colapsa espacios dobles
+            .trim()
+            .toUpperCase();
+    };
+
+    const nombreBuscado = normalizarParaBusqueda(nombreGafete);
+
+    // Validación de seguridad para evitar búsquedas en blanco
+    if (!nombreBuscado || nombreBuscado === "-" || nombreBuscado.length < 5) {
         ocultarCarga();
-        alert("⚠️ Sesión no localizada. Por favor, reingresa desde el módulo de acceso inicial.");
+        alert("⚠️ Identidad de brigadista no localizada. Por favor, reingresa desde el módulo de acceso inicial.");
         return;
     }
 
-    // Consulta SQL Remota Blindada: Le ordena a Google buscar en toda la hoja de cálculo 
-    // y contar únicamente las filas donde la columna T (ID_Unico / CURP) coincida con el usuario.
-    const querySQL = encodeURIComponent(`SELECT COUNT(E) WHERE T = '${curpBrigadista}' LABEL COUNT(E) ''`);
-    const urlConsulta = `https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing`;
+    // URL de exportación pública directa en crudo (CSV) que salta bloqueos de cuentas ajenas
+    const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
     
     try {
         const respuesta = await fetch(urlConsulta);
-        if (!respuesta.ok) throw new Error("Fallo de respuesta del servidor de Google");
+        if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
         
         const textoCSV = await respuesta.text();
         
-        // Google Sheets devuelve una sola línea con el número neto calculado (ejemplo: "3")
-        const lineas = textoCSV.split(/\r?\n/).filter(l => l.trim() !== "");
-        let totalMisEncuestas = 0;
+        // Convertimos el documento entero a texto plano limpio (sin acentos y todo en mayúsculas)
+        const textoDocumentoPuro = normalizarParaBusqueda(textoCSV);
+        
+        // ESTRATEGIA DE PARTICIÓN DIRECTA (Tijera Digital):
+        // Divide el documento en fragmentos usando el nombre del brigadista como corte.
+        // El total de repeticiones es exactamente el número de pedazos obtenidos menos 1.
+        const fragmentosDeCorte = textoDocumentoPuro.split(nombreBuscado);
+        const totalMisEncuestas = fragmentosDeCorte.length - 1;
 
-        if (lineas.length > 0) {
-            // Limpiamos comillas del valor numérico e intentamos parsearlo
-            const valorLimpio = lineas[0].replace(/^"(.*)"$/, '$1').trim();
-            totalMisEncuestas = parseInt(valorLimpio, 10) || 0;
-        }
-
-        // Inyectamos el gran total real calculado de forma remota en tu recuadro HTML
+        // Inyectamos el total neto calculado en el recuadro HTML de forma segura
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
             elemTotal.innerText = totalMisEncuestas;
         }
 
-        // Diseño limpio para el contenedor inferior de la interfaz
+        // Mensaje estético en el contenedor inferior de la interfaz
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
                 <div style="text-align: center; padding: 2rem 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Capturas Enlazadas Correctamente
+                    📊 Capturas de ${nombreBuscado} Sincronizadas
                 </div>
             `;
         }
@@ -722,8 +734,8 @@ async function cargarEstadisticasDirectas() {
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error en procesamiento remoto de consultas masivas:", error);
+        console.error("Error en escaneo lineal por partición de texto:", error);
         ocultarCarga();
-        alert("Ocurrió un retraso de red al conectar con Google Sheets. Inténtalo de nuevo.");
+        alert("No se pudieron totalizar las encuestas debido al volumen de datos. Inténtalo de nuevo.");
     }
 }
