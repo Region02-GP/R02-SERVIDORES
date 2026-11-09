@@ -675,66 +675,60 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 });
 
 
-// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
+// ========================================================
+// BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA SEGURO (MÉDULA)
+// ========================================================
+
+// Disparador de navegación a la Pantalla 4
+document.getElementById('btnVerEstadisticas').addEventListener('click', cargarEstadisticasDirectas);
+
+// Botones de salida de la Pantalla 4
+document.getElementById('btnEstVolver').addEventListener('click', () => irAPantalla(3));
+document.getElementById('btnEstSalir').addEventListener('click', () => {
+    document.getElementById('p1_curp').value = "";
+    irAPantalla(1);
+});
+
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Procesando padrón masivo en tiempo real (+30k registros)...");
-    
-    // 1. Extrae de forma segura el nombre inyectado en el gafete que nunca se borra
-    const nombreFijo = document.getElementById('credCompleto')?.innerText || "";
-    
-    // Función de limpieza absoluta para remover acentos, espacios dobles y caracteres especiales
-    const normalizarCadena = (texto) => {
-        if (!texto) return "";
-        return String(texto)
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "") // Remueve acentos dinámicamente
-            .replace(/[^A-Z0-9\s]/g, "")     // Deja solo letras y números limpios
-            .replace(/\s+/g, " ")            // Elimina espacios dobles
-            .trim()
-            .toUpperCase();
-    };
+    mostrarCarga("Conectando con el servidor central de Google...");
 
-    const nombreBuscado = normalizarCadena(nombreFijo);
+    // Recuperamos el nombre del brigadista autenticado directamente del gafete
+    const nombreBrigadista = document.getElementById('credCompleto')?.innerText.trim().toUpperCase();
 
-    if (!nombreBuscado || nombreBuscado === "-" || nombreBuscado.length < 5) {
+    if (!nombreBrigadista || nombreBrigadista === "-") {
         ocultarCarga();
-        alert("⚠️ Identidad de brigadista no localizada. Por favor reingresa desde el módulo de acceso inicial.");
+        alert("⚠️ Identidad de brigadista no localizada. Por favor, reingresa desde el módulo de acceso.");
         return;
     }
 
-    // URL de exportación pública directa que brinca los bloqueos de cuentas ajenas de Google
-    const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
-    
     try {
-        const respuesta = await fetch(urlConsulta);
-        if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
-        
-        const textoCSV = await respuesta.text();
-        
-        // 2. Convertimos todo el archivo masivo descargado a texto plano plano sin acentos
-        const documentoNormalizado = normalizarCadena(textoCSV);
-        
-        // 3. ESTRATEGIA DE BÚSQUEDA MATEMÁTICA DIRECTA (Regex Global):
-        // Crea un buscador automático que rastrea cuántas veces exactas aparece el nombre en el archivo.
-        // Evita el uso de splits o bucles lentos que consuman la memoria del dispositivo.
-        const buscadorRegex = new RegExp(nombreBuscado, "g");
-        const coincidenciasEncontradas = documentoNormalizado.match(buscadorRegex);
-        
-        // Si match no encuentra nada devuelve null, por lo que validamos que devuelva mínimo 0
-        const totalMisEncuestas = coincidenciasEncontradas ? coincidenciasEncontradas.length : 0;
+        // Aprovechamos tu WEB_APP_URL activo para enviar la petición interna
+        const res = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                action: 'estadisticas',
+                nombre: nombreBrigadista
+            })
+        });
 
-        // Inyectamos de forma segura el gran total consolidado en tu recuadro HTML
+        const datos = await res.json();
+
+        // Recibimos la respuesta numérica limpia calculada directamente dentro de Google
+        const totalEncuestas = datos.total || 0;
+
+        // Inyectamos la cifra real en tu recuadro HTML
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
-            elemTotal.innerText = totalMisEncuestas;
+            elemTotal.innerText = totalEncuestas;
         }
 
-        // Diseño limpio para el contenedor inferior de la interfaz de la Pantalla 4
+        // Dejamos un sello visual limpio en la parte inferior de la Pantalla 4
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
                 <div style="text-align: center; padding: 2rem 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Capturas de ${nombreBuscado} Sincronizadas
+                    📊 Capturas de ${nombreBrigadista} Sincronizadas
                 </div>
             `;
         }
@@ -742,10 +736,10 @@ async function cargarEstadisticasDirectas() {
         ocultarCarga();
         irAPantalla(4);
 
-    } catch (error) {
-        console.error("Error en procesamiento masivo lineal por coincidencia de texto:", error);
+    } catch (err) {
+        console.error("Fallo de comunicación en módulo estadístico:", err);
         ocultarCarga();
-        alert("Ocurrió un retraso de red al conectar con Google Sheets. Inténtalo de nuevo.");
+        alert("Fallo de sincronización con la base de datos central. Verifica tu Deploy en Google Sheets.");
     }
 }
 
