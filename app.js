@@ -659,6 +659,8 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // ========================================================
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================
+// BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y PEGA TU NUEVA URL:
+const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbw82HQVwmAkUOdp6qpg3dFATt4D2-leRlRFfcYZ1UyToeKGKbE9OyHFlp2p5xZDfSaJcw/exec";
 
 // BUSCA ESTAS LÍNEAS E INYECTA EL ID DE TU HOJA NUEVA PROPIA:
 const GOOGLE_SHEET_ID_PROPIA = "1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM";
@@ -677,71 +679,41 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 
 // REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Procesando padrón masivo en tiempo real (+30k registros)...");
+    mostrarCarga("Solicitando consolidación interna a tu Apps Script...");
     
-    // 1. Extrae de forma segura el nombre inyectado en el gafete que nunca se borra de la Pantalla 3
-    const nombreFijo = document.getElementById('credCompleto')?.innerText || "";
+    // Extrae de forma segura el nombre inyectado en el gafete que nunca se borra
+    const nombreFijoGafete = document.getElementById('credCompleto')?.innerText || "";
     
-    // Función de limpieza absoluta para eliminar acentos, espacios dobles y caracteres especiales
-    const normalizarCadena = (texto) => {
-        if (!texto) return "";
-        return String(texto)
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "") // Remueve acentos dinámicamente
-            .replace(/[^A-Z0-9\s]/g, "")     // Deja solo letras y números limpios
-            .replace(/\s+/g, " ")            // Elimina espacios dobles
-            .trim()
-            .toUpperCase();
-    };
-
-    const nombreBuscado = normalizarCadena(nombreFijo);
-
-    if (!nombreBuscado || nombreBuscado === "-" || nombreBuscado.length < 5) {
+    if (!nombreFijoGafete || nombreFijoGafete === "-" || nombreFijoGafete.length < 5) {
         ocultarCarga();
         alert("⚠️ Identidad de brigadista no localizada. Por favor reingresa desde el módulo de acceso inicial.");
         return;
     }
 
-    // URL de exportación pública directa en crudo (CSV) que brinca los bloqueos de cuentas ajenas de Google
-    const urlConsulta = "https://docs.google.com/spreadsheets/d/1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM/edit?usp=sharing";
+    // Consultamos directamente a tu Apps Script pasándole el nombre en la URL (petición GET limpia)
+    const urlConsulta = `${SCRIPT_ESTADISTICAS_PROPIO}?nombre=${encodeURIComponent(nombreFijoGafete)}`;
     
     try {
         const respuesta = await fetch(urlConsulta);
-        if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
+        if (!respuesta.ok) throw new Error("Fallo de comunicación con el Apps Script privado");
         
-        const textoCSV = await respuesta.text();
+        const datosJSON = await respuesta.json();
         
-        // Dividimos el documento estrictamente por renglones planos
-        const lineas = textoCSV.split(/\r?\n/);
-        let totalMisEncuestas = 0;
+        // Recibe el número neto calculado directamente en el servidor de Google
+        const totalMisEncuestas = datosJSON.total || 0;
 
-        // Recorremos las más de 30,000 líneas saltando la primera fila (cabecera de títulos)
-        for (let i = 1; i < lineas.length; i++) {
-            const lineaOriginal = lineas[i].trim();
-            if (!lineaOriginal) continue; // Salta líneas totalmente vacías
-
-            // Normalizamos toda la línea en crudo de forma paralela (mayúsculas y sin acentos)
-            const lineaNormalizada = normalizarCadena(lineaOriginal);
-
-            // ESTRATEGIA DE ESCANEO DIRECTO: Si el nombre limpio del brigadista aparece 
-            // textualmente en cualquier sección de la línea, se contabiliza de inmediato
-            if (lineaNormalizada.indexOf(nombreBuscado) !== -1) {
-                totalMisEncuestas++;
-            }
-        }
-
-        // Inyectamos de forma segura el gran total consolidado en tu recuadro HTML
+        // Inyectamos de forma segura el gran total real en tu recuadro HTML de la Pantalla 4
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
             elemTotal.innerText = totalMisEncuestas;
         }
 
-        // Diseño limpio para el contenedor inferior de la interfaz de la Pantalla 4
+        // Diseño limpio para el contenedor inferior de la interfaz
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
                 <div style="text-align: center; padding: 2rem 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Capturas de ${nombreBuscado} Sincronizadas
+                    📊 Resumen Personal Sincronizado con Éxito
                 </div>
             `;
         }
@@ -750,8 +722,8 @@ async function cargarEstadisticasDirectas() {
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error en procesamiento masivo lineal por concordancia:", error);
+        console.error("Error consultando el Apps Script propio:", error);
         ocultarCarga();
-        alert("Ocurrió un retraso de red al conectar con Google Sheets. Inténtalo de nuevo.");
+        alert("No se pudieron extraer las estadísticas. Verifica que el URL_PROPIO esté implementado como 'Cualquiera'.");
     }
 }
