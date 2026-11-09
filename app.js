@@ -680,62 +680,84 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
     irAPantalla(1);
 });
 
-// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
-async function cargarEstadisticasDirectas() {
-    mostrarCarga("Solicitando consolidación interna a tu Apps Script...");
+/**
+ * Función unificada que procesa de manera exacta el conteo original de la Etapa 2,
+ * extrae el resumen de la tabla de la Etapa 1 y el acumulado de AppSN.
+ */
+function procesarMetricasTotales(nombreBuscado) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  var contadorEtapa2 = 0;
+  var visitasEtapa1 = 0;
+  var visitasAppSN = 0;
+  
+  // Función interna original para quitar acentos de forma nativa en Google
+  function limpiarAcentos(texto) {
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+  
+  var nombreLimpio = limpiarAcentos(nombreBuscado);
+  
+  if (nombreLimpio !== "" && nombreLimpio !== "SERVIDOR") {
     
-    const nombreFijoGafete = document.getElementById('credCompleto')?.innerText || "";
-    
-    if (!nombreFijoGafete || nombreFijoGafete === "-" || nombreFijoGafete.length < 5) {
-        ocultarCarga();
-        alert("⚠️ Identidad de brigadista no localizada. Por favor reingresa desde el módulo de acceso inicial.");
-        return;
-    }
-
-    const urlConsulta = `${SCRIPT_ESTADISTICAS_PROPIO}?nombre=${encodeURIComponent(nombreFijoGafete)}`;
-    
+    // 1️⃣ LÓGICA ORIGINAL: Conteo de encuestas lineales (Etapa 2)
     try {
-        const respuesta = await fetch(urlConsulta);
-        if (!respuesta.ok) throw new Error("Fallo de comunicación con el Apps Script privado");
-        
-        const datosJSON = await respuesta.json();
-        
-        // 1. Extrae el conteo lineal de encuestas (Etapa 2)
-        const totalMisEncuestas = datosJSON.total || 0;
-        const elemTotal = document.getElementById('estTotal');
-        if (elemTotal) {
-            elemTotal.innerText = totalMisEncuestas;
+      var sheetEstadisticas = ss.getSheetByName("Estadisticas");
+      if (sheetEstadisticas) {
+        var datosEstadisticas = sheetEstadisticas.getDataRange().getValues();
+        for (var i = 0; i < datosEstadisticas.length; i++) {
+          var celdaVal = datosEstadisticas[i][0] ? limpiarAcentos(datosEstadisticas[i][0].toString().trim().toUpperCase()) : "";
+          if (celdaVal === nombreLimpio) {
+            contadorEtapa2++;
+          }
         }
-
-        // 2. Extrae el total acumulado mapeado de la tabla de la Etapa 1
-        const totalVisitasEtapa1 = datosJSON.visitas_etapa1 || 0;
-        const elemEtapa1 = document.getElementById('p4_totalVisitasEtapa1');
-        if (elemEtapa1) {
-            elemEtapa1.innerText = totalVisitasEtapa1;
-        }
-
-        // 3. Extrae el total acumulado mapeado de la tabla AppSN
-        const totalVisitasAppSN = datosJSON.visitas_appsn || 0;
-        const elemAppSN = document.getElementById('p4_totalVisitasAppSN');
-        if (elemAppSN) {
-            elemAppSN.innerText = totalVisitasAppSN;
-        }
-
-        const contenedor = document.getElementById('contenedorMunicipios');
-        if (contenedor) {
-            contenedor.innerHTML = `
-                <div style="text-align: center; padding: 2rem 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Resumen Personal Sincronizado con Éxito
-                </div>
-            `;
-        }
-
-        ocultarCarga();
-        irAPantalla(4);
-
-    } catch (error) {
-        console.error("Error consultando el Apps Script propio:", error);
-        ocultarCarga();
-        alert("No se pudieron extraer las estadísticas. Verifica que el URL_PROPIO esté implementado como 'Cualquiera'.");
+      }
+    } catch(err2) {
+      Logger.log("Error en conteo Etapa 2: " + err2.toString());
     }
+
+    // 2️⃣ INTEGRACIÓN CORREGIDA: Extraer el total resumido de la tabla en Etapa1
+    try {
+      var sheetEtapa1 = ss.getSheetByName("Etapa1");
+      if (sheetEtapa1) {
+        var datosEtapa1 = sheetEtapa1.getDataRange().getValues();
+        for (var k = 1; k < datosEtapa1.length; k++) { // CORREGIDO: cambiado dataEtapa1 por datosEtapa1
+          var nombreFilaEtapa1 = datosEtapa1[k][0] ? limpiarAcentos(datosEtapa1[k][0].toString().trim().toUpperCase()) : "";
+          
+          if (nombreFilaEtapa1 === nombreLimpio) {
+            visitasEtapa1 = Number(datosEtapa1[k][1]) || 0; // Columna B: Total Visitas
+            break;
+          }
+        }
+      }
+    } catch(err1) {
+      Logger.log("Error en lectura Etapa 1: " + err1.toString());
+    }
+
+    // 3️⃣ INTEGRACIÓN REVISADA: Extraer el total resumido de la tabla en AppSN
+    try {
+      var sheetAppSN = ss.getSheetByName("AppSN");
+      if (sheetAppSN) {
+        var datosAppSN = sheetAppSN.getDataRange().getValues();
+        for (var m = 1; m < datosAppSN.length; m++) {
+          var nombreFilaAppSN = datosAppSN[m][0] ? limpiarAcentos(datosAppSN[m][0].toString().trim().toUpperCase()) : "";
+          
+          if (nombreFilaAppSN === nombreLimpio) {
+            visitasAppSN = Number(datosAppSN[m][1]) || 0; // Columna B: Total Visitas AppSN
+            break;
+          }
+        }
+      }
+    } catch(errSN) {
+      Logger.log("Error en lectura AppSN: " + errSN.toString());
+    }
+  }
+  
+  // Devolvemos los tres valores calculados simultáneamente
+  return { 
+    "total": contadorEtapa2, 
+    "visitas_etapa1": visitasEtapa1,
+    "visitas_appsn": visitasAppSN 
+  };
 }
+
