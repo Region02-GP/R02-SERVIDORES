@@ -660,10 +660,10 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================================
 // BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y PEGA TU NUEVA URL:
-const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbyWj2xAXmEr5Ox_UapZEFAFM5vhveZkBODlbwN4Up_t9ZPQckLlzzoj3Yz2zSMZeBa34g/exec";
+const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbxz9kjriqI44rYcy9wpfSC6ODBw5N-QTSN_a-uHeiM-91gIpYzbnN1URbc66LLg1Nw1wA/exec";
 
 // 📊 NUEVA CONSTANTE: URL de la Web App del libro exclusivo de "Estadísticas" (Pestaña Etapa1)
-const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbyWj2xAXmEr5Ox_UapZEFAFM5vhveZkBODlbwN4Up_t9ZPQckLlzzoj3Yz2zSMZeBa34g/exec";
+const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbxz9kjriqI44rYcy9wpfSC6ODBw5N-QTSN_a-uHeiM-91gIpYzbnN1URbc66LLg1Nw1wA/exec";
 
 // BUSCA ESTAS LÍNEAS E INYECTA EL ID DE TU HOJA NUEVA PROPIA:
 const GOOGLE_SHEET_ID_PROPIA = "1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM";
@@ -700,7 +700,7 @@ async function cargarEstadisticasDirectas() {
         
         const datosJSON = await respuesta.json();
         
-        // 1. Extrae el conteo lineal de encuestas (Etapa 2) con el método exacto de ayer
+        // 1. Extrae el conteo lineal de encuestas (Etapa 2)
         const totalMisEncuestas = datosJSON.total || 0;
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
@@ -712,6 +712,13 @@ async function cargarEstadisticasDirectas() {
         const elemEtapa1 = document.getElementById('p4_totalVisitasEtapa1');
         if (elemEtapa1) {
             elemEtapa1.innerText = totalVisitasEtapa1;
+        }
+
+        // 3. Extrae el total acumulado mapeado de la tabla AppSN
+        const totalVisitasAppSN = datosJSON.visitas_appsn || 0;
+        const elemAppSN = document.getElementById('p4_totalVisitasAppSN');
+        if (elemAppSN) {
+            elemAppSN.innerText = totalVisitasAppSN;
         }
 
         const contenedor = document.getElementById('contenedorMunicipios');
