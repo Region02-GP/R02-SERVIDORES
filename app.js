@@ -660,9 +660,10 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================
 
-// 1. Variables de enlace con tu documento real verificado
-const GOOGLE_SHEET_ID = "1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8";
-const NOMBRE_PESTANA = "VCXC"; 
+// BUSCA ESTAS LÍNEAS E INYECTA EL ID DE TU HOJA NUEVA PROPIA:
+const GOOGLE_SHEET_ID_PROPIA = "1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM";
+const NOMBRE_PESTANA_PROPIA = "Estadisticas"; 
+
 
 // Disparador esencial para la navegación hacia la Pantalla 4
 document.getElementById('btnVerEstadisticas').addEventListener('click', cargarEstadisticasDirectas);
@@ -676,13 +677,13 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 
 // REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Procesando padrón masivo en tiempo real (+30k registros)...");
+    mostrarCarga("Conectando con tu panel estadístico privado...");
     
-    // Captura el nombre fijo inyectado en la credencial que nunca se borra de la Pantalla 3
+    // Extrae de forma segura el nombre fijo de la credencial en pantalla (Pantalla 3)
     const nombreFijoGafete = document.getElementById('credCompleto')?.innerText || "";
     
-    // Función de limpieza absoluta para eliminar acentos, espacios dobles y caracteres especiales
-    const normalizarCadenaTexto = (texto) => {
+    // Función de limpieza absoluta para eliminar acentos y caracteres especiales de control
+    const normalizarParaFiltro = (texto) => {
         if (!texto) return "";
         return String(texto)
             .normalize("NFD")
@@ -693,35 +694,45 @@ async function cargarEstadisticasDirectas() {
             .toUpperCase();
     };
 
-    const nombreBuscado = normalizarCadenaTexto(nombreFijoGafete);
+    const nombreBuscado = normalizarParaFiltro(nombreFijoGafete);
 
-    // Validación de seguridad para evitar búsquedas si el gafete no ha cargado datos
+    // Validación de seguridad para prevenir llamadas si la sesión no ha cargado datos
     if (!nombreBuscado || nombreBuscado === "-" || nombreBuscado.length < 5) {
         ocultarCarga();
         alert("⚠️ Identidad de brigadista no localizada. Por favor reingresa desde el módulo de acceso inicial.");
         return;
     }
 
-    // URL de exportación pública en crudo (CSV) que salta los bloqueos de cuentas ajenas de Google
-    const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
+    // URL de exportación de tu propiedad, libre de bloqueos de perfiles externos de Google
+    const urlConsulta = `https://google.com{GOOGLE_SHEET_ID_PROPIA}/export?format=csv&sheet=${encodeURIComponent(NOMBRE_PESTANA_PROPIA)}`;
     
     try {
         const respuesta = await fetch(urlConsulta);
-        if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
+        if (!respuesta.ok) throw new Error("Fallo de comunicación con tu hoja de cálculo");
         
-        // CORRECCIÓN CRÍTICA: Espera asíncrona obligatoria a que el texto baje completo de internet
         const textoCSV = await respuesta.text();
         
-        // Convertimos todo el archivo masivo descargado a texto plano sin acentos de un solo golpe
-        const documentoNormalizado = normalizarCadenaTexto(textoCSV);
+        // Separamos el archivo limpio por renglones planos
+        const lineas = textoCSV.split(/\r?\n/);
         
-        // ESTRATEGIA DE PARTICIÓN TOTAL (Tijera Digital):
-        // Divide la cadena completa del documento usando el nombre del brigadista como corte.
-        // El número exacto de coincidencias en la hoja es el número de fragmentos obtenidos menos 1.
-        const fragmentosDeCorte = documentoNormalizado.split(nombreBuscado);
-        const totalMisEncuestas = fragmentosDeCorte.length - 1;
+        let totalMisEncuestas = 0;
 
-        // Inyectamos el gran total consolidado en tu recuadro HTML de la Pantalla 4
+        // Recorremos tu columna (comienza en i=0 porque IMPORTRANGE clona directo el texto)
+        for (let i = 0; i < lineas.length; i++) {
+            let celdaServidor = lineas[i].trim();
+            if (!celdaServidor) continue;
+
+            // Limpiamos comillas de Google y normalizamos ortografía de forma simétrica
+            celdaServidor = celdaServidor.replace(/^"(.*)"$/, '$1');
+            celdaServidor = normalizarParaFiltro(celdaServidor);
+
+            // Comparación lineal exacta y limpia
+            if (celdaServidor === nombreBuscado) {
+                totalMisEncuestas++;
+            }
+        }
+
+        // Inyectamos el total neto filtrado en tu recuadro HTML de forma exitosa
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
             elemTotal.innerText = totalMisEncuestas;
@@ -732,7 +743,7 @@ async function cargarEstadisticasDirectas() {
         if (contenedor) {
             contenedor.innerHTML = `
                 <div style="text-align: center; padding: 2rem 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Capturas de ${nombreBuscado} Sincronizadas
+                    📊 Resumen Personal Sincronizado con Éxito
                 </div>
             `;
         }
@@ -741,8 +752,9 @@ async function cargarEstadisticasDirectas() {
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error en procesamiento masivo lineal por coincidencia de texto:", error);
+        console.error("Error leyendo tu hoja clonada propia:", error);
         ocultarCarga();
-        alert("No se pudieron extraer las estadísticas. Revisa la conexión de red.");
+        alert("No se pudieron extraer las estadísticas de tu cuenta. Verifica tu ID y el Compartir.");
     }
 }
+
