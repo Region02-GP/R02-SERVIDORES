@@ -673,15 +673,15 @@ async function cargarEstadisticasDirectas() {
     
     // URL de exportación pública en crudo verificado
     const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
+// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 
-    
     try {
         const respuesta = await fetch(urlConsulta);
         if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
         
         const textoCSV = await respuesta.text();
         
-        // Separamos de forma estricta el documento únicamente por saltos de línea planos
+        // Separamos el documento por saltos de línea
         const lineas = textoCSV.split(/\r?\n/);
         
         let totalGeneralEncuestas = 0;
@@ -689,20 +689,30 @@ async function cargarEstadisticasDirectas() {
         // Recorremos las líneas saltando la fila 1 (cabeceras de títulos)
         for (let i = 1; i < lineas.length; i++) {
             const linea = lineas[i].trim();
+            if (!linea) continue;
+
+            // Separamos la fila por comas
+            const columnas = linea.split(",");
             
-            // Si la línea contiene datos reales, la sumamos al contador global
-            if (linea && linea.length > 10) {
-                totalGeneralEncuestas++;
+            // Evaluamos de forma estricta la columna E (índice 4: SERVIDOR)
+            if (columnas && columnas.length > 4) {
+                // Limpiamos comillas dobles automáticas de Google
+                const brigadista = columnas[4].replace(/^"(.*)"$/, '$1').trim().toUpperCase();
+                
+                // CONDICIÓN EXCLUSIVA: Solo suma si hay un nombre real de brigadista asignado en la fila
+                if (brigadista && brigadista !== "" && brigadista !== "SERVIDOR" && brigadista.length > 5) {
+                    totalGeneralEncuestas++;
+                }
             }
         }
 
-        // Inyectamos el gran total exacto en el recuadro numérico del HTML
+        // Inyectamos el gran total exacto filtrado en el HTML
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
             elemTotal.innerText = totalGeneralEncuestas;
         }
 
-        // Limpiamos el contenedor inferior para que no pinte listas y quede el diseño limpio
+        // Diseño limpio e institucional para el bloque inferior
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
