@@ -656,11 +656,14 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
     document.getElementById('modalFirmaPantallaCompleta').classList.add('hidden');
 });
 
-// ========================================================
+// ========================================================================
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
-// ========================================================
+// ========================================================================
 // BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y PEGA TU NUEVA URL:
-const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbw82HQVwmAkUOdp6qpg3dFATt4D2-leRlRFfcYZ1UyToeKGKbE9OyHFlp2p5xZDfSaJcw/exec";
+const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbyl4wTKEfPHxJZgXKBmqvd5qKKOTCiRBvhpNzumN1NE3v5WiAOSyt9kAy1whEVfFcXJrA/exec";
+
+// 📊 NUEVA CONSTANTE: URL de la Web App del libro exclusivo de "Estadísticas" (Pestaña Etapa1)
+const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbyl4wTKEfPHxJZgXKBmqvd5qKKOTCiRBvhpNzumN1NE3v5WiAOSyt9kAy1whEVfFcXJrA/exec";
 
 // BUSCA ESTAS LÍNEAS E INYECTA EL ID DE TU HOJA NUEVA PROPIA:
 const GOOGLE_SHEET_ID_PROPIA = "1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM";
@@ -706,6 +709,25 @@ async function cargarEstadisticasDirectas() {
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
             elemTotal.innerText = totalMisEncuestas;
+        }
+
+        // 📈 INTEGRACIÓN NUEVA: Consulta paralela para traer las visitas de la Etapa 1
+        try {
+            const payloadEtapa1 = { action: 'buscar', nombre: nombreFijoGafete };
+            const resEtapa1 = await fetch(SCRIPT_ETAPA1_URL, {
+                method: 'POST',
+                redirect: 'follow',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payloadEtapa1)
+            });
+            const datosEtapa1 = await resEtapa1.json();
+            
+            const elemEtapa1 = document.getElementById('p4_totalVisitasEtapa1');
+            if (elemEtapa1 && datosEtapa1.status === "success") {
+                elemEtapa1.innerText = datosEtapa1.visitas_etapa1 || 0;
+            }
+        } catch (errEtapa1) {
+            console.error("Error al recuperar las estadísticas de la Etapa 1:", errEtapa1);
         }
 
         // Diseño limpio para el contenedor inferior de la interfaz
