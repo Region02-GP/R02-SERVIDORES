@@ -676,7 +676,12 @@ async function cargarEstadisticasDirectas() {
     // URL FIJA Y DIRECTA: Envía la orden SELECT E, COUNT(E) directo a docs.google.com sin llaves ni variables que fallen
     const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing''";
     
-
+// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
+async function cargarEstadisticasDirectas() {
+    mostrarCarga("Procesando volumen de datos consolidados...");
+    
+    // URL de exportación pública en crudo verificado
+    const urlConsulta = "https://google.com";
     
     try {
         const respuesta = await fetch(urlConsulta);
@@ -684,26 +689,26 @@ async function cargarEstadisticasDirectas() {
         
         const textoCSV = await respuesta.text();
         
-        // Separamos el documento estrictamente por saltos de línea planos
+        // Dividimos el documento estrictamente por filas
         const lineas = textoCSV.split(/\r?\n/);
         
         const conteoEncuestas = {};
         let totalGeneralEncuestas = 0;
 
-        // Recorremos desde la línea 1 (saltando los encabezados de la fila 1)
+        // Recorremos desde la línea 1 (omitiendo la cabecera de títulos)
         for (let i = 1; i < lineas.length; i++) {
             const linea = lineas[i].trim();
-            if (!linea) continue; // Si la línea está vacía, la salta
+            if (!linea) continue; // Ignora renglones totalmente vacíos
 
-            // Separador avanzado que segmenta por comas, pero ignora las comas que están dentro de comillas (coordenadas de mapa)
-            const columnas = linea.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || linea.split(",");
+            // Segmentación por comas limpia
+            const columnas = linea.split(",");
             
-            // La columna E es exactamente el índice 4 (Fecha=0, Hora=1, Lat=2, Long=3, SERVIDOR=4)
-            if (columnas && columnas[4]) {
-                // Limpiamos comillas dobles y espacios en blanco de los extremos
-                const brigadista = columnas[4].replace(/^"(.*)"$/, '$1').trim().toUpperCase();
+            // Estrategia Segura: La columna E es exactamente la posición número 5 (índice 4)
+            if (columnas && columnas.length > 4) {
+                // Removemos las comillas de texto que introduce Google automáticamente
+                let brigadista = columnas[4].replace(/^"(.*)"$/, '$1').trim().toUpperCase();
                 
-                // Filtramos para no contar celdas vacías o la palabra del encabezado
+                // Filtro estricto para evitar textos de control o celdas vacías
                 if (brigadista && brigadista !== "SERVIDOR" && brigadista !== "") {
                     conteoEncuestas[brigadista] = (conteoEncuestas[brigadista] || 0) + 1;
                     totalGeneralEncuestas++;
@@ -711,15 +716,18 @@ async function cargarEstadisticasDirectas() {
             }
         }
 
-        // Inyectamos el total general exacto en el recuadro superior
-        document.getElementById('estTotal').innerText = totalGeneralEncuestas;
+        // CONTROL DE PERMISOS DOM (?): Si el elemento 'estTotal' no existe, no congela el flujo
+        const elemTotal = document.getElementById('estTotal');
+        if (elemTotal) {
+            elemTotal.innerText = totalGeneralEncuestas;
+        }
 
-        // Dibujado de los renglones en la interfaz
+        // Dibujado adaptativo de las filas de brigadistas
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = "";
 
-            // Ordenamos alfabéticamente los nombres para una presentación limpia
+            // Ordenamiento alfabético automático
             Object.keys(conteoEncuestas).sort().forEach(brigadista => {
                 const numeroEncuestas = conteoEncuestas[brigadista];
                 const renglon = document.createElement('div');
@@ -728,7 +736,7 @@ async function cargarEstadisticasDirectas() {
                 renglon.innerHTML = `
                     <div style="display: flex; flex-direction: column;">
                         <span style="font-size: 0.82rem; font-weight: 700; color: #1f2937; text-transform: uppercase;">${brigadista}</span>
-                        <span style="font-size: 0.68rem; color: var(--color-texto-mutado); font-weight: 500; margin-top: 1px;">BRIGADISTA ACTIVO</span>
+                        <span style="font-size: 0.68rem; color: var(--color-texto-mutated); font-weight: 500; margin-top: 1px;">BRIGADISTA ACTIVO</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.4rem;">
                         <span style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);"># ENCUESTAS:</span>
@@ -743,8 +751,9 @@ async function cargarEstadisticasDirectas() {
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error procesando conteo de encuestas masivo:", error);
+        console.error("Error en procesamiento masivo tolerante:", error);
         ocultarCarga();
-        alert("Ocurrió un error al procesar las encuestas. Revisa la conexión de red.");
+        alert("No se pudieron totalizar las encuestas. Por favor inténtalo de nuevo.");
     }
 }
+
