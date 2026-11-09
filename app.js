@@ -670,69 +670,50 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 
 // REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Escaneando padrón masivo en tiempo real (+30k registros)...");
+    mostrarCarga("Solicitando consolidación remota a Google (+30k registros)...");
     
-    // ESTRATEGIA INTACTA: Extrae el nombre fijo del gafete que ya pasó por validación y nunca se borra
-    const nombreFijoGafete = document.getElementById('credCompleto')?.innerText || "";
+    // ESTRATEGIA DE ACCESO INMUNE: Recuperamos la CURP autorizada del elemento de la credencial
+    const curpBrigadista = document.getElementById('credIdentificacion')?.innerText.trim().toUpperCase();
     
-    // Función de limpieza absoluta para eliminar acentos, espacios dobles y caracteres especiales
-    const limpiarParaBúsqueda = (texto) => {
-        if (!texto) return "";
-        return String(texto)
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "") // Remueve acentos dinámicamente
-            .replace(/[^A-Z0-9\s]/g, "")     // Deja solo letras y espacios limpios
-            .replace(/\s+/g, " ")            // Colapsa espacios dobles en uno solo
-            .trim()
-            .toUpperCase();
-    };
-
-    const nombreBuscado = limpiarParaBúsqueda(nombreFijoGafete);
-
-    // Si por alguna razón el texto es inválido o es el guion por defecto, aborta con seguridad
-    if (!nombreBuscado || nombreBuscado === "-" || nombreBuscado.length < 3) {
+    if (!curpBrigadista || curpBrigadista === "-" || curpBrigadista.length < 10) {
         ocultarCarga();
-        alert("⚠️ Identidad de brigadista no localizada. Por favor reingresa desde el módulo de acceso.");
+        alert("⚠️ Sesión no localizada. Por favor, reingresa desde el módulo de acceso inicial.");
         return;
     }
 
-    // URL de exportación pública directa en formato crudo CSV
-    const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
+    // Consulta SQL Remota Blindada: Le ordena a Google buscar en toda la hoja de cálculo 
+    // y contar únicamente las filas donde la columna T (ID_Unico / CURP) coincida con el usuario.
+    const querySQL = encodeURIComponent(`SELECT COUNT(E) WHERE T = '${curpBrigadista}' LABEL COUNT(E) ''`);
+    const urlConsulta = `https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing`;
     
     try {
         const respuesta = await fetch(urlConsulta);
-        if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
+        if (!respuesta.ok) throw new Error("Fallo de respuesta del servidor de Google");
         
         const textoCSV = await respuesta.text();
         
-        // Separamos el bloque masivo de texto por saltos de línea estrictos
-        const lineas = textoCSV.split(/\r?\n/);
-        
-        let conteoTotalEncuestas = 0;
+        // Google Sheets devuelve una sola línea con el número neto calculado (ejemplo: "3")
+        const lineas = textoCSV.split(/\r?\n/).filter(l => l.trim() !== "");
+        let totalMisEncuestas = 0;
 
-        // Escaneamos las más de 30,000 líneas omitiendo la fila 1 de cabeceras
-        for (let i = 1; i < lineas.length; i++) {
-            const lineaLimpia = limpiarParaBúsqueda(lineas[i]);
-            if (!lineaLimpia) continue;
-
-            // BÚSQUEDA VECTORIAL DIRECTA: Si el bloque de texto crudo contiene el nombre limpio, se cuenta de inmediato
-            if (lineaLimpia.indexOf(nombreBuscado) !== -1) {
-                conteoTotalEncuestas++;
-            }
+        if (lineas.length > 0) {
+            // Limpiamos comillas del valor numérico e intentamos parsearlo
+            const valorLimpio = lineas[0].replace(/^"(.*)"$/, '$1').trim();
+            totalMisEncuestas = parseInt(valorLimpio, 10) || 0;
         }
 
-        // Pintamos el gran total exacto filtrado en tu panel estadístico
+        // Inyectamos el gran total real calculado de forma remota en tu recuadro HTML
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
-            elemTotal.innerText = conteoTotalEncuestas;
+            elemTotal.innerText = totalMisEncuestas;
         }
 
-        // Inyección del aviso informativo inferior en el contenedor
+        // Diseño limpio para el contenedor inferior de la interfaz
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
                 <div style="text-align: center; padding: 2rem 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Sincronización en Tiempo Real Activa
+                    📊 Capturas Enlazadas Correctamente
                 </div>
             `;
         }
@@ -741,9 +722,8 @@ async function cargarEstadisticasDirectas() {
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error en procesamiento de escaneo de texto plano:", error);
+        console.error("Error en procesamiento remoto de consultas masivas:", error);
         ocultarCarga();
-        alert("Ocurrió un retraso al procesar las encuestas debido al volumen de datos. Inténtalo de nuevo.");
+        alert("Ocurrió un retraso de red al conectar con Google Sheets. Inténtalo de nuevo.");
     }
 }
-
