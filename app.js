@@ -677,47 +677,51 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 
 // REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Solicitando consolidación remota a Google (+30k registros)...");
+    mostrarCarga("Procesando padrón masivo en tiempo real (+30k registros)...");
     
-    // ESTRATEGIA INMUNE: Recuperamos el nombre verificado guardado en la memoria global de sesión
-    const nombreBrigadista = typeof nombreGlobalSesion !== 'undefined' ? nombreGlobalSesion : "";
+    // 1. Extrae de forma segura el nombre inyectado en el gafete que nunca se borra
+    const nombreFijo = document.getElementById('credCompleto')?.innerText || "";
     
-    // Si por alguna razón la variable global se vació, la recuperamos del gafete permanente
-    const nombreFijo = nombreBrigadista || document.getElementById('credCompleto')?.innerText || "";
-    
-    // Limpieza absoluta para la cadena de texto SQL (remueve acentos y caracteres extraños)
-    const nombreLimpio = nombreFijo
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^A-Z0-9\s]/g, "")
-        .trim()
-        .toUpperCase();
+    // Función de limpieza absoluta para remover acentos, espacios dobles y caracteres especiales
+    const normalizarCadena = (texto) => {
+        if (!texto) return "";
+        return String(texto)
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "") // Remueve acentos dinámicamente
+            .replace(/[^A-Z0-9\s]/g, "")     // Deja solo letras y números limpios
+            .replace(/\s+/g, " ")            // Elimina espacios dobles
+            .trim()
+            .toUpperCase();
+    };
 
-    if (!nombreLimpio || nombreLimpio === "-" || nombreLimpio.length < 4) {
+    const nombreBuscado = normalizarCadena(nombreFijo);
+
+    if (!nombreBuscado || nombreBuscado === "-" || nombreBuscado.length < 5) {
         ocultarCarga();
-        alert("⚠️ Sesión no localizada. Por favor, reingresa desde el módulo de acceso inicial.");
+        alert("⚠️ Identidad de brigadista no localizada. Por favor reingresa desde el módulo de acceso inicial.");
         return;
     }
 
-    // CONSULTA ULTRA-VELOZ REMOTA: Google Sheets cuenta las filas de la columna E que coincidan con tu nombre
-    const querySQL = encodeURIComponent(`SELECT COUNT(E) WHERE UPPER(E) MATCHES '.*${nombreLimpio}.*' LABEL COUNT(E) ''`);
-    const urlConsulta = `https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing`;
+    // URL de exportación pública directa que brinca los bloqueos de cuentas ajenas de Google
+    const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
     
     try {
         const respuesta = await fetch(urlConsulta);
-        if (!respuesta.ok) throw new Error("Fallo de respuesta del servidor de Google");
+        if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
         
         const textoCSV = await respuesta.text();
         
-        // Google Sheets devuelve una sola hilera de texto con el número calculado
-        const lineas = textoCSV.split(/\r?\n/).filter(l => l.trim() !== "");
-        let totalMisEncuestas = 0;
-
-        if (lineas.length > 0) {
-            // Removemos comillas dobles automáticas de Google del valor numérico final
-            const valorNumericoPuro = lineas[0].replace(/^"(.*)"$/, '$1').trim();
-            totalMisEncuestas = parseInt(valorNumericoPuro, 10) || 0;
-        }
+        // 2. Convertimos todo el archivo masivo descargado a texto plano plano sin acentos
+        const documentoNormalizado = normalizarCadena(textoCSV);
+        
+        // 3. ESTRATEGIA DE BÚSQUEDA MATEMÁTICA DIRECTA (Regex Global):
+        // Crea un buscador automático que rastrea cuántas veces exactas aparece el nombre en el archivo.
+        // Evita el uso de splits o bucles lentos que consuman la memoria del dispositivo.
+        const buscadorRegex = new RegExp(nombreBuscado, "g");
+        const coincidenciasEncontradas = documentoNormalizado.match(buscadorRegex);
+        
+        // Si match no encuentra nada devuelve null, por lo que validamos que devuelva mínimo 0
+        const totalMisEncuestas = coincidenciasEncontradas ? coincidenciasEncontradas.length : 0;
 
         // Inyectamos de forma segura el gran total consolidado en tu recuadro HTML
         const elemTotal = document.getElementById('estTotal');
@@ -730,7 +734,7 @@ async function cargarEstadisticasDirectas() {
         if (contenedor) {
             contenedor.innerHTML = `
                 <div style="text-align: center; padding: 2rem 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Capturas de ${nombreLimpio} Sincronizadas
+                    📊 Capturas de ${nombreBuscado} Sincronizadas
                 </div>
             `;
         }
@@ -739,7 +743,7 @@ async function cargarEstadisticasDirectas() {
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error en procesamiento remoto de consultas masivas:", error);
+        console.error("Error en procesamiento masivo lineal por coincidencia de texto:", error);
         ocultarCarga();
         alert("Ocurrió un retraso de red al conectar con Google Sheets. Inténtalo de nuevo.");
     }
