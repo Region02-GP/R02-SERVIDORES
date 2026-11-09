@@ -677,60 +677,60 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 
 // REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Procesando volumen de encuestas en tiempo real (+30k registros)...");
+    mostrarCarga("Solicitando consolidación remota a Google (+30k registros)...");
     
-    // Función auxiliar interna para eliminar acentos y caracteres especiales de control
-    const normalizarTextoPlano = (texto) => {
-        if (!texto) return "";
-        return String(texto)
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "") // Remueve acentos dinámicamente
-            .replace(/[^A-Z0-9\s]/g, "")     // Deja solo letras y números limpios
-            .replace(/\s+/g, " ")            // Colapsa espacios dobles
-            .trim()
-            .toUpperCase();
-    };
+    // ESTRATEGIA INMUNE: Recuperamos el nombre verificado guardado en la memoria global de sesión
+    const nombreBrigadista = typeof nombreGlobalSesion !== 'undefined' ? nombreGlobalSesion : "";
+    
+    // Si por alguna razón la variable global se vació, la recuperamos del gafete permanente
+    const nombreFijo = nombreBrigadista || document.getElementById('credCompleto')?.innerText || "";
+    
+    // Limpieza absoluta para la cadena de texto SQL (remueve acentos y caracteres extraños)
+    const nombreLimpio = nombreFijo
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^A-Z0-9\s]/g, "")
+        .trim()
+        .toUpperCase();
 
-    // ESTRATEGIA INTEGRAL INMUNE: Lee el nombre verificado guardado en la memoria global de sesión
-    const nombreBuscado = normalizarTextoPlano(nombreGlobalSesion);
-
-    // Validación de seguridad para certificar que la identidad esté activa
-    if (!nombreBuscado || nombreBuscado.length < 4) {
+    if (!nombreLimpio || nombreLimpio === "-" || nombreLimpio.length < 4) {
         ocultarCarga();
-        alert("⚠️ Sesión inactiva o identidad no localizada. Por favor reingresa desde el módulo de acceso inicial.");
+        alert("⚠️ Sesión no localizada. Por favor, reingresa desde el módulo de acceso inicial.");
         return;
     }
 
-    // URL de exportación pública directa en formato crudo CSV
-    const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
+    // CONSULTA ULTRA-VELOZ REMOTA: Google Sheets cuenta las filas de la columna E que coincidan con tu nombre
+    const querySQL = encodeURIComponent(`SELECT COUNT(E) WHERE UPPER(E) MATCHES '.*${nombreLimpio}.*' LABEL COUNT(E) ''`);
+    const urlConsulta = `https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing`;
     
     try {
         const respuesta = await fetch(urlConsulta);
-        if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
+        if (!respuesta.ok) throw new Error("Fallo de respuesta del servidor de Google");
         
         const textoCSV = await respuesta.text();
         
-        // Convertimos el documento entero a texto plano completamente limpio y normalizado
-        const textoDocumentoPuro = normalizarTextoPlano(textoCSV);
-        
-        // ESTRATEGIA DE PARTICIÓN TOTAL:
-        // Corta el texto entero del Excel usando tu nombre como separador.
-        // El número exacto de coincidencias es el número de fragmentos obtenidos menos 1.
-        const fragmentosDeCorte = textoDocumentoPuro.split(nombreBuscado);
-        const totalMisEncuestas = fragmentosDeCorte.length - 1;
+        // Google Sheets devuelve una sola hilera de texto con el número calculado
+        const lineas = textoCSV.split(/\r?\n/).filter(l => l.trim() !== "");
+        let totalMisEncuestas = 0;
 
-        // Inyectamos de forma segura el gran total real calculado en tu recuadro HTML
+        if (lineas.length > 0) {
+            // Removemos comillas dobles automáticas de Google del valor numérico final
+            const valorNumericoPuro = lineas[0].replace(/^"(.*)"$/, '$1').trim();
+            totalMisEncuestas = parseInt(valorNumericoPuro, 10) || 0;
+        }
+
+        // Inyectamos de forma segura el gran total consolidado en tu recuadro HTML
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
             elemTotal.innerText = totalMisEncuestas;
         }
 
-        // Mensaje estético en el contenedor inferior de la interfaz de la Pantalla 4
+        // Diseño limpio para el contenedor inferior de la interfaz de la Pantalla 4
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
                 <div style="text-align: center; padding: 2rem 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Capturas de ${nombreBuscado} Sincronizadas
+                    📊 Capturas de ${nombreLimpio} Sincronizadas
                 </div>
             `;
         }
@@ -739,9 +739,9 @@ async function cargarEstadisticasDirectas() {
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error en escaneo masivo tolerante por variable de sesión:", error);
+        console.error("Error en procesamiento remoto de consultas masivas:", error);
         ocultarCarga();
-        alert("No se pudieron totalizar las encuestas debido al volumen de datos. Inténtalo de nuevo.");
+        alert("Ocurrió un retraso de red al conectar con Google Sheets. Inténtalo de nuevo.");
     }
 }
 
