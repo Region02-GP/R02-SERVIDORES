@@ -5,6 +5,8 @@
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxd5X8JYe7-aheiPhE9p-6s1AS2B-zL9McryRmK5oPViX7yOQtjej0aDZaCen5ASZ0dUw/exec";
 
+// Añade esta variable global arriba en tu app.js junto a las demás variables globales:
+let nombreGlobalSesion = ""; 
 
 let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 let fotoCompletaBase64 = ""; // Foto local capturada
@@ -65,8 +67,13 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             document.getElementById('nombre_curp').value = curp;
         }
 
-        if (datos.existe) {
+               if (datos.existe) {
             const nom = datos.nombre ? String(datos.nombre).trim() : ""; 
+            
+            // => CORRECCIÓN CRÍTICA DE PERSISTENCIA:
+            // Guardamos el nombre verificado oficial en la memoria permanente de la sesión
+            nombreGlobalSesion = nom;
+ 
             const mun = datos.municipio ? String(datos.municipio).trim() : "";
             const pue = datos.puesto ? String(datos.puesto).trim() : "";
             const tel = datos.telefono ? String(datos.telefono).trim() : "";
@@ -668,15 +675,12 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 });
 
 
-/// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
+// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Calculando volumen de encuestas masivas en tiempo real...");
+    mostrarCarga("Procesando volumen de encuestas en tiempo real (+30k registros)...");
     
-    // Captura el nombre fijo inyectado en la credencial que nunca se borra
-    const nombreGafete = document.getElementById('credCompleto')?.innerText || "";
-    
-    // Función de limpieza absoluta para eliminar acentos, espacios dobles y caracteres especiales
-    const normalizarParaBusqueda = (texto) => {
+    // Función auxiliar interna para eliminar acentos y caracteres especiales de control
+    const normalizarTextoPlano = (texto) => {
         if (!texto) return "";
         return String(texto)
             .normalize("NFD")
@@ -687,16 +691,17 @@ async function cargarEstadisticasDirectas() {
             .toUpperCase();
     };
 
-    const nombreBuscado = normalizarParaBusqueda(nombreGafete);
+    // ESTRATEGIA INTEGRAL INMUNE: Lee el nombre verificado guardado en la memoria global de sesión
+    const nombreBuscado = normalizarTextoPlano(nombreGlobalSesion);
 
-    // Validación de seguridad para evitar búsquedas en blanco
-    if (!nombreBuscado || nombreBuscado === "-" || nombreBuscado.length < 5) {
+    // Validación de seguridad para certificar que la identidad esté activa
+    if (!nombreBuscado || nombreBuscado.length < 4) {
         ocultarCarga();
-        alert("⚠️ Identidad de brigadista no localizada. Por favor, reingresa desde el módulo de acceso inicial.");
+        alert("⚠️ Sesión inactiva o identidad no localizada. Por favor reingresa desde el módulo de acceso inicial.");
         return;
     }
 
-    // URL de exportación pública directa en crudo (CSV) que salta bloqueos de cuentas ajenas
+    // URL de exportación pública directa en formato crudo CSV
     const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
     
     try {
@@ -705,22 +710,22 @@ async function cargarEstadisticasDirectas() {
         
         const textoCSV = await respuesta.text();
         
-        // Convertimos el documento entero a texto plano limpio (sin acentos y todo en mayúsculas)
-        const textoDocumentoPuro = normalizarParaBusqueda(textoCSV);
+        // Convertimos el documento entero a texto plano completamente limpio y normalizado
+        const textoDocumentoPuro = normalizarTextoPlano(textoCSV);
         
-        // ESTRATEGIA DE PARTICIÓN DIRECTA (Tijera Digital):
-        // Divide el documento en fragmentos usando el nombre del brigadista como corte.
-        // El total de repeticiones es exactamente el número de pedazos obtenidos menos 1.
+        // ESTRATEGIA DE PARTICIÓN TOTAL:
+        // Corta el texto entero del Excel usando tu nombre como separador.
+        // El número exacto de coincidencias es el número de fragmentos obtenidos menos 1.
         const fragmentosDeCorte = textoDocumentoPuro.split(nombreBuscado);
         const totalMisEncuestas = fragmentosDeCorte.length - 1;
 
-        // Inyectamos el total neto calculado en el recuadro HTML de forma segura
+        // Inyectamos de forma segura el gran total real calculado en tu recuadro HTML
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
             elemTotal.innerText = totalMisEncuestas;
         }
 
-        // Mensaje estético en el contenedor inferior de la interfaz
+        // Mensaje estético en el contenedor inferior de la interfaz de la Pantalla 4
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
@@ -734,8 +739,9 @@ async function cargarEstadisticasDirectas() {
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error en escaneo lineal por partición de texto:", error);
+        console.error("Error en escaneo masivo tolerante por variable de sesión:", error);
         ocultarCarga();
         alert("No se pudieron totalizar las encuestas debido al volumen de datos. Inténtalo de nuevo.");
     }
 }
+
