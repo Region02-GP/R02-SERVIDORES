@@ -660,10 +660,10 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================================
 // BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y PEGA TU NUEVA URL:
-const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbyl4wTKEfPHxJZgXKBmqvd5qKKOTCiRBvhpNzumN1NE3v5WiAOSyt9kAy1whEVfFcXJrA/exec";
+const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbyWj2xAXmEr5Ox_UapZEFAFM5vhveZkBODlbwN4Up_t9ZPQckLlzzoj3Yz2zSMZeBa34g/exec";
 
 // 📊 NUEVA CONSTANTE: URL de la Web App del libro exclusivo de "Estadísticas" (Pestaña Etapa1)
-const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbyl4wTKEfPHxJZgXKBmqvd5qKKOTCiRBvhpNzumN1NE3v5WiAOSyt9kAy1whEVfFcXJrA/exec";
+const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbyWj2xAXmEr5Ox_UapZEFAFM5vhveZkBODlbwN4Up_t9ZPQckLlzzoj3Yz2zSMZeBa34g/exec";
 
 // BUSCA ESTAS LÍNEAS E INYECTA EL ID DE TU HOJA NUEVA PROPIA:
 const GOOGLE_SHEET_ID_PROPIA = "1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM";
@@ -684,7 +684,6 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 async function cargarEstadisticasDirectas() {
     mostrarCarga("Solicitando consolidación interna a tu Apps Script...");
     
-    // Extrae de forma segura el nombre inyectado en el gafete que nunca se borra
     const nombreFijoGafete = document.getElementById('credCompleto')?.innerText || "";
     
     if (!nombreFijoGafete || nombreFijoGafete === "-" || nombreFijoGafete.length < 5) {
@@ -693,7 +692,6 @@ async function cargarEstadisticasDirectas() {
         return;
     }
 
-    // Consultamos directamente a tu Apps Script pasándole el nombre en la URL (petición GET limpia)
     const urlConsulta = `${SCRIPT_ESTADISTICAS_PROPIO}?nombre=${encodeURIComponent(nombreFijoGafete)}`;
     
     try {
@@ -702,35 +700,20 @@ async function cargarEstadisticasDirectas() {
         
         const datosJSON = await respuesta.json();
         
-        // Recibe el número neto calculado directamente en el servidor de Google
+        // 1. Extrae el conteo lineal de encuestas (Etapa 2) con el método exacto de ayer
         const totalMisEncuestas = datosJSON.total || 0;
-
-        // Inyectamos de forma segura el gran total real en tu recuadro HTML de la Pantalla 4
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
             elemTotal.innerText = totalMisEncuestas;
         }
 
-        // 📈 INTEGRACIÓN NUEVA: Consulta paralela para traer las visitas de la Etapa 1
-        try {
-            const payloadEtapa1 = { action: 'buscar', nombre: nombreFijoGafete };
-            const resEtapa1 = await fetch(SCRIPT_ETAPA1_URL, {
-                method: 'POST',
-                redirect: 'follow',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(payloadEtapa1)
-            });
-            const datosEtapa1 = await resEtapa1.json();
-            
-            const elemEtapa1 = document.getElementById('p4_totalVisitasEtapa1');
-            if (elemEtapa1 && datosEtapa1.status === "success") {
-                elemEtapa1.innerText = datosEtapa1.visitas_etapa1 || 0;
-            }
-        } catch (errEtapa1) {
-            console.error("Error al recuperar las estadísticas de la Etapa 1:", errEtapa1);
+        // 2. Extrae el total acumulado mapeado de la tabla de la Etapa 1
+        const totalVisitasEtapa1 = datosJSON.visitas_etapa1 || 0;
+        const elemEtapa1 = document.getElementById('p4_totalVisitasEtapa1');
+        if (elemEtapa1) {
+            elemEtapa1.innerText = totalVisitasEtapa1;
         }
 
-        // Diseño limpio para el contenedor inferior de la interfaz
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
