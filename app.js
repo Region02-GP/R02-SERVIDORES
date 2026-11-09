@@ -704,7 +704,7 @@ async function cargarEstadisticasDirectas() {
     }
 
     // URL de exportación de tu propiedad, libre de bloqueos de perfiles externos de Google
-    const urlConsulta = `https://google.com{GOOGLE_SHEET_ID_PROPIA}/export?format=csv&sheet=${encodeURIComponent(NOMBRE_PESTANA_PROPIA)}`;
+    const urlConsulta = `https://google.com{1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM}/export?format=csv&sheet=${encodeURIComponent(NOMBRE_PESTANA_PROPIA)}`;
     
     try {
         const respuesta = await fetch(urlConsulta);
