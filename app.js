@@ -704,7 +704,8 @@ async function cargarEstadisticasDirectas() {
     }
 
     // URL de exportación de tu propiedad, libre de bloqueos de perfiles externos de Google
-     const urlConsulta = `https://google.com{GOOGLE_SHEET_ID_PROPIA}/export?format=csv&sheet=${encodeURIComponent(NOMBRE_PESTANA_PROPIA)}`;    
+    const urlConsulta = `https://google.com{GOOGLE_SHEET_ID_PROPIA}/export?format=csv&sheet=${encodeURIComponent(NOMBRE_PESTANA_PROPIA)}`;
+    
     try {
         const respuesta = await fetch(urlConsulta);
         if (!respuesta.ok) throw new Error("Fallo de comunicación con tu hoja de cálculo");
@@ -731,7 +732,7 @@ async function cargarEstadisticasDirectas() {
             }
         }
 
-        // Inyectamos el total neto filtrado en tu recuadro HTML de forma exitosa
+        // Inyectamos el total neto filtrado en tu recuadro HTML de forma de éxito
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
             elemTotal.innerText = totalMisEncuestas;
@@ -756,4 +757,3 @@ async function cargarEstadisticasDirectas() {
         alert("No se pudieron extraer las estadísticas de tu cuenta. Verifica tu ID y el Compartir.");
     }
 }
-
