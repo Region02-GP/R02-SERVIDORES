@@ -680,59 +680,71 @@ async function cargarEstadisticasDirectas() {
     
     try {
         const respuesta = await fetch(urlConsulta);
-        if (!respuesta.ok) throw new Error("Error en servidor remoto");
+        if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
         
         const textoCSV = await respuesta.text();
         
-        // Muestra una ventana flotante con la respuesta exacta que manda Google para capturar el error
-        alert("Respuesta de Google:\n" + textoCSV.substring(0, 300));
+        // Separamos el documento estrictamente por saltos de línea planos
+        const lineas = textoCSV.split(/\r?\n/);
         
-        const lineas = textoCSV.split(/\r?\n/).filter(l => l.trim() !== "");
-        
+        const conteoEncuestas = {};
         let totalGeneralEncuestas = 0;
+
+        // Recorremos desde la línea 1 (saltando los encabezados de la fila 1)
+        for (let i = 1; i < lineas.length; i++) {
+            const linea = lineas[i].trim();
+            if (!linea) continue; // Si la línea está vacía, la salta
+
+            // Separador avanzado que segmenta por comas, pero ignora las comas que están dentro de comillas (coordenadas de mapa)
+            const columnas = linea.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || linea.split(",");
+            
+            // La columna E es exactamente el índice 4 (Fecha=0, Hora=1, Lat=2, Long=3, SERVIDOR=4)
+            if (columnas && columnas[4]) {
+                // Limpiamos comillas dobles y espacios en blanco de los extremos
+                const brigadista = columnas[4].replace(/^"(.*)"$/, '$1').trim().toUpperCase();
+                
+                // Filtramos para no contar celdas vacías o la palabra del encabezado
+                if (brigadista && brigadista !== "SERVIDOR" && brigadista !== "") {
+                    conteoEncuestas[brigadista] = (conteoEncuestas[brigadista] || 0) + 1;
+                    totalGeneralEncuestas++;
+                }
+            }
+        }
+
+        // Inyectamos el total general exacto en el recuadro superior
+        document.getElementById('estTotal').innerText = totalGeneralEncuestas;
+
+        // Dibujado de los renglones en la interfaz
         const contenedor = document.getElementById('contenedorMunicipios');
-        
         if (contenedor) {
             contenedor.innerHTML = "";
 
-            lineas.forEach((linea) => {
-                // Separamos limpiando comillas dobles
-                const columnas = linea.split(",").map(c => c.replace(/^"(.*)"$/, '$1').trim());
+            // Ordenamos alfabéticamente los nombres para una presentación limpia
+            Object.keys(conteoEncuestas).sort().forEach(brigadista => {
+                const numeroEncuestas = conteoEncuestas[brigadista];
+                const renglon = document.createElement('div');
+                renglon.style.cssText = "display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(97, 18, 50, 0.2); padding: 0.6rem 0.8rem; border-radius: 0.4rem; background-color: rgba(255,255,255,0.85); box-sizing: border-box; width: 100%; margin-bottom: 0.2rem;";
                 
-                if (columnas.length >= 2) {
-                    const brigadista = columnas[0].toUpperCase();
-                    const numeroEncuestas = parseInt(columnas[1], 10) || 0;
-                    
-                    if (brigadista && brigadista !== "SERVIDOR" && brigadista !== "SERVIDOR PUBLICO" && brigadista !== "NAME") {
-                        totalGeneralEncuestas += numeroEncuestas;
-                        
-                        const renglon = document.createElement('div');
-                        renglon.style.cssText = "display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(97, 18, 50, 0.2); padding: 0.6rem 0.8rem; border-radius: 0.4rem; background-color: rgba(255,255,255,0.85); box-sizing: border-box; width: 100%; margin-bottom: 0.2rem;";
-                        
-                        renglon.innerHTML = `
-                            <div style="display: flex; flex-direction: column;">
-                                <span style="font-size: 0.82rem; font-weight: 700; color: #1f2937; text-transform: uppercase;">${brigadista}</span>
-                                <span style="font-size: 0.68rem; color: var(--color-texto-mutado); font-weight: 500; margin-top: 1px;">BRIGADISTA ACTIVO</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                <span style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);"># ENCUESTAS:</span>
-                                <span style="font-size: 0.95rem; font-weight: 800; color: var(--color-guinda); background-color: rgba(97, 18, 50, 0.1); padding: 3px 10px; border-radius: 12px;">${numeroEncuestas}</span>
-                            </div>
-                        `;
-                        contenedor.appendChild(renglon);
-                    }
-                }
+                renglon.innerHTML = `
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-size: 0.82rem; font-weight: 700; color: #1f2937; text-transform: uppercase;">${brigadista}</span>
+                        <span style="font-size: 0.68rem; color: var(--color-texto-mutado); font-weight: 500; margin-top: 1px;">BRIGADISTA ACTIVO</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <span style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);"># ENCUESTAS:</span>
+                        <span style="font-size: 0.95rem; font-weight: 800; color: var(--color-guinda); background-color: rgba(97, 18, 50, 0.1); padding: 3px 10px; border-radius: 12px;">${numeroEncuestas}</span>
+                    </div>
+                `;
+                contenedor.appendChild(renglon);
             });
         }
 
-        document.getElementById('estTotal').innerText = totalGeneralEncuestas;
         ocultarCarga();
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error en procesamiento de datos unificados:", error);
+        console.error("Error procesando conteo de encuestas masivo:", error);
         ocultarCarga();
-        alert("Ocurrió un retraso al procesar las celdas. Inténtalo de nuevo.");
+        alert("Ocurrió un error al procesar las encuestas. Revisa la conexión de red.");
     }
 }
-
