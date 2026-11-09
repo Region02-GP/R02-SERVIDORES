@@ -667,57 +667,58 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
     irAPantalla(1);
 });
 
-// Función de procesamiento masivo tolerante y exacto de la Columna E
-async function cargarEstadisticasDirectas() {
-    mostrarCarga("Procesando volumen de datos consolidados...");
-    
-    // URL de exportación pública en crudo verificado
-    const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
-// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 
+// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
+async function cargarEstadisticasDirectas() {
+    mostrarCarga("Escaneando padrón masivo en tiempo real (+30k registros)...");
+    
+    // Captura el nombre exacto del brigadista ingresado en el formulario (Pantalla 2)
+    const nombreBuscado = document.getElementById('nombre')?.value.trim().toUpperCase();
+    
+    if (!nombreBuscado) {
+        ocultarCarga();
+        alert("⚠️ Por favor, asegúrate de que el campo de Nombre Completo no esté vacío.");
+        return;
+    }
+
+    // URL de exportación pública directa en crudo de tu hoja VCXC
+    const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
+    
     try {
         const respuesta = await fetch(urlConsulta);
         if (!respuesta.ok) throw new Error("Fallo de comunicación con la base central");
         
         const textoCSV = await respuesta.text();
         
-        // Separamos el documento por saltos de línea
+        // Separamos el documento por renglones de forma estricta
         const lineas = textoCSV.split(/\r?\n/);
         
-        let totalGeneralEncuestas = 0;
+        let conteoTotalBrigadista = 0;
 
-        // Recorremos las líneas saltando la fila 1 (cabeceras de títulos)
+        // Recorremos las más de 30,000 líneas saltando la cabecera
         for (let i = 1; i < lineas.length; i++) {
-            const linea = lineas[i].trim();
-            if (!linea) continue;
+            const lineaEnCrudo = lineas[i].toUpperCase().trim();
+            if (!lineaEnCrudo) continue;
 
-            // Separamos la fila por comas
-            const columnas = linea.split(",");
-            
-            // Evaluamos de forma estricta la columna E (índice 4: SERVIDOR)
-            if (columnas && columnas.length > 4) {
-                // Limpiamos comillas dobles automáticas de Google
-                const brigadista = columnas[4].replace(/^"(.*)"$/, '$1').trim().toUpperCase();
-                
-                // CONDICIÓN EXCLUSIVA: Solo suma si hay un nombre real de brigadista asignado en la fila
-                if (brigadista && brigadista !== "" && brigadista !== "SERVIDOR" && brigadista.length > 5) {
-                    totalGeneralEncuestas++;
-                }
+            // Estrategia de Escaneo Directo: Si el nombre del brigadista aparece 
+            // textualmente en la línea, sumamos la encuesta de inmediato.
+            if (lineaEnCrudo.includes(nombreBuscado)) {
+                conteoTotalBrigadista++;
             }
         }
 
-        // Inyectamos el gran total exacto filtrado en el HTML
+        // Pintamos el gran total exacto filtrado en tu panel
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
-            elemTotal.innerText = totalGeneralEncuestas;
+            elemTotal.innerText = conteoTotalBrigadista;
         }
 
-        // Diseño limpio e institucional para el bloque inferior
+        // Mensaje estético en el contenedor de abajo
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
                 <div style="text-align: center; padding: 2rem 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Captura Conectada en Tiempo Real
+                    📊 Capturas de ${nombreBuscado} Sincronizadas
                 </div>
             `;
         }
@@ -726,8 +727,8 @@ async function cargarEstadisticasDirectas() {
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error en procesamiento masivo lineal:", error);
+        console.error("Error en escaneo masivo por concordancia de texto:", error);
         ocultarCarga();
-        alert("No se pudieron totalizar las encuestas. Por favor inténtalo de nuevo.");
+        alert("No se pudieron totalizar las encuestas debido al volumen de datos. Inténtalo de nuevo.");
     }
 }
