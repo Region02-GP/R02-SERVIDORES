@@ -670,30 +670,33 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 
 // REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Procesando padrón masivo (+30k registros)...");
+    mostrarCarga("Escaneando padrón masivo en tiempo real (+30k registros)...");
     
-    // Captura el nombre del brigadista directamente del campo de la Pantalla 2
-    let nombreBuscado = document.getElementById('nombre')?.value || "";
+    // ESTRATEGIA INTACTA: Extrae el nombre fijo del gafete que ya pasó por validación y nunca se borra
+    const nombreFijoGafete = document.getElementById('credCompleto')?.innerText || "";
     
-    // Función auxiliar interna para limpiar acentos y caracteres especiales de control
-    const normalizarTexto = (texto) => {
+    // Función de limpieza absoluta para eliminar acentos, espacios dobles y caracteres especiales
+    const limpiarParaBúsqueda = (texto) => {
         if (!texto) return "";
         return String(texto)
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "") // Remueve acentos dinámicamente
+            .replace(/[^A-Z0-9\s]/g, "")     // Deja solo letras y espacios limpios
+            .replace(/\s+/g, " ")            // Colapsa espacios dobles en uno solo
             .trim()
             .toUpperCase();
     };
 
-    const nombreFormateado = normalizarTexto(nombreBuscado);
+    const nombreBuscado = limpiarParaBúsqueda(nombreFijoGafete);
 
-    if (!nombreFormateado) {
+    // Si por alguna razón el texto es inválido o es el guion por defecto, aborta con seguridad
+    if (!nombreBuscado || nombreBuscado === "-" || nombreBuscado.length < 3) {
         ocultarCarga();
-        alert("⚠️ Por favor, asegúrate de que el campo de Nombre Completo tenga datos.");
+        alert("⚠️ Identidad de brigadista no localizada. Por favor reingresa desde el módulo de acceso.");
         return;
     }
 
-    // URL de exportación pública directa en crudo de tu hoja VCXC
+    // URL de exportación pública directa en formato crudo CSV
     const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
     
     try {
@@ -702,44 +705,34 @@ async function cargarEstadisticasDirectas() {
         
         const textoCSV = await respuesta.text();
         
-        // Separamos el documento por renglones de forma estricta
+        // Separamos el bloque masivo de texto por saltos de línea estrictos
         const lineas = textoCSV.split(/\r?\n/);
         
-        let conteoTotalBrigadista = 0;
+        let conteoTotalEncuestas = 0;
 
-        // Recorremos las más de 30,000 líneas saltando la cabecera
+        // Escaneamos las más de 30,000 líneas omitiendo la fila 1 de cabeceras
         for (let i = 1; i < lineas.length; i++) {
-            const linea = lineas[i].trim();
-            if (!linea) continue;
+            const lineaLimpia = limpiarParaBúsqueda(lineas[i]);
+            if (!lineaLimpia) continue;
 
-            // Separador Avanzado: Segmenta por comas ignorando las que están dentro de comillas (Lat/Long)
-            const columnas = linea.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            
-            // Evaluamos la columna E (índice 4: SERVIDOR)
-            if (columnas && columnas.length > 4) {
-                // Limpiamos comillas de escape de Google y normalizamos el texto de la celda
-                let brigadistaFila = columnas[4].replace(/^"(.*)"$/, '$1');
-                brigadistaFila = normalizarTexto(brigadistaFila);
-                
-                // Comparación estricta libre de errores de acentos o espacios
-                if (brigadistaFila === nombreFormateado) {
-                    conteoTotalBrigadista++;
-                }
+            // BÚSQUEDA VECTORIAL DIRECTA: Si el bloque de texto crudo contiene el nombre limpio, se cuenta de inmediato
+            if (lineaLimpia.indexOf(nombreBuscado) !== -1) {
+                conteoTotalEncuestas++;
             }
         }
 
-        // Pintamos el gran total exacto filtrado en tu panel
+        // Pintamos el gran total exacto filtrado en tu panel estadístico
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
-            elemTotal.innerText = conteoTotalBrigadista;
+            elemTotal.innerText = conteoTotalEncuestas;
         }
 
-        // Mensaje estético en el contenedor inferior
+        // Inyección del aviso informativo inferior en el contenedor
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
                 <div style="text-align: center; padding: 2rem 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Capturas de ${nombreFormateado} Sincronizadas
+                    📊 Sincronización en Tiempo Real Activa
                 </div>
             `;
         }
@@ -748,8 +741,9 @@ async function cargarEstadisticasDirectas() {
         irAPantalla(4);
 
     } catch (error) {
-        console.error("Error en procesamiento masivo tolerante por índice:", error);
+        console.error("Error en procesamiento de escaneo de texto plano:", error);
         ocultarCarga();
-        alert("No se pudieron totalizar las encuestas debido al volumen de datos. Inténtalo de nuevo.");
+        alert("Ocurrió un retraso al procesar las encuestas debido al volumen de datos. Inténtalo de nuevo.");
     }
 }
+
