@@ -653,35 +653,26 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================
 
+// 1. Variables de enlace con tu documento real verificado
 const GOOGLE_SHEET_ID = "1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8";
 const NOMBRE_PESTANA = "VCXC"; 
 
-// BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y CORRIGE / AGREGA ESTAS LÍNEAS:
-
-// => DISPARADOR ESENCIAL: Vincula el botón de la barra con la función de carga
+// Disparador esencial para la navegación hacia la Pantalla 4
 document.getElementById('btnVerEstadisticas').addEventListener('click', cargarEstadisticasDirectas);
 
-// Botones de salida de la Pantalla 4 intactos
+// Botones de salida de la Pantalla 4
 document.getElementById('btnEstVolver').addEventListener('click', () => irAPantalla(3));
 document.getElementById('btnEstSalir').addEventListener('click', () => {
     document.getElementById('p1_curp').value = "";
     irAPantalla(1);
 });
 
-
-// REEMPLAZAR ÚNICAMENTE LAS PRIMERAS LÍNEAS DE LA FUNCIÓN EN TU app.js (Línea 681 aprox.)
-async function cargarEstadisticasDirectas() {
-    mostrarCarga("Solicitando consolidación remota a Google...");
-    
-    // URL FIJA Y DIRECTA: Envía la orden SELECT E, COUNT(E) directo a docs.google.com sin llaves ni variables que fallen
-    const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing''";
-    
-// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
+// Función de procesamiento masivo tolerante y exacto de la Columna E
 async function cargarEstadisticasDirectas() {
     mostrarCarga("Procesando volumen de datos consolidados...");
     
     // URL de exportación pública en crudo verificado
-    const urlConsulta = "https://google.com";
+    const urlConsulta = "https://docs.google.com/spreadsheets/d/1mxbvJz65T6qudx_vZmG6-cS8t4ZpW3d03Y01dNMCMz8/edit?usp=sharing";
     
     try {
         const respuesta = await fetch(urlConsulta);
@@ -716,7 +707,7 @@ async function cargarEstadisticasDirectas() {
             }
         }
 
-        // CONTROL DE PERMISOS DOM (?): Si el elemento 'estTotal' no existe, no congela el flujo
+        // Control de errores del DOM para evitar congelamientos si el HTML cambia
         const elemTotal = document.getElementById('estTotal');
         if (elemTotal) {
             elemTotal.innerText = totalGeneralEncuestas;
@@ -736,7 +727,7 @@ async function cargarEstadisticasDirectas() {
                 renglon.innerHTML = `
                     <div style="display: flex; flex-direction: column;">
                         <span style="font-size: 0.82rem; font-weight: 700; color: #1f2937; text-transform: uppercase;">${brigadista}</span>
-                        <span style="font-size: 0.68rem; color: var(--color-texto-mutated); font-weight: 500; margin-top: 1px;">BRIGADISTA ACTIVO</span>
+                        <span style="font-size: 0.68rem; color: var(--color-texto-mutado); font-weight: 500; margin-top: 1px;">BRIGADISTA ACTIVO</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.4rem;">
                         <span style="font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado);"># ENCUESTAS:</span>
@@ -753,7 +744,6 @@ async function cargarEstadisticasDirectas() {
     } catch (error) {
         console.error("Error en procesamiento masivo tolerante:", error);
         ocultarCarga();
-        alert("No se pudieron totalizar las encuestas. Por favor inténtalo de nuevo.");
+        alert("No se pudieron extraer las estadísticas. Revisa la conexión de red.");
     }
 }
-
