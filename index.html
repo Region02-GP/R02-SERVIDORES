@@ -15,7 +15,7 @@
     
             <div class="banner-institucional-img"></div>
             <div class="encabezado-institucional" style="background-color: transparent !important; border-bottom: none; position: relative; z-index: 10;">
-        <h1 class="titulo-principal" style="font-size: 1.4rem; font-weight: 800; margin: 0; color: var(--color-guinda); text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);">MODULA DE ACCESO PARA SERVIDORES</h1>
+        <h1 class="titulo-principal" style="font-size: 1.4rem; font-weight: 800; margin: 0; color: var(--color-guinda); text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);">ACCESO PARA SERVIDORES R-02</h1>
            </div>
             
             <div class="cuerpo-credencial" style="justify-content: center; gap: 2rem; overflow: hidden;">
@@ -31,10 +31,10 @@
                     <label class="campo-etiqueta">Ingrese CURP para continuar</label>
                     <input type="text" id="p1_curp" required class="campo-input id-mono" placeholder="Ej. GOMJ560101...">
                 </div>
-                <div style="width: 100%; display: flex; justify-content: center; margin-top: 0.5rem; margin-bottom: 0.5rem;">
-     <button type="button" id="btnAcceder" class="btn-guardar">🔍 Validar Identidad</button>
+              <div style="width: 100%; display: flex; justify-content: center; margin-top: 0.5rem; margin-bottom: 0.5rem; box-sizing: border-box;">
+     <button type="button" id="btnAcceder" class="btn-guardar" style="width: 50%; margin: 0; padding: 0.85rem 0;">🔍 Validar Identidad</button>
 </div>
-               
+              
             </div>
 
             <div class="footer-institucional-img"></div>
@@ -195,27 +195,27 @@
     
     <!-- Opción 1: Guardar Credencial -->
     <button type="button" id="btnDescargarPDF" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-        <span style="font-size: 1.05rem;">🖼️</span> Credencial
+        <span style="font-size: 1.05rem;">💳</span> Descargar credencial
     </button>
     
     <!-- Opción 2: Modificar Datos -->
     <button type="button" id="btnEditarPerfil" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-        <span style="font-size: 1.05rem;">✏️</span> Perfil
+        <span style="font-size: 1.05rem;">👤</span> Modificar Perfil
     </button>
 
     <!-- 🗺️ Opción Nueva 3: Ver Mapa Zona (Condicionado dinámicamente) -->
     <button type="button" id="btnVerMapaZona" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box; display: none;">
-        <span style="font-size: 1.05rem;">🗺️</span> Mapa Zona
+        <span style="font-size: 1.05rem;">🗺️</span> Mapa de Zona de Trabajo
     </button>
        
     <!-- Opción 4: Cargar Estadísticas Directas -->
     <button type="button" id="btnVerEstadisticas" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-        <span style="font-size: 1.05rem;">📊</span> Visitas CXC
+        <span style="font-size: 1.05rem;">📈</span> Estadistica de Visitas CXC
     </button>
 
     <!-- Opción 5: Salir del Gafete -->
     <button type="button" id="btnCerrar" style="flex: 1; background: transparent !important; color: #611232; border: none; padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-        <span style="font-size: 1.05rem;">◀</span> Salir
+        <span style="font-size: 1.05rem;">❌</span> Salir
     </button>
 </div>
     </div>
@@ -301,7 +301,7 @@
             <span style="font-size: 1.1rem;">🪪</span> Regresar
         </button>
         <button type="button" id="btnEstSalir" style="flex: 1; background: transparent !important; color: var(--color-guinda); border: none; padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-            <span style="font-size: 1.1rem;">◀</span> Salir
+            <span style="font-size: 1.1rem;">❌</span> Salir
         </button>
     </div>
 
