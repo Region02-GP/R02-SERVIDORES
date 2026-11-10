@@ -660,10 +660,10 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================================
 // BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y PEGA TU NUEVA URL:
-const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbx70q31HM_doD-wAqAg_aVjt43z1cQx-xyqJFfjqc0-SDCSxBn1YtkS52lOvTeAKpwMqA/exec";
+const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbxOiYW2WFzOMMKGtf6eh0y9UA51cVHX0X1gwiPx8-eukYUaFqPpkkChDNG6UDf-Zdth3A/exec";
 
 // 📊 NUEVA CONSTANTE: URL de la Web App del libro exclusivo de "Estadísticas" (Pestaña Etapa1)
-const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbx70q31HM_doD-wAqAg_aVjt43z1cQx-xyqJFfjqc0-SDCSxBn1YtkS52lOvTeAKpwMqA/exec";
+const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbxOiYW2WFzOMMKGtf6eh0y9UA51cVHX0X1gwiPx8-eukYUaFqPpkkChDNG6UDf-Zdth3A/exec";
 
 // BUSCA ESTAS LÍNEAS E INYECTA EL ID DE TU HOJA NUEVA PROPIA:
 const GOOGLE_SHEET_ID_PROPIA = "1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM";
@@ -720,12 +720,24 @@ async function cargarEstadisticasDirectas() {
         if (elemAppSN) {
             elemAppSN.innerText = totalVisitasAppSN;
         }
+// ... [Código anterior de mapeo de Etapa 2, Etapa 1 y AppSN]
+
 // Extrae el conteo de la pestaña interna Derechohabientes alimentada por IMPORTRANGE
 const totalDerechohabientes = datosJSON.conteo_derechohabientes || 0;
 const elemDerecho = document.getElementById('p4_totalDerechohabientes');
 if (elemDerecho) {
     elemDerecho.innerText = totalDerechohabientes;
 }
+
+// 📊 NUEVO: Extrae e inyecta el conteo de la pestaña Actualizacion_Datos
+const totalActualizacion = datosJSON.conteo_actualizacion || 0;
+const elemActualizacion = document.getElementById('p4_totalActualizacion');
+if (elemActualizacion) {
+    elemActualizacion.innerText = totalActualizacion;
+}
+
+// ... [Continúa el código con el contenedor de Municipios e irAPantalla(4)]
+
 
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
