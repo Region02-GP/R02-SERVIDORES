@@ -3,10 +3,12 @@
 // ========================================================
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxd5X8JYe7-aheiPhE9p-6s1AS2B-zL9McryRmK5oPViX7yOQtjej0aDZaCen5ASZ0dUw/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxR-F2Ta0QuduBuxnSGe5HgB2o57Yf__XIiDDrSK0rpbXZwGU1c5M15A6X8R6M7qlX_Mg/exec";
 
 // Añade esta variable global arriba en tu app.js junto a las demás variables globales:
 let nombreGlobalSesion = ""; 
+let urlMapaZonaGlobal = ""; // 🗺️ Almacena la URL de navegación territorial
+
 
 let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 let fotoCompletaBase64 = ""; // Foto local capturada
@@ -81,7 +83,20 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
             const cor = datos.correo ? String(datos.correo).trim() : "";
             
             fotoUrlActual = datos.foto_url ? String(datos.foto_url).trim() : "";
-            firmaBase64 = datos.firma_url ? String(datos.firma_url).trim() : "";
+firmaBase64 = datos.firma_url ? String(datos.firma_url).trim() : "";
+// Captura el mapa zonal enviado desde Google Sheets
+urlMapaZonaGlobal = datos.url_mapa_zona ? String(datos.url_mapa_zona).trim() : "";
+
+// Configura y condiciona la visibilidad del botón de mapa en la barra inferior
+const btnMapaNav = document.getElementById('btnVerMapaZona');
+if (btnMapaNav) {
+    if (urlMapaZonaGlobal && urlMapaZonaGlobal.startsWith("http")) {
+        btnMapaNav.style.display = "flex"; // Se muestra si tiene un enlace válido
+    } else {
+        btnMapaNav.style.display = "none"; // Se esconde si está vacío
+    }
+}
+
 
             if (document.getElementById('nombre')) document.getElementById('nombre').value = nom;
             if (document.getElementById('municipio')) document.getElementById('municipio').value = mun;
@@ -644,6 +659,14 @@ document.getElementById('btnLimpiarFirma').addEventListener('click', () => {
         ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
         firmaBase64 = "";
         document.getElementById('firmaAviso').classList.add('hidden');
+    }
+});
+// Manejador para abrir el mapa geográfico de la región asignada
+document.getElementById('btnVerMapaZona')?.addEventListener('click', () => {
+    if (urlMapaZonaGlobal && urlMapaZonaGlobal.startsWith("http")) {
+        window.open(urlMapaZonaGlobal, '_blank');
+    } else {
+        alert("⚠️ No se encuentra asignada una URL geográfica para esta zona de trabajo.");
     }
 });
 
