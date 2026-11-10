@@ -222,84 +222,94 @@
     <div class="footer-institucional-img"></div>
 </div>
 
-              <!-- PANTALLA 4: ESTADÍSTICAS GENERALES (CONSOLIDADO AGRUPADO Y DIFERENCIAS) -->
+            <!-- PANTALLA 4: ESTADÍSTICAS GENERALES (DISEÑO UNIFICADO INSTITUCIONAL) -->
 <div id="pantalla4" class="tarjeta-control hidden" style="background-image: linear-gradient(rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.65)), url('https://postimg.cc'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 44rem; max-width: 28rem !important; margin: 1.5rem auto; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25); border: 1px solid #e2e8f0; border-radius: 1.25rem;">
         
     <div class="banner-institucional-img"></div>
     
     <div class="encabezado-institucional" style="background-color: transparent !important; border-bottom: none; position: relative; z-index: 10;">
         <h1 class="titulo-principal" style="font-size: 1.4rem; font-weight: 800; margin: 0; color: var(--color-guinda); text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);">Módulo Estadístico</h1>
-        <p class="subtitulo-patria" style="margin: 4px 0 0 0; text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);">RENDIMIENTO DE CAMPO</p>
+        <p class="subtitulo-patria" style="margin: 4px 0 0 0; font-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: var(--color-texto-mutado);">Rendimiento de Campo Sincronizado</p>
     </div>
 
-    <div class="cuerpo-credencial" style="gap: 1rem; padding: 1.2rem; box-sizing: border-box; width: 100%; flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto;">
+    <div class="cuerpo-credencial" style="gap: 1.2rem; padding: 1.5rem; box-sizing: border-box; width: 100%; flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto;">
         
-        <!-- 📦 GRUPO 1: BLOQUE CONSOLIDADO DE TRABAJO EN TERRITORIO -->
-        <div style="background-color: rgba(255,255,255,0.9); border: 2px solid var(--color-guinda); border-radius: 0.85rem; padding: 1rem; box-sizing: border-box; display: flex; flex-direction: column; gap: 0.65rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-            <p style="margin: 0 0 0.2rem 0; font-size: 0.78rem; font-weight: 800; color: var(--color-guinda); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1.5px dashed rgba(97, 18, 50, 0.2); padding-bottom: 4px;">📂 Métricas Agrupadas de Campo</p>
+        <!-- 📂 SECCIÓN 1: DESGLOSE DE MÉTRICAS LINEALES -->
+        <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1.2rem; box-sizing: border-box; display: flex; flex-direction: column; gap: 0.8rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <p style="margin: 0 0 0.4rem 0; font-size: 0.75rem; font-weight: 700; color: var(--color-guinda); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--color-dorado); padding-bottom: 6px;">Métricas de Trabajo en Campo</p>
             
-            <!-- Fila: Etapa 1 -->
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; font-weight: 600;">
-                <span style="color: #4b5563;">⏱️ Visitas Etapa 1:</span>
-                <span id="p4_totalVisitasEtapa1" style="color: #111827; font-family: monospace; font-size: 1rem;">0</span>
+            <!-- Visitas Etapa 1 -->
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-texto-oscuro);">Visitas Etapa 1:</span>
+                <span id="p4_totalVisitasEtapa1" style="font-size: 1rem; font-family: monospace; font-weight: 700; color: var(--color-texto-oscuro);">0</span>
             </div>
             
-            <!-- Fila: Etapa 2 -->
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; font-weight: 600;">
-                <span style="color: #4b5563;">📝 Total de visitas Etapa 2:</span>
-                <span id="estTotal" style="color: #111827; font-family: monospace; font-size: 1rem;">0</span>
+            <!-- Visitas Etapa 2 -->
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-texto-oscuro);">Total de Visitas Etapa 2:</span>
+                <span id="estTotal" style="font-size: 1rem; font-family: monospace; font-weight: 700; color: var(--color-texto-oscuro);">0</span>
             </div>
             
-            <!-- Fila: Derechohabientes -->
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; font-weight: 600;">
-                <span style="color: #4b5563;">👤 Asignaciones Derechohabientes:</span>
-                <span id="p4_totalDerechohabientes" style="color: #111827; font-family: monospace; font-size: 1rem;">0</span>
+            <!-- Asignaciones Derechohabientes -->
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-texto-oscuro);">Asignaciones Derechohabientes:</span>
+                <span id="p4_totalDerechohabientes" style="font-size: 1rem; font-family: monospace; font-weight: 700; color: var(--color-texto-oscuro);">0</span>
             </div>
             
-            <!-- Fila: Actualización de Datos -->
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; font-weight: 600;">
-                <span style="color: #4b5563;">🔄 Actualización de Datos:</span>
-                <span id="p4_totalActualizacion" style="color: #111827; font-family: monospace; font-size: 1rem;">0</span>
+            <!-- Actualización de Datos -->
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-texto-oscuro);">Actualización de Datos:</span>
+                <span id="p4_totalActualizacion" style="font-size: 1rem; font-family: monospace; font-weight: 700; color: var(--color-texto-oscuro);">0</span>
             </div>
             
-            <!-- Fila Destacada: SUMA TOTAL -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.4rem; padding-top: 0.5rem; border-top: 2px solid var(--color-guinda); font-size: 0.95rem; font-weight: 800; color: var(--color-guinda);">
-                <span>🧮 SUMA TOTAL DE CAMPO:</span>
-                <span id="p4_sumaTotalCampo" style="font-family: monospace; font-size: 1.15rem;">0</span>
+            <!-- SUMA TOTAL DE CAMPO (DESTACADA) -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.4rem; padding-top: 0.8rem; border-top: 1px dashed #e2e8f0;">
+                <span style="font-size: 0.85rem; font-weight: 800; color: var(--color-guinda); text-transform: uppercase; letter-spacing: 0.02em;">Suma Total de Campo:</span>
+                <span id="p4_sumaTotalCampo" style="font-size: 1.15rem; font-family: monospace; font-weight: 800; color: var(--color-guinda);">0</span>
             </div>
         </div>
 
-        <!-- 📊 PANEL CENTRAL: VISITAS TOTALES APPSN (PARTE DE ABAJO) -->
-        <div style="background-color: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 0.75rem; padding: 0.85rem; text-align: center; box-sizing: border-box;">
-            <p style="margin: 0; font-size: 0.8rem; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 0.05em;">Visitas Totales AppSN</p>
-            <p style="margin: 0.1rem 0 0 0; font-size: 0.68rem; color: #4b5563; font-weight: 600;">Historial de Trabajo (Módulo SN)</p>
-            <div style="font-size: 2.3rem; font-weight: 900; color: #1d4ed8; margin-top: 0.2rem;" id="p4_totalVisitasAppSN">0</div>
+        <!-- 📊 SECCIÓN 2: COMPARATIVO APPSN Y BALANCE -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; box-sizing: border-box;">
+            
+            <!-- Bloque Izquierdo: Totales AppSN -->
+            <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1rem; text-align: center; box-sizing: border-box; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <p style="margin: 0; font-size: 0.72rem; font-weight: 700; color: var(--color-texto-mutado); text-transform: uppercase; letter-spacing: 0.03em;">Total AppSN</p>
+                    <p style="margin: 2px 0 0 0; font-size: 0.62rem; color: var(--color-texto-mutado); font-weight: 500; line-height: 1.1;">Historial Módulo SN</p>
+                </div>
+                <div style="font-size: 2rem; font-weight: 800; color: var(--color-texto-oscuro); margin-top: 0.6rem; font-family: sans-serif;" id="p4_totalVisitasAppSN">0</div>
+            </div>
+            
+            <!-- Bloque Derecho: Diferencia Pendiente -->
+            <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1rem; text-align: center; box-sizing: border-box; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <p style="margin: 0; font-size: 0.72rem; font-weight: 700; color: var(--color-guinda); text-transform: uppercase; letter-spacing: 0.03em;">Diferencia</p>
+                    <p style="margin: 2px 0 0 0; font-size: 0.62rem; color: var(--color-texto-mutado); font-weight: 500; line-height: 1.1;">AppSN menos Campo</p>
+                </div>
+                <div style="font-size: 2rem; font-weight: 800; color: var(--color-guinda); margin-top: 0.6rem; font-family: sans-serif;" id="p4_restaDiferencia">0</div>
+            </div>
+            
         </div>
 
-        <!-- ⚖️ PANEL DE BALANCE: RESTA O DIFERENCIA METROLÓGICA -->
-        <div style="background-color: #fff1f2; border: 1.5px solid #fecdd3; border-radius: 0.75rem; padding: 0.85rem; text-align: center; box-sizing: border-box;">
-            <p style="margin: 0; font-size: 0.8rem; font-weight: 700; color: #9f1239; text-transform: uppercase; letter-spacing: 0.05em;">Diferencia Pendiente</p>
-            <p style="margin: 0.1rem 0 0 0; font-size: 0.68rem; color: #4b5563; font-weight: 600;">Visitas AppSN menos Suma de Campo</p>
-            <div style="font-size: 2.3rem; font-weight: 900; color: #e11d48; margin-top: 0.2rem;" id="p4_restaDiferencia">0</div>
-        </div>
-
-        <!-- Contenedor de Resumen Auxiliar Sincronizado -->
+        <!-- Contenedor Auxiliar para mensajes de Éxito -->
         <div id="contenedorMunicipios" style="width: 100%;"></div>
 
     </div>
 
-    <!-- Barra de Navegación de Pantalla 4 -->
-    <div style="width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.9); border-top: 2px solid #611232; border-bottom: 1px solid #e5e7eb; box-sizing: border-box; z-index: 10; overflow: hidden; margin-top: auto; flex-shrink: 0;">
-        <button type="button" id="btnEstVolver" style="flex: 1; background: transparent !important; color: #611232; border: none; padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+    <!-- BARRA DE NAVEGACIÓN INFERIOR UNIFICADA -->
+    <div style="width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.95); border-top: 2px solid var(--color-guinda); border-bottom: 1px solid #e5e7eb; box-sizing: border-box; z-index: 10; overflow: hidden; margin-top: auto; flex-shrink: 0;">
+        <button type="button" id="btnEstVolver" style="flex: 1; background: transparent !important; color: var(--color-guinda); border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
             <span style="font-size: 1.1rem;">🪪</span> Regresar
         </button>
-        <button type="button" id="btnEstSalir" style="flex: 1; background: transparent !important; color: #611232; border: none; padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+        <button type="button" id="btnEstSalir" style="flex: 1; background: transparent !important; color: var(--color-guinda); border: none; padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
             <span style="font-size: 1.1rem;">◀</span> Salir
         </button>
     </div>
 
     <div class="footer-institucional-img"></div>
 </div>
+
 
   <!-- VENTANA FLOTANTE PARA FIRMA -->
     <div id="modalFirmaPantallaCompleta" class="overlay-carga hidden" style="background-color: rgba(17, 24, 39, 0.98); z-index: 10005; padding: 1rem; box-sizing: border-box; display: flex; flex-direction: column;">
