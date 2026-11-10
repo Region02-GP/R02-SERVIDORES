@@ -190,27 +190,35 @@
 
         </div>
 
-               <!-- BARRA DE NAVEGACIÓN INFERIOR (INTEGRADA EN EL FLUJO SIN TAPAR EL FOOTER) -->
-        <div style="width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.9); border-top: 2px solid #611232; border-bottom: 1px solid #e5e7eb; box-sizing: border-box; z-index: 10; overflow: hidden; margin-top: auto; flex-shrink: 0;">
-            
-            <!-- Opción 1: Guardar (Pestaña Izquierda) -->
-            <button type="button" id="btnDescargarPDF" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-                <span style="font-size: 1.1rem;">🪪</span> Descargar credencial
-            </button>
-            
-            <!-- Opción 2: Modificar (Pestaña Central) -->
-            <button type="button" id="btnEditarPerfil" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-                <span style="font-size: 1.1rem;">✏️</span> Modificar Perfil
-            </button>
-               <!-- AGREGAR ESTA OPCIÓN DENTRO DE LA NAV-BAR DE PANTALLA 3 EN TU index.html -->
-<button type="button" id="btnVerEstadisticas" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-    <span style="font-size: 1.1rem;">📊</span> Estadistica de Visitas CXC
-</button>
-            <!-- Opción 3: Salir (Pestaña Derecha) -->
-            <button type="button" id="btnCerrar" style="flex: 1; background: transparent !important; color: #611232; border: none; padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-                <span style="font-size: 1.1rem;">◀</span> Salir
-            </button>
-           
+              <!-- BARRA DE NAVEGACIÓN INFERIOR (REDISEÑADA PARA 4 OPCIONES SIMÉTRICAS) -->
+<div style="width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.95); border-top: 2px solid #611232; border-bottom: 1px solid #e5e7eb; box-sizing: border-box; z-index: 10; overflow: hidden; margin-top: auto; flex-shrink: 0;">
+    
+    <!-- Opción 1: Guardar Credencial -->
+    <button type="button" id="btnDescargarPDF" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+        <span style="font-size: 1.05rem;">🖼️</span> Credencial
+    </button>
+    
+    <!-- Opción 2: Modificar Datos -->
+    <button type="button" id="btnEditarPerfil" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+        <span style="font-size: 1.05rem;">✏️</span> Perfil
+    </button>
+
+    <!-- 🗺️ Opción Nueva 3: Ver Mapa Zona (Condicionado dinámicamente) -->
+    <button type="button" id="btnVerMapaZona" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box; display: none;">
+        <span style="font-size: 1.05rem;">🗺️</span> Mapa Zona
+    </button>
+       
+    <!-- Opción 4: Cargar Estadísticas Directas -->
+    <button type="button" id="btnVerEstadisticas" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+        <span style="font-size: 1.05rem;">📊</span> Visitas CXC
+    </button>
+
+    <!-- Opción 5: Salir del Gafete -->
+    <button type="button" id="btnCerrar" style="flex: 1; background: transparent !important; color: #611232; border: none; padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+        <span style="font-size: 1.05rem;">◀</span> Salir
+    </button>
+</div>
+
 
         </div>
 
