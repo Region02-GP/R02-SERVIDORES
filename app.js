@@ -680,7 +680,6 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
     irAPantalla(1);
 });
 
-// REEMPLAZAR COMPLETAMENTE TU FUNCIÓN AL FINAL DE TU app.js
 async function cargarEstadisticasDirectas() {
     mostrarCarga("Solicitando consolidación interna a tu Apps Script...");
     
@@ -700,50 +699,55 @@ async function cargarEstadisticasDirectas() {
         
         const datosJSON = await respuesta.json();
         
-        // 1. Extrae el conteo lineal de encuestas (Etapa 2) de forma segura
-        const totalMisEncuestas = datosJSON.total || 0;
-        const elemTotal = document.getElementById('estTotal');
-        if (elemTotal) {
-            elemTotal.innerText = totalMisEncuestas;
+        // 1. Extraer los 4 valores numéricos base de campo de forma segura
+        const vEtapa1 = Number(datosJSON.visitas_etapa1) || 0;
+        const vEtapa2 = Number(datosJSON.total) || 0;
+        const vDerecho = Number(datosJSON.conteo_derechohabientes) || 0;
+        const vActualiz = Number(datosJSON.conteo_actualizacion) || 0;
+        
+        // 2. Extraer el valor base de la AppSN
+        const vAppSN = Number(datosJSON.visitas_appsn) || 0;
+
+        // 3. Calcular la suma del grupo de campo
+        const sumaTotalCampo = vEtapa1 + vEtapa2 + vDerecho + vActualiz;
+
+        // 4. Calcular la resta (AppSN menos la Suma Total de Campo)
+        let restaDiferencia = vAppSN - sumaTotalCampo;
+        if (restaDiferencia < 0) {
+            restaDiferencia = 0; // Regla de control forzada a cero
         }
 
-        // 2. Extrae el total acumulado mapeado de la tabla de la Etapa 1 de forma segura
-        const totalVisitasEtapa1 = datosJSON.visitas_etapa1 || 0;
-        const elemEtapa1 = document.getElementById('p4_totalVisitasEtapa1');
-        if (elemEtapa1) {
-            elemEtapa1.innerText = totalVisitasEtapa1;
+        // 5. Inyectar y renderizar de forma exacta cada elemento en el DOM
+        if (document.getElementById('p4_totalVisitasEtapa1')) {
+            document.getElementById('p4_totalVisitasEtapa1').innerText = vEtapa1;
+        }
+        if (document.getElementById('estTotal')) {
+            document.getElementById('estTotal').innerText = vEtapa2;
+        }
+        if (document.getElementById('p4_totalDerechohabientes')) {
+            document.getElementById('p4_totalDerechohabientes').innerText = vDerecho;
+        }
+        if (document.getElementById('p4_totalActualizacion')) {
+            document.getElementById('p4_totalActualizacion').innerText = vActualiz;
+        }
+        
+        // Inyectar cálculos dinámicos acumulados
+        if (document.getElementById('p4_sumaTotalCampo')) {
+            document.getElementById('p4_sumaTotalCampo').innerText = sumaTotalCampo;
+        }
+        if (document.getElementById('p4_totalVisitasAppSN')) {
+            document.getElementById('p4_totalVisitasAppSN').innerText = vAppSN;
+        }
+        if (document.getElementById('p4_restaDiferencia')) {
+            document.getElementById('p4_restaDiferencia').innerText = restaDiferencia;
         }
 
-        // 3. Extrae el total acumulado mapeado de la tabla AppSN de forma segura
-        const totalVisitasAppSN = datosJSON.visitas_appsn || 0;
-        const elemAppSN = document.getElementById('p4_totalVisitasAppSN');
-        if (elemAppSN) {
-            elemAppSN.innerText = totalVisitasAppSN;
-        }
-// ... [Código anterior de mapeo de Etapa 2, Etapa 1 y AppSN]
-
-// Extrae el conteo de la pestaña interna Derechohabientes alimentada por IMPORTRANGE
-const totalDerechohabientes = datosJSON.conteo_derechohabientes || 0;
-const elemDerecho = document.getElementById('p4_totalDerechohabientes');
-if (elemDerecho) {
-    elemDerecho.innerText = totalDerechohabientes;
-}
-
-// 📊 NUEVO: Extrae e inyecta el conteo de la pestaña Actualizacion_Datos
-const totalActualizacion = datosJSON.conteo_actualizacion || 0;
-const elemActualizacion = document.getElementById('p4_totalActualizacion');
-if (elemActualizacion) {
-    elemActualizacion.innerText = totalActualizacion;
-}
-
-// ... [Continúa el código con el contenedor de Municipios e irAPantalla(4)]
-
-
+        // Renderizado del pie de resumen
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
-                <div style="text-align: center; padding: 2rem 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Resumen Personal Sincronizado con Éxito
+                <div style="text-align: center; padding: 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
+                    📊 Balance Operativo Sincronizado
                 </div>
             `;
         }
@@ -755,7 +759,7 @@ if (elemActualizacion) {
         console.error("Error consultando el Apps Script propio:", error);
         ocultarCarga();
         
-        // Al menos forzamos el cambio de pantalla para que el usuario no se quede congelado si la red falla
+        // Forzamos el cambio de pantalla preventivo para evitar bloqueos de interfaz
         irAPantalla(4);
         alert("Se mostraron los datos locales. Algunas métricas remotas no se pudieron extraer en este momento.");
     }
