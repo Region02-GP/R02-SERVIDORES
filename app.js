@@ -712,7 +712,7 @@ async function cargarEstadisticasDirectas() {
         const sumaTotalCampo = vEtapa1 + vEtapa2 + vDerecho + vActualiz;
 
         // 4. Calcular la resta (AppSN menos la Suma Total de Campo)
-        let restaDiferencia = vAppSN - sumaTotalCampo;
+        let restaDiferencia = sumaTotalCampo - vAppSN;
         if (restaDiferencia < 0) {
             restaDiferencia = 0; // Regla de control forzada a cero
         }
