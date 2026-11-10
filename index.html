@@ -309,22 +309,35 @@
 </div>
 
 
-  <!-- VENTANA FLOTANTE PARA FIRMA -->
-    <div id="modalFirmaPantallaCompleta" class="overlay-carga hidden" style="background-color: rgba(17, 24, 39, 0.98); z-index: 10005; padding: 1rem; box-sizing: border-box; display: flex; flex-direction: column;">
-        <div style="width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; overflow: hidden; position: relative;">
-            <div style="height: 8vh; text-align: center; color: #ffffff; display: flex; flex-direction: column; justify-content: center; flex-shrink: 0;">
-                <p style="font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 0; color: var(--color-dorado);">Firma Digital Autorizada</p>
-                <p style="font-size: 0.72rem; margin: 2px 0 0 0; color: #cbd5e1;">Use su dedo para trazar. Puede girar el celular para más espacio.</p>
-            </div>
-            <div style="height: 65vh; width: 100%; background-color: #ffffff; border-radius: 0.75rem; border: 2px dashed var(--color-dorado); overflow: hidden; position: relative; box-sizing: border-box; flex-shrink: 0;">
-                <canvas id="canvasFirma" style="width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair;"></canvas>
-            </div>
-            <div style="height: 12vh; display: flex; gap: 0.75rem; align-items: center; width: 100%; box-sizing: border-box; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom);">
-                <button type="button" id="btnLimpiarFirma" class="btn-buscar" style="flex: 1; background-color: #6b7280; padding: 0.85rem; font-size: 0.9rem; font-weight: bold; height: 3.2rem; border-radius: 0.5rem;">✨ Limpiar</button>
-                <button type="button" id="btnAceptarFirma" class="btn-guardar" style="flex: 1; margin: 0; background-color: #15803d; padding: 0.85rem; font-size: 0.9rem; font-weight: bold; height: 3.2rem; border-radius: 0.5rem;">✔️ Aceptar Firma</button>
-            </div>
+  <!-- VENTANA FLOTANTE PARA FIRMA (CORREGIDO COMPATIBILIDAD CON TABLETS Y GIRO DE PANTALLA) -->
+<div id="modalFirmaPantallaCompleta" class="overlay-carga hidden" style="background-color: rgba(17, 24, 39, 0.98); z-index: 10005; padding: 1rem; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    
+    <div style="width: 100%; max-width: 32rem; height: 100%; max-height: 95vh; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; overflow: hidden; position: relative; gap: 0.75rem;">
+        
+        <!-- Encabezado de la Ventana -->
+        <div style="text-align: center; color: #ffffff; display: flex; flex-direction: column; justify-content: center; flex-shrink: 0; padding: 0.2rem 0;">
+            <p style="font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 0; color: var(--color-dorado);">Firma Digital Autorizada</p>
+            <p style="font-size: 0.72rem; margin: 2px 0 0 0; color: #cbd5e1;">Use su dedo para trazar. Puede girar la tablet para tener más espacio.</p>
         </div>
+        
+        <!-- Contenedor del Canvas Adaptable -->
+        <div style="flex-grow: 1; min-height: 18rem; width: 100%; background-color: #ffffff; border-radius: 0.75rem; border: 2px dashed var(--color-dorado); overflow: hidden; position: relative; box-sizing: border-box; flex-shrink: 1;">
+            <canvas id="canvasFirma" style="width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair;"></canvas>
+        </div>
+        
+        <!-- 🔘 BOTONERA DE ACCIÓN SIEMPRE VISIBLE (FLEX-SHRINK: 0 IMPIDE QUE SE OCULTE) -->
+        <div style="display: flex; gap: 0.75rem; align-items: center; width: 100%; box-sizing: border-box; flex-shrink: 0; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));">
+            <button type="button" id="btnLimpiarFirma" class="btn-buscar" style="flex: 1; background-color: #6b7280; padding: 0.85rem; font-size: 0.9rem; font-weight: bold; height: 3.2rem; border-radius: 0.5rem; display: inline-flex; align-items: center; justify-content: center; border: none; color: #ffffff; cursor: pointer;">
+                ✨ Limpiar
+            </button>
+            <button type="button" id="btnAceptarFirma" class="btn-guardar" style="flex: 1; margin: 0; background-color: #15803d; padding: 0.85rem; font-size: 0.9rem; font-weight: bold; height: 3.2rem; border-radius: 0.5rem; display: inline-flex; align-items: center; justify-content: center; border: none; color: #ffffff; cursor: pointer; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);">
+                ✔️ Aceptar Firma
+            </button>
+        </div>
+        
     </div>
+</div>
+
 
 
     <!-- PANTALLA DE CARGA GLOBAL -->
