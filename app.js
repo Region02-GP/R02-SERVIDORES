@@ -9,7 +9,6 @@ const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwlpS2IiquwiintipGz
 let nombreGlobalSesion = ""; 
 let urlMapaZonaGlobal = ""; // 🗺️ Almacena la URL de navegación territorial
 
-
 let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 let fotoCompletaBase64 = ""; // Foto local capturada
 let fotoUrlActual = ""; // URL de la foto en la base de datos
