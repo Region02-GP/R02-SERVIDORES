@@ -3,7 +3,7 @@
 // ========================================================
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxR-F2Ta0QuduBuxnSGe5HgB2o57Yf__XIiDDrSK0rpbXZwGU1c5M15A6X8R6M7qlX_Mg/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwlpS2IiquwiintipGzmwz7bEefVsH8ci4jYPu_j8N-hDX8qf42wW04nlYi4dX7d0OeSQ/exec";
 
 // Añade esta variable global arriba en tu app.js junto a las demás variables globales:
 let nombreGlobalSesion = ""; 
@@ -14,12 +14,16 @@ let firmaBase64 = ""; // Almacenará el trazo de la firma en formato Base64
 let fotoCompletaBase64 = ""; // Foto local capturada
 let fotoUrlActual = ""; // URL de la foto en la base de datos
 
-// REEMPLAZAR LA FUNCIÓN EN TU app.js (BLOQUE 1)
+let esModoSuperusuario = false;
+let listaBrigadistasGlobal = [];
+const FOTO_PLACEHOLDER = "https://postimg.cc";
+
 function irAPantalla(num) {
     document.getElementById('pantalla1').classList.add('hidden');
     document.getElementById('pantalla2').classList.add('hidden');
     document.getElementById('pantalla3').classList.add('hidden');
-    document.getElementById('pantalla4').classList.add('hidden'); // <-- Nueva línea agregada
+    document.getElementById('pantalla4').classList.add('hidden');
+    document.getElementById('pantalla5').classList.add('hidden');
     
     document.getElementById('pantalla' + num).classList.remove('hidden');
 }
@@ -46,7 +50,11 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     mostrarCarga("Verificando identidad en el padrón autorizado...");
 
     try {
-        const payloadBuscar = { action: 'buscar', curp: curp };
+                // Reemplaza la línea const payloadBuscar = { action: 'buscar', curp: curp }; por:
+        const clavesSuper = ["SUPERUSUARIO001", "SUPERUSUARIO002"]; // Mismas claves que en Code.gs
+        const esSuper = clavesSuper.includes(curp);
+        const payloadBuscar = { action: esSuper ? 'buscar_todos' : 'buscar', curp: curp };
+
         
         const res = await fetch(WEB_APP_URL, { 
             method: 'POST',
@@ -58,6 +66,18 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
         });
 
         const datos = await res.json();
+        if (datos.is_superuser) {
+            esModoSuperusuario = true;
+            listaBrigadistasGlobal = datos.brigadistas || [];
+            document.getElementById('p5_buscador').value = "";
+            renderizarListaSuperusuario(listaBrigadistasGlobal);
+            ocultarCarga();
+            irAPantalla(5);
+            return;
+        } else {
+            esModoSuperusuario = false;
+            configurarBotoneraPantalla3(false);
+        }
 
         if (datos.status === "denied") {
             ocultarCarga();
@@ -787,4 +807,132 @@ async function cargarEstadisticasDirectas() {
         alert("Se mostraron los datos locales. Algunas métricas remotas no se pudieron extraer en este momento.");
     }
 }
+// ========================================================================
+// MÓDULO SUPERUSUARIO: DIRECTORIO Y VISTA DE PERFIL (PANTALLA 5 -> 3)
+// ========================================================================
+
+// Configurar visibilidad de botones en Pantalla 3 según el tipo de usuario
+function configurarBotoneraPantalla3(modoSuper) {
+    const btnRegresar = document.getElementById('btnRegresarSuperusuario');
+    const btnDescargar = document.getElementById('btnDescargarPDF');
+    const btnEditar = document.getElementById('btnEditarPerfil');
+    const btnCerrar = document.getElementById('btnCerrar');
+    const btnMapa = document.getElementById('btnVerMapaZona');
+    const btnEst = document.getElementById('btnVerEstadisticas');
+
+    if (modoSuper) {
+        // Mostrar: Regresar (a P5), Mapa (si tiene URL) y Estadísticas
+        btnRegresar?.classList.remove('hidden');
+        btnEst?.classList.remove('hidden');
+        
+        // Ocultar: Descargar, Modificar Perfil y Salir
+        btnDescargar?.classList.add('hidden');
+        btnEditar?.classList.add('hidden');
+        btnCerrar?.classList.add('hidden');
+    } else {
+        // Restaurar botonera normal de brigadista
+        btnRegresar?.classList.add('hidden');
+        btnDescargar?.classList.remove('hidden');
+        btnEditar?.classList.remove('hidden');
+        btnCerrar?.classList.remove('hidden');
+        btnEst?.classList.remove('hidden');
+    }
+
+    // El botón de mapa siempre depende de si existe URL válida
+    if (btnMapa) {
+        if (urlMapaZonaGlobal && urlMapaZonaGlobal.startsWith("http")) {
+            btnMapa.style.display = "flex";
+        } else {
+            btnMapa.style.display = "none";
+        }
+    }
+}
+
+// Renderizar tarjetas en Pantalla 5
+function renderizarListaSuperusuario(lista) {
+    const contenedor = document.getElementById('p5_listaBrigadistas');
+    const contador = document.getElementById('p5_contador');
+    if (!contenedor) return;
+
+    contenedor.innerHTML = "";
+    if (contador) contador.innerText = lista.length;
+
+    if (lista.length === 0) {
+        contenedor.innerHTML = `<p style="text-align: center; color: var(--color-texto-mutado); font-size: 0.85rem; margin-top: 1rem;">No se encontraron coincidencias.</p>`;
+        return;
+    }
+
+    lista.forEach(brigadista => {
+        const item = document.createElement('div');
+        item.style.cssText = "background-color: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid var(--color-guinda); border-radius: 0.5rem; padding: 0.75rem 1rem; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.04); transition: transform 0.15s;";
+        
+        const estatusColor = (brigadista.foto_url && brigadista.foto_url.length > 50) ? "#059669" : "#d97706";
+        const estatusTexto = (brigadista.foto_url && brigadista.foto_url.length > 50) ? "Perfil Completo" : "Datos Incompletos";
+
+        item.innerHTML = `
+            <div style="font-size: 0.88rem; font-weight: 800; color: var(--color-texto-oscuro); text-transform: uppercase;">${brigadista.nombre}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem; font-size: 0.72rem; color: var(--color-texto-mutado);">
+                <span>📍 ${brigadista.municipio || "SIN MUNICIPIO"} | Zona: ${brigadista.zona || "N/A"}</span>
+                <span style="color: ${estatusColor}; font-weight: 700;">● ${estatusTexto}</span>
+            </div>
+        `;
+
+        item.addEventListener('click', () => abrirPerfilDesdeSuperusuario(brigadista));
+        contenedor.appendChild(item);
+    });
+}
+
+// Filtro en tiempo real en Pantalla 5
+document.getElementById('p5_buscador')?.addEventListener('input', (e) => {
+    const termino = e.target.value.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const filtrados = listaBrigadistasGlobal.filter(b => {
+        const nom = (b.nombre || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const mun = (b.municipio || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return nom.includes(termino) || mun.includes(termino);
+    });
+    renderizarListaSuperusuario(filtrados);
+});
+
+// Cargar datos del brigadista en Pantalla 3 sin exigir campos completos
+function abrirPerfilDesdeSuperusuario(b) {
+    nombreGlobalSesion = b.nombre || "";
+    urlMapaZonaGlobal = b.url_mapa_zona ? String(b.url_mapa_zona).trim() : "";
+    fotoUrlActual = (b.foto_url && b.foto_url.length > 50) ? b.foto_url : FOTO_PLACEHOLDER;
+
+    document.getElementById('credCompleto').innerText = (b.nombre || "SIN NOMBRE").toUpperCase();
+    document.getElementById('credPuesto').innerText = (b.municipio || "SIN MUNICIPIO").toUpperCase();
+    document.getElementById('credZona').innerText = (b.zona || "SIN ZONA").toUpperCase();
+    document.getElementById('credIdentificacion').innerText = b.curp || "-";
+    document.getElementById('credFoto').src = fotoUrlActual;
+
+    const tel = b.telefono ? String(b.telefono).trim() : "";
+    document.getElementById('credTelefono').innerText = tel || "SIN TELÉFONO";
+
+    if (tel !== "") {
+        const numeroLimpio = tel.replace(/\s+/g, '');
+        document.getElementById('btnLlamarBrigadista').href = "tel:" + numeroLimpio;
+        document.getElementById('btnLlamarBrigadista').style.display = "inline-flex";
+        document.getElementById('btnWhatsappBrigadista').href = "whatsapp://send?phone=52" + numeroLimpio;
+        document.getElementById('btnWhatsappBrigadista').style.display = "inline-flex";
+    } else {
+        document.getElementById('btnLlamarBrigadista').style.display = "none";
+        document.getElementById('btnWhatsappBrigadista').style.display = "none";
+    }
+
+    configurarBotoneraPantalla3(true);
+    irAPantalla(3);
+}
+
+// Botón Regresar (Pantalla 3 -> Pantalla 5)
+document.getElementById('btnRegresarSuperusuario')?.addEventListener('click', () => {
+    irAPantalla(5);
+});
+
+// Botón Cerrar Sesión Superusuario (Pantalla 5 -> Pantalla 1)
+document.getElementById('btnP5Salir')?.addEventListener('click', () => {
+    esModoSuperusuario = false;
+    listaBrigadistasGlobal = [];
+    document.getElementById('p1_curp').value = "";
+    irAPantalla(1);
+});
 
