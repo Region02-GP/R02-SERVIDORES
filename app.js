@@ -3,7 +3,7 @@
 // ========================================================
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzUklgFtFdJA7pDTTGpXBZAIhbpIfMbU7RtPbTOG9vlAadFJydAoCiY9ArtLFxwDgOfCw/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz7IARJFGt6xH_oGZgPfUHP5WowHtZ7p_dxsr8e67djPd3ewX78S5GetGW2yiFCq4xopg/exec";
 
 // Añade esta variable global arriba en tu app.js junto a las demás variables globales:
 let nombreGlobalSesion = ""; 
