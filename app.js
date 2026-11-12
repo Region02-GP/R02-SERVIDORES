@@ -3,7 +3,7 @@
 // ========================================================
 
 // Reemplaza esta URL con tu enlace generado al hacer Deploy en Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwlpS2IiquwiintipGzmwz7bEefVsH8ci4jYPu_j8N-hDX8qf42wW04nlYi4dX7d0OeSQ/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzUklgFtFdJA7pDTTGpXBZAIhbpIfMbU7RtPbTOG9vlAadFJydAoCiY9ArtLFxwDgOfCw/exec";
 
 // Añade esta variable global arriba en tu app.js junto a las demás variables globales:
 let nombreGlobalSesion = ""; 
@@ -702,10 +702,10 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================================
 // BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y PEGA TU NUEVA URL:
-const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbzXS0m89TkXbnZ99diXDqrgfTsmAG_fAeahC23TZAYfgpymQwf3semNJH5CpDI4j6tIMw/exec";
+const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbwCcFepXwafkX0svIdax7KlIIGhJfHcSlQKyE5kh0YPcizY4eWefxXbC0YBJSKOWV2MQw/exec";
 
 // 📊 NUEVA CONSTANTE: URL de la Web App del libro exclusivo de "Estadísticas" (Pestaña Etapa1)
-const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbzXS0m89TkXbnZ99diXDqrgfTsmAG_fAeahC23TZAYfgpymQwf3semNJH5CpDI4j6tIMw/exec";
+const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbwCcFepXwafkX0svIdax7KlIIGhJfHcSlQKyE5kh0YPcizY4eWefxXbC0YBJSKOWV2MQw/exec";
 
 // BUSCA ESTAS LÍNEAS E INYECTA EL ID DE TU HOJA NUEVA PROPIA:
 const GOOGLE_SHEET_ID_PROPIA = "1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM";
