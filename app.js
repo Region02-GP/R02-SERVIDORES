@@ -725,7 +725,8 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 async function cargarEstadisticasDirectas() {
     mostrarCarga("Solicitando consolidación interna a tu Apps Script...");
     
-    const nombreFijoGafete = document.getElementById('credCompleto')?.innerText || "";
+    const rawNombre = document.getElementById('credCompleto')?.innerText || "";
+    const nombreFijoGafete = rawNombre.replace(/\s+/g, ' ').trim();
     
     if (!nombreFijoGafete || nombreFijoGafete === "-" || nombreFijoGafete.length < 5) {
         ocultarCarga();
@@ -733,10 +734,19 @@ async function cargarEstadisticasDirectas() {
         return;
     }
 
-    const urlConsulta = `${SCRIPT_ESTADISTICAS_PROPIO}?nombre=${encodeURIComponent(nombreFijoGafete)}`;
-    
     try {
-        const respuesta = await fetch(urlConsulta);
+        const respuesta = await fetch(SCRIPT_ESTADISTICAS_PROPIO, {
+            method: 'POST',
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify({
+                action: 'metricas',
+                nombre: nombreFijoGafete
+            })
+        });
+
         if (!respuesta.ok) throw new Error("Fallo de comunicación con el Apps Script privado");
         
         const datosJSON = await respuesta.json();
@@ -753,10 +763,10 @@ async function cargarEstadisticasDirectas() {
         // 3. Calcular la suma del grupo de campo
         const sumaTotalCampo = vEtapa1 + vEtapa2 + vDerecho + vActualiz;
 
-        // 4. Calcular la resta (AppSN menos la Suma Total de Campo)
+        // 4. Calcular la resta (conservando tu lógica actual)
         let restaDiferencia = sumaTotalCampo - vAppSN;
         if (restaDiferencia < 0) {
-            restaDiferencia = 0; // Regla de control forzada a cero
+            restaDiferencia = 0;
         }
 
         // 5. Inyectar y renderizar de forma exacta cada elemento en el DOM
@@ -784,7 +794,7 @@ async function cargarEstadisticasDirectas() {
             document.getElementById('p4_restaDiferencia').innerText = restaDiferencia;
         }
 
-        // Renderizado del pie de resumen
+        // Renderizado del pie de resumen (si el contenedor existe)
         const contenedor = document.getElementById('contenedorMunicipios');
         if (contenedor) {
             contenedor.innerHTML = `
@@ -800,12 +810,11 @@ async function cargarEstadisticasDirectas() {
     } catch (error) {
         console.error("Error consultando el Apps Script propio:", error);
         ocultarCarga();
-        
-        // Forzamos el cambio de pantalla preventivo para evitar bloqueos de interfaz
         irAPantalla(4);
         alert("Se mostraron los datos locales. Algunas métricas remotas no se pudieron extraer en este momento.");
     }
 }
+
 // ========================================================================
 // MÓDULO SUPERUSUARIO: DIRECTORIO Y VISTA DE PERFIL (PANTALLA 5 -> 3)
 // ========================================================================
