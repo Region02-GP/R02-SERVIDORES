@@ -702,10 +702,10 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================================
 // BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y PEGA TU NUEVA URL:
-const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbxOiYW2WFzOMMKGtf6eh0y9UA51cVHX0X1gwiPx8-eukYUaFqPpkkChDNG6UDf-Zdth3A/exec";
+const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbxaypPU17P5j3lCxRh1K7o8jXLZko2dBvX-WG4--XE45qkP0DFCzf7JZlZ-18K0WGd-xQ/exec";
 
 // 📊 NUEVA CONSTANTE: URL de la Web App del libro exclusivo de "Estadísticas" (Pestaña Etapa1)
-const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbxOiYW2WFzOMMKGtf6eh0y9UA51cVHX0X1gwiPx8-eukYUaFqPpkkChDNG6UDf-Zdth3A/exec";
+const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbxaypPU17P5j3lCxRh1K7o8jXLZko2dBvX-WG4--XE45qkP0DFCzf7JZlZ-18K0WGd-xQ/exec";
 
 // BUSCA ESTAS LÍNEAS E INYECTA EL ID DE TU HOJA NUEVA PROPIA:
 const GOOGLE_SHEET_ID_PROPIA = "1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM";
@@ -935,3 +935,98 @@ document.getElementById('btnP5Salir')?.addEventListener('click', () => {
     irAPantalla(1);
 });
 
+// ========================================================================
+// BLOQUE EXTRA: EXPORTACIÓN DE REGISTROS DETALLADOS EN CSV (PANTALLA 3)
+// ========================================================================
+
+document.getElementById('btnDescargarCSV')?.addEventListener('click', descargarRegistrosCSV);
+
+function convertirMatrizACSV(filas) {
+    return filas.map(fila => 
+        fila.map(celda => {
+            const texto = celda !== null && celda !== undefined ? String(celda) : "";
+            // Escapar comillas dobles y envolver entre comillas si hay comas, saltos de línea o comillas
+            if (texto.includes('"') || texto.includes(',') || texto.includes('\n') || texto.includes('\r')) {
+                return `"${texto.replace(/"/g, '""')}"`;
+            }
+            return texto;
+        }).join(',')
+    ).join('\r\n');
+}
+
+function dispararDescargaArchivoCSV(contenidoCSV, nombreArchivo) {
+    // \uFEFF agrega el BOM de UTF-8 para que Excel abra acentos y ñ correctamente
+    const blob = new Blob(["\uFEFF" + contenidoCSV], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = nombreArchivo;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+async function descargarRegistrosCSV() {
+    const nombreFijoGafete = document.getElementById('credCompleto')?.innerText.trim() || "";
+    const curpFijaGafete = document.getElementById('credIdentificacion')?.innerText.trim() || "BRIGADISTA";
+
+    if (!nombreFijoGafete || nombreFijoGafete === "-" || nombreFijoGafete.length < 4) {
+        alert("⚠️ No se pudo identificar el nombre del brigadista en pantalla.");
+        return;
+    }
+
+    mostrarCarga("Extrayendo registros detallados de las 3 hojas...");
+
+    const urlExportar = `${SCRIPT_ESTADISTICAS_PROPIO}?action=exportar&nombre=${encodeURIComponent(nombreFijoGafete)}`;
+
+    try {
+        const respuesta = await fetch(urlExportar);
+        if (!respuesta.ok) throw new Error("Error de conexión con el servidor de estadísticas.");
+
+        const resultado = await respuesta.json();
+
+        if (resultado.status !== "success" || !resultado.datos) {
+            ocultarCarga();
+            alert("⚠️ No se pudieron recuperar los datos para exportar.");
+            return;
+        }
+
+        const hojas = [
+            { clave: "Estadisticas", etiqueta: "Etapa2_Estadisticas" },
+            { clave: "Derechohabientes", etiqueta: "Derechohabientes_SS" },
+            { clave: "Actualizacion_Datos", etiqueta: "Actualizacion_Datos" }
+        ];
+
+        let archivosDescargados = 0;
+
+        hojas.forEach((hoja, index) => {
+            const filas = resultado.datos[hoja.clave];
+            // Solo descargar si hay más de 1 fila (Fila 0 es encabezado + al menos 1 registro del brigadista)
+            if (filas && filas.length > 1) {
+                const csvTexto = convertirMatrizACSV(filas);
+                const nombreArchivo = `${hoja.etiqueta}_${curpFijaGafete}.csv`;
+                
+                // Pequeño retardo escalonado para que navegadores móviles no bloqueen descargas múltiples
+                setTimeout(() => {
+                    dispararDescargaArchivoCSV(csvTexto, nombreArchivo);
+                }, index * 400);
+
+                archivosDescargados++;
+            }
+        });
+
+        ocultarCarga();
+
+        if (archivosDescargados === 0) {
+            alert("ℹ️ Este brigadista aún no cuenta con registros capturados en ninguna de las tres hojas.");
+        } else {
+            alert(`✅ Se están descargando ${archivosDescargados} archivo(s) .CSV con el desglose completo.`);
+        }
+
+    } catch (error) {
+        console.error("Error exportando CSV:", error);
+        ocultarCarga();
+        alert("❌ Ocurrió un error al descargar los registros. Verifica tu conexión e intenta de nuevo.");
+    }
+}
