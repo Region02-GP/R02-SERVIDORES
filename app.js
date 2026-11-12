@@ -702,10 +702,10 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================================
 // BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y PEGA TU NUEVA URL:
-const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbz7mjuZSTMvgEug0ARcZyPAUEXWP0V5_OqTskcTNw_peATDckm_ruxkDje7Kf-iLaWs/exec";
+const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbxwq2iSBmx4BC7ddjP-UsRsjYwzw3xYW4Yi_ap7u9nZ4uPGyMcSO1pi7rHlhsGSKfO5dw/exec";
 
 // 📊 NUEVA CONSTANTE: URL de la Web App del libro exclusivo de "Estadísticas" (Pestaña Etapa1)
-const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbz7mjuZSTMvgEug0ARcZyPAUEXWP0V5_OqTskcTNw_peATDckm_ruxkDje7Kf-iLaWs/exec";
+const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbxwq2iSBmx4BC7ddjP-UsRsjYwzw3xYW4Yi_ap7u9nZ4uPGyMcSO1pi7rHlhsGSKfO5dw/exec";
 
 // BUSCA ESTAS LÍNEAS E INYECTA EL ID DE TU HOJA NUEVA PROPIA:
 const GOOGLE_SHEET_ID_PROPIA = "1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM";
