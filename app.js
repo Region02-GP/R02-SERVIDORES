@@ -247,7 +247,7 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
         return; 
     }
 
-    mostrarCarga("Comprimiendo fotografía a escala celular...");
+    mostrarCarga("Comprimiendo fotografía...");
     const reader = new FileReader();
     
     reader.onload = function(evt) {
