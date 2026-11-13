@@ -48,7 +48,7 @@ document.getElementById('btnAcceder').addEventListener('click', async () => {
     const curp = document.getElementById('p1_curp').value.trim().toUpperCase();
     if (!curp) return alert('Por favor, ingresa una CURP válida');
 
-    mostrarCarga("Verificando identidad en el padrón...");
+    mostrarCarga("Verificando identidad...");
 
     try {
                 // Reemplaza la línea const payloadBuscar = { action: 'buscar', curp: curp }; por:
