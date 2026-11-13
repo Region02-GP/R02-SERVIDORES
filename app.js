@@ -1071,67 +1071,37 @@ function renderizarTablaMunicipiosP6(filasMunicipios) {
         return;
     }
 
-    const encabezadosOrig = filasMunicipios;
-    if (!Array.isArray(encabezadosOrig)) return;
+    const encabezados = filasMunicipios[0];
+    if (!Array.isArray(encabezados)) return;
 
-    // 1. Detectar columnas a ocultar ("Clave municipio" y "Meta SN") e índice de "Porcentaje visitas"
+    // Detectar qué columnas mostrar (excluyendo "Clave municipio" y "Meta SN")
     const indicesVisibles = [];
-    let idxPorcentaje = -1;
-
-    encabezadosOrig.forEach((col, idx) => {
+    encabezados.forEach((col, idx) => {
         const nombreCol = normalizarCadenaP6(col);
         const esClaveMun = nombreCol.includes("CLAVE") && nombreCol.includes("MUNICIPIO");
         const esMetaSN = nombreCol.includes("META") && nombreCol.includes("SN");
-
-        if (nombreCol.includes("PORCENTAJE") && nombreCol.includes("VISITA")) {
-            idxPorcentaje = idx;
-        }
 
         if (!esClaveMun && !esMetaSN) {
             indicesVisibles.push(idx);
         }
     });
 
-    // 2. Renderizar encabezados filtrados
+    // Encabezado con el mismo diseño original
     const trHead = document.createElement('tr');
     indicesVisibles.forEach((origIdx, visiblePos) => {
         const th = document.createElement('th');
-        th.innerText = encabezadosOrig[origIdx] || `Col ${origIdx + 1}`;
+        th.innerText = encabezados[origIdx] || `Col ${origIdx + 1}`;
         th.style.cssText = `padding: 0.45rem 0.35rem; text-align: ${visiblePos === 0 ? 'left' : 'center'}; white-space: nowrap;`;
         trHead.appendChild(th);
     });
     thead.appendChild(trHead);
 
-    // 3. Separar filas de datos normales y fila de TOTAL (si existe) para no desordenar el total
-    const filasDatos = [];
-    const filasTotales = [];
-
+    // Filas en el mismo orden exacto de la hoja de cálculo
     for (let i = 1; i < filasMunicipios.length; i++) {
         const fila = filasMunicipios[i];
         if (!Array.isArray(fila)) continue;
 
-        const tieneTotal = fila.some(celda => normalizarCadenaP6(celda).includes("TOTAL"));
-        if (tieneTotal) {
-            filasTotales.push(fila);
-        } else {
-            filasDatos.push(fila);
-        }
-    }
-
-    // 4. Ordenar filas de menor a mayor según "Porcentaje visitas"
-    if (idxPorcentaje !== -1) {
-        filasDatos.sort((a, b) => {
-            const valA = parseFloat(String(a[idxPorcentaje] || "0").replace(/[^0-9.-]/g, "")) || 0;
-            const valB = parseFloat(String(b[idxPorcentaje] || "0").replace(/[^0-9.-]/g, "")) || 0;
-            return valA - valB; // Menor a mayor
-        });
-    }
-
-    // 5. Renderizar filas ordenadas y al final la fila de TOTAL
-    const filasFinales = [...filasDatos, ...filasTotales];
-
-    filasFinales.forEach((fila, i) => {
-        const esFilaTotal = fila.some(celda => normalizarCadenaP6(celda).includes("TOTAL"));
+        const esFilaTotal = normalizarCadenaP6(fila[0]).includes("TOTAL");
         const tr = document.createElement('tr');
         tr.style.cssText = esFilaTotal
             ? "background-color: #fdf2f8; font-weight: 800; color: var(--color-guinda); border-top: 2px solid var(--color-guinda);"
@@ -1144,8 +1114,9 @@ function renderizarTablaMunicipiosP6(filasMunicipios) {
             tr.appendChild(td);
         });
         tbody.appendChild(tr);
-    });
+    }
 }
+
 
 // ========================================================================
 // BLOQUE 3 (PANTALLA 6): TABLA INDIVIDUAL, FILTRO, ORDENAMIENTO Y PERFIL
