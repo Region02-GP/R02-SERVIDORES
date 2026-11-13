@@ -427,6 +427,38 @@
         </div>
 
     </div>
+        <!-- BLOQUE 3: TABLA DE VISITAS SEMANALES (LUNES A SÁBADO) -->
+        <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.85rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 0.6rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--color-dorado); padding-bottom: 4px; flex-wrap: wrap; gap: 4px;">
+                <p style="margin: 0; font-size: 0.75rem; font-weight: 800; color: var(--color-guinda); text-transform: uppercase; letter-spacing: 0.04em;">
+                    📅 Visitas Semanales (Lun - Sáb)
+                </p>
+                <span id="p6_rangoSemanaTexto" style="font-size: 0.68rem; font-weight: 700; color: var(--color-texto-mutado);">
+                    Semana en curso
+                </span>
+            </div>
+
+            <!-- Buscador rápido para tabla semanal -->
+            <input type="text" id="p6_buscadorSemanal" class="campo-input" placeholder="🔍 Filtrar brigadista en semana..." style="margin-top: 0; padding: 0.6rem 0.75rem; font-size: 0.85rem;">
+
+            <!-- Tabla scrolleable semanal -->
+            <div style="overflow-x: auto; max-height: 20rem; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 0.4rem;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem;">
+                    <thead style="background-color: var(--color-guinda); color: #ffffff; position: sticky; top: 0; z-index: 2;">
+                        <tr>
+                            <th data-col-sem="nombre" class="p6-th-sem-sort" style="padding: 0.55rem 0.4rem; text-align: left; cursor: pointer; user-select: none;">Nombre <span class="sort-icon-sem">↕</span></th>
+                            <th data-col-sem="sem_estadisticas" class="p6-th-sem-sort" style="padding: 0.55rem 0.3rem; text-align: center; cursor: pointer; user-select: none;">Estadíst. <span class="sort-icon-sem">↕</span></th>
+                            <th data-col-sem="sem_derechohabientes" class="p6-th-sem-sort" style="padding: 0.55rem 0.3rem; text-align: center; cursor: pointer; user-select: none;">Visitas SS <span class="sort-icon-sem">↕</span></th>
+                            <th data-col-sem="sem_actualizacion" class="p6-th-sem-sort" style="padding: 0.55rem 0.3rem; text-align: center; cursor: pointer; user-select: none;">Act. Datos <span class="sort-icon-sem">↕</span></th>
+                            <th data-col-sem="sem_total" class="p6-th-sem-sort" style="padding: 0.55rem 0.3rem; text-align: center; cursor: pointer; user-select: none;">Total <span class="sort-icon-sem">▼</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="p6_tbodySemanal">
+                        <!-- Filas dinámicas semanales -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
     <!-- Barra inferior de navegación Pantalla 6 -->
     <div style="width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.95); border-top: 2px solid var(--color-guinda); border-bottom: 1px solid #e5e7eb; box-sizing: border-box; z-index: 10; overflow: hidden; margin-top: auto; flex-shrink: 0;">
