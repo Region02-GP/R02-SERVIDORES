@@ -417,7 +417,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
 // ====================================================================
 
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
-    mostrarCarga("Dibujando credencial en alta densidad gráfica...");
+    mostrarCarga("Dibujando credencial...");
 
     const curp = document.getElementById('credIdentificacion').innerText;
     const nombre = document.getElementById('credCompleto').innerText;
