@@ -1074,19 +1074,25 @@ function renderizarTablaMunicipiosP6(filasMunicipios) {
     const encabezados = filasMunicipios[0];
     if (!Array.isArray(encabezados)) return;
 
-    // Detectar qué columnas mostrar (excluyendo "Clave municipio" y "Meta SN")
+    // 1. Detectar columnas visibles (excluyendo "Clave municipio" y "Meta SN") e índice de "Porcentaje visitas"
     const indicesVisibles = [];
+    let idxPorcentaje = -1;
+
     encabezados.forEach((col, idx) => {
         const nombreCol = normalizarCadenaP6(col);
         const esClaveMun = nombreCol.includes("CLAVE") && nombreCol.includes("MUNICIPIO");
         const esMetaSN = nombreCol.includes("META") && nombreCol.includes("SN");
+
+        if (nombreCol.includes("PORCENTAJE") && nombreCol.includes("VISITA")) {
+            idxPorcentaje = idx;
+        }
 
         if (!esClaveMun && !esMetaSN) {
             indicesVisibles.push(idx);
         }
     });
 
-    // Encabezado con el mismo diseño original
+    // 2. Renderizar encabezado con el mismo diseño original
     const trHead = document.createElement('tr');
     indicesVisibles.forEach((origIdx, visiblePos) => {
         const th = document.createElement('th');
@@ -1096,12 +1102,36 @@ function renderizarTablaMunicipiosP6(filasMunicipios) {
     });
     thead.appendChild(trHead);
 
-    // Filas en el mismo orden exacto de la hoja de cálculo
+    // 3. Separar filas normales y fila de TOTAL (para dejar TOTAL siempre al final)
+    const filasDatos = [];
+    const filasTotales = [];
+
     for (let i = 1; i < filasMunicipios.length; i++) {
         const fila = filasMunicipios[i];
         if (!Array.isArray(fila)) continue;
 
-        const esFilaTotal = normalizarCadenaP6(fila[0]).includes("TOTAL");
+        const esFilaTotal = fila.some(celda => normalizarCadenaP6(celda).includes("TOTAL"));
+        if (esFilaTotal) {
+            filasTotales.push(fila);
+        } else {
+            filasDatos.push(fila);
+        }
+    }
+
+    // 4. Ordenar de mayor a menor (descendente) por "Porcentaje visitas"
+    if (idxPorcentaje !== -1) {
+        filasDatos.sort((a, b) => {
+            const valA = parseFloat(String(a[idxPorcentaje] || "0").replace(/[^0-9.-]/g, "")) || 0;
+            const valB = parseFloat(String(b[idxPorcentaje] || "0").replace(/[^0-9.-]/g, "")) || 0;
+            return valB - valA; // Descendente (mayor a menor)
+        });
+    }
+
+    // 5. Renderizar filas ordenadas y al final la fila de TOTAL
+    const filasFinales = [...filasDatos, ...filasTotales];
+
+    filasFinales.forEach((fila, i) => {
+        const esFilaTotal = fila.some(celda => normalizarCadenaP6(celda).includes("TOTAL"));
         const tr = document.createElement('tr');
         tr.style.cssText = esFilaTotal
             ? "background-color: #fdf2f8; font-weight: 800; color: var(--color-guinda); border-top: 2px solid var(--color-guinda);"
@@ -1114,7 +1144,7 @@ function renderizarTablaMunicipiosP6(filasMunicipios) {
             tr.appendChild(td);
         });
         tbody.appendChild(tr);
-    }
+    });
 }
 
 
