@@ -702,10 +702,10 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================================
 // BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y PEGA TU NUEVA URL:
-const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbyEAK70XZUUZ-fZxx0qly94Y-XC0V4GMtKsRyVWxmXs3WLErrOPs0HmkBniLGWrcE7nHw/exec";
+const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbzh5SVF4HH61lnVSEHZ7ZK7ZlSlxAVT3koTSdV_cf-iHqSvJ1hasRzINo2lNRBNd_a2qA/exec";
 
 // 📊 NUEVA CONSTANTE: URL de la Web App del libro exclusivo de "Estadísticas" (Pestaña Etapa1)
-const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbyEAK70XZUUZ-fZxx0qly94Y-XC0V4GMtKsRyVWxmXs3WLErrOPs0HmkBniLGWrcE7nHw/exec";
+const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbzh5SVF4HH61lnVSEHZ7ZK7ZlSlxAVT3koTSdV_cf-iHqSvJ1hasRzINo2lNRBNd_a2qA/exec";
 
 // BUSCA ESTAS LÍNEAS E INYECTA EL ID DE TU HOJA NUEVA PROPIA:
 const GOOGLE_SHEET_ID_PROPIA = "1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM";
@@ -943,6 +943,272 @@ document.getElementById('btnP5Salir')?.addEventListener('click', () => {
     document.getElementById('p1_curp').value = "";
     irAPantalla(1);
 });
+// ========================================================================
+// BLOQUE 1 (PANTALLA 6): VARIABLES, NORMALIZACIÓN Y NAVEGACIÓN
+// ========================================================================
+
+let listaEstadisticasGeneralesGlobal = [];
+let ordenActualP6 = { columna: 'pendientes', direccion: 'desc' };
+let pantallaOrigenSuperusuario = 5; // Controla si el botón "Regresar" de P3 vuelve a P5 o P6
+
+function normalizarCadenaP6(txt) {
+    return (txt || "")
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toUpperCase();
+}
+
+// Botón en Pantalla 5 para abrir Pantalla 6
+document.getElementById('btnIrPantalla6')?.addEventListener('click', cargarEstadisticasGenerales);
+
+// Botones de navegación inferior de Pantalla 6
+document.getElementById('btnP6Volver')?.addEventListener('click', () => {
+    pantallaOrigenSuperusuario = 5;
+    irAPantalla(5);
+});
+
+document.getElementById('btnP6Salir')?.addEventListener('click', () => {
+    esModoSuperusuario = false;
+    listaBrigadistasGlobal = [];
+    listaEstadisticasGeneralesGlobal = [];
+    pantallaOrigenSuperusuario = 5;
+    document.getElementById('p1_curp').value = "";
+    irAPantalla(1);
+});
+
+// Ajustar el botón "Regresar" de Pantalla 3 para volver a P5 o P6 según corresponda
+const btnRegresarP3 = document.getElementById('btnRegresarSuperusuario');
+if (btnRegresarP3) {
+    const nuevoBtnRegresar = btnRegresarP3.cloneNode(true);
+    btnRegresarP3.parentNode.replaceChild(nuevoBtnRegresar, btnRegresarP3);
+    nuevoBtnRegresar.addEventListener('click', () => {
+        irAPantalla(pantallaOrigenSuperusuario);
+    });
+}
+// ========================================================================
+// BLOQUE 2 (PANTALLA 6): CONSULTA REMOTA Y TABLA DE MUNICIPIOS (D:I)
+// ========================================================================
+
+async function cargarEstadisticasGenerales() {
+    mostrarCarga("Consolidando estadísticas regionales y por brigadista...");
+
+    try {
+        const res = await fetch(SCRIPT_ESTADISTICAS_PROPIO, {
+            method: 'POST',
+            redirect: 'follow',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'estadisticas_generales' })
+        });
+
+        if (!res.ok) throw new Error("Error al conectar con el servidor de estadísticas.");
+        const datos = await res.json();
+
+        if (datos.status !== "success") {
+            throw new Error(datos.message || "No se pudieron obtener las estadísticas generales.");
+        }
+
+        // 1. Renderizar tabla municipal (Columnas D:I de AppSN)
+        renderizarTablaMunicipiosP6(datos.municipios || []);
+
+        // 2. Cruzar con listaBrigadistasGlobal para incluir a todos los del padrón aunque tengan 0
+        const mapaRemoto = {};
+        (datos.brigadistas || []).forEach(b => {
+            mapaRemoto[normalizarCadenaP6(b.nombre)] = b;
+        });
+
+        if (listaBrigadistasGlobal.length > 0) {
+            listaEstadisticasGeneralesGlobal = listaBrigadistasGlobal.map(bPadron => {
+                const norm = normalizarCadenaP6(bPadron.nombre);
+                const metrica = mapaRemoto[norm];
+                return {
+                    nombre: (bPadron.nombre || "").toUpperCase(),
+                    total_campo: metrica ? Number(metrica.total_campo) || 0 : 0,
+                    appsn: metrica ? Number(metrica.appsn) || 0 : 0,
+                    pendientes: metrica ? Number(metrica.pendientes) || 0 : 0,
+                    perfilCompleto: bPadron
+                };
+            });
+        } else {
+            listaEstadisticasGeneralesGlobal = (datos.brigadistas || []).map(b => ({
+                nombre: (b.nombre || "").toUpperCase(),
+                total_campo: Number(b.total_campo) || 0,
+                appsn: Number(b.appsn) || 0,
+                pendientes: Number(b.pendientes) || 0,
+                perfilCompleto: null
+            }));
+        }
+
+        document.getElementById('p6_buscador').value = "";
+        ordenActualP6 = { columna: 'pendientes', direccion: 'desc' };
+        actualizarIconosOrdenP6();
+        aplicarFiltroYOrdenP6();
+
+        ocultarCarga();
+        irAPantalla(6);
+
+    } catch (error) {
+        console.error("Error en Pantalla 6:", error);
+        ocultarCarga();
+        alert("⚠️ No se pudieron cargar las estadísticas generales. Verifica la implementación del Apps Script.");
+    }
+}
+
+function renderizarTablaMunicipiosP6(filasMunicipios) {
+    const thead = document.getElementById('p6_theadMunicipios');
+    const tbody = document.getElementById('p6_tbodyMunicipios');
+    if (!thead || !tbody) return;
+
+    thead.innerHTML = "";
+    tbody.innerHTML = "";
+
+    if (!filasMunicipios || filasMunicipios.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="padding: 0.75rem; color: var(--color-texto-mutado);">Sin datos municipales en columnas D:I de AppSN.</td></tr>`;
+        return;
+    }
+
+    // Primera fila como encabezado
+    const encabezados = filasMunicipios[0];
+    const trHead = document.createElement('tr');
+    encabezados.forEach((col, idx) => {
+        const th = document.createElement('th');
+        th.innerText = col || `Col ${idx + 1}`;
+        th.style.cssText = `padding: 0.45rem 0.35rem; text-align: ${idx === 0 ? 'left' : 'center'}; white-space: nowrap;`;
+        trHead.appendChild(th);
+    });
+    thead.appendChild(trHead);
+
+    // Filas restantes como datos
+    for (let i = 1; i < filasMunicipios.length; i++) {
+        const fila = filasMunicipios[i];
+        const esFilaTotal = normalizarCadenaP6(fila[0]).includes("TOTAL");
+        const tr = document.createElement('tr');
+        tr.style.cssText = esFilaTotal
+            ? "background-color: #fdf2f8; font-weight: 800; color: var(--color-guinda); border-top: 2px solid var(--color-guinda);"
+            : `background-color: ${i % 2 === 0 ? '#f9fafb' : '#ffffff'}; border-bottom: 1px solid #e5e7eb;`;
+
+        fila.forEach((celda, idx) => {
+            const td = document.createElement('td');
+            td.innerText = celda;
+            td.style.cssText = `padding: 0.45rem 0.35rem; text-align: ${idx === 0 ? 'left' : 'center'}; font-weight: ${idx === 0 || esFilaTotal ? '700' : '500'};`;
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    }
+}
+// ========================================================================
+// BLOQUE 3 (PANTALLA 6): TABLA INDIVIDUAL, FILTRO, ORDENAMIENTO Y PERFIL
+// ========================================================================
+
+function aplicarFiltroYOrdenP6() {
+    const termino = normalizarCadenaP6(document.getElementById('p6_buscador')?.value || "");
+
+    let filtrados = listaEstadisticasGeneralesGlobal.filter(item =>
+        normalizarCadenaP6(item.nombre).includes(termino)
+    );
+
+    const { columna, direccion } = ordenActualP6;
+    const factor = direccion === 'asc' ? 1 : -1;
+
+    filtrados.sort((a, b) => {
+        if (columna === 'nombre') {
+            return a.nombre.localeCompare(b.nombre) * factor;
+        }
+        return (a[columna] - b[columna]) * factor;
+    });
+
+    renderizarTablaBrigadistasP6(filtrados);
+}
+
+function renderizarTablaBrigadistasP6(lista) {
+    const tbody = document.getElementById('p6_tbodyBrigadistas');
+    const contador = document.getElementById('p6_contadorBrigadistas');
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+    if (contador) contador.innerText = lista.length;
+
+    if (lista.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="padding: 1rem; text-align: center; color: var(--color-texto-mutado);">No se encontraron coincidencias.</td></tr>`;
+        return;
+    }
+
+    lista.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.style.cssText = `background-color: ${index % 2 === 0 ? '#ffffff' : '#f9fafb'}; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background-color 0.15s;`;
+
+        tr.innerHTML = `
+            <td style="padding: 0.5rem 0.4rem; text-align: left; font-weight: 700; color: var(--color-guinda); text-decoration: underline;">
+                ${item.nombre}
+            </td>
+            <td style="padding: 0.5rem 0.35rem; text-align: center; font-family: monospace; font-weight: 700; color: var(--color-texto-oscuro);">
+                ${item.total_campo}
+            </td>
+            <td style="padding: 0.5rem 0.35rem; text-align: center; font-family: monospace; font-weight: 700; color: #059669;">
+                ${item.appsn}
+            </td>
+            <td style="padding: 0.5rem 0.35rem; text-align: center; font-family: monospace; font-weight: 800; color: ${item.pendientes > 0 ? '#dc2626' : '#6b7280'};">
+                ${item.pendientes}
+            </td>
+        `;
+
+        tr.addEventListener('click', () => {
+            pantallaOrigenSuperusuario = 6;
+            const perfil = item.perfilCompleto || listaBrigadistasGlobal.find(
+                b => normalizarCadenaP6(b.nombre) === normalizarCadenaP6(item.nombre)
+            );
+
+            if (perfil) {
+                abrirPerfilDesdeSuperusuario(perfil);
+            } else {
+                abrirPerfilDesdeSuperusuario({
+                    nombre: item.nombre,
+                    municipio: "SIN MUNICIPIO",
+                    zona: "SIN ZONA",
+                    curp: "-",
+                    telefono: "",
+                    foto_url: "",
+                    url_mapa_zona: ""
+                });
+            }
+        });
+
+        tbody.appendChild(tr);
+    });
+}
+
+// Evento de búsqueda en tiempo real en Pantalla 6
+document.getElementById('p6_buscador')?.addEventListener('input', aplicarFiltroYOrdenP6);
+
+// Eventos de ordenamiento en los encabezados de la tabla de Pantalla 6
+document.querySelectorAll('.p6-th-sort').forEach(th => {
+    th.addEventListener('click', () => {
+        const col = th.getAttribute('data-col');
+        if (ordenActualP6.columna === col) {
+            ordenActualP6.direccion = ordenActualP6.direccion === 'asc' ? 'desc' : 'asc';
+        } else {
+            ordenActualP6.columna = col;
+            ordenActualP6.direccion = col === 'nombre' ? 'asc' : 'desc';
+        }
+        actualizarIconosOrdenP6();
+        aplicarFiltroYOrdenP6();
+    });
+});
+
+function actualizarIconosOrdenP6() {
+    document.querySelectorAll('.p6-th-sort').forEach(th => {
+        const col = th.getAttribute('data-col');
+        const span = th.querySelector('.sort-icon');
+        if (!span) return;
+        if (col === ordenActualP6.columna) {
+            span.innerText = ordenActualP6.direccion === 'asc' ? '▲' : '▼';
+        } else {
+            span.innerText = '↕';
+        }
+    });
+}
 
 // ========================================================================
 // BLOQUE EXTRA: EXPORTACIÓN DE REGISTROS DETALLADOS EN CSV (PANTALLA 3)
