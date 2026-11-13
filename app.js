@@ -725,7 +725,7 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 });
 
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Solicitando informacion interna...");
+    mostrarCarga("Solicitando consolidación interna a tu Apps Script...");
     
     const rawNombre = document.getElementById('credCompleto')?.innerText || "";
     const nombreFijoGafete = rawNombre.replace(/\s+/g, ' ').trim();
@@ -734,6 +734,12 @@ async function cargarEstadisticasDirectas() {
         ocultarCarga();
         alert("⚠️ Identidad de brigadista no localizada. Por favor reingresa desde el módulo de acceso inicial.");
         return;
+    }
+
+    // Inyectar el nombre del brigadista en el encabezado de la Pantalla 4
+    const lblNombreP4 = document.getElementById('p4_nombreBrigadista');
+    if (lblNombreP4) {
+        lblNombreP4.innerText = nombreFijoGafete.toUpperCase();
     }
 
     try {
