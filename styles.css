@@ -306,3 +306,31 @@ body {
 #pantalla3 .cuerpo-credencial {
     background-color: transparent !important;
 }
+/* ========================================================
+   BARRAS DE NAVEGACIÓN INFERIORES FIJAS (PANTALLAS 5 Y 6)
+   ======================================================== */
+
+/* Fija la barra inferior al borde de la pantalla sin tapar el footer */
+#pantalla5 > div[style*="border-top: 2px solid var(--color-guinda)"],
+#pantalla6 > div[style*="border-top: 2px solid var(--color-guinda)"] {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 100% !important;
+    max-width: 28rem !important;
+    z-index: 999 !important;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.12) !important;
+    border-radius: 0 !important;
+}
+
+/* Ajusta el ancho máximo específico de la barra para Pantalla 6 */
+#pantalla6 > div[style*="border-top: 2px solid var(--color-guinda)"] {
+    max-width: 34rem !important;
+}
+
+/* Espacio inferior en las tarjetas 5 y 6 para que el footer y la lista no queden ocultos detrás de la barra fija */
+#pantalla5,
+#pantalla6 {
+    padding-bottom: 4.5rem !important;
+}
