@@ -1118,12 +1118,12 @@ function renderizarTablaMunicipiosP6(filasMunicipios) {
         }
     }
 
-    // 4. Ordenar de mayor a menor (descendente) por "Porcentaje visitas"
+    // 4. Ordenar de menor a mayor (ascendente) por "Porcentaje visitas"
     if (idxPorcentaje !== -1) {
         filasDatos.sort((a, b) => {
             const valA = parseFloat(String(a[idxPorcentaje] || "0").replace(/[^0-9.-]/g, "")) || 0;
             const valB = parseFloat(String(b[idxPorcentaje] || "0").replace(/[^0-9.-]/g, "")) || 0;
-            return valB - valA; // Descendente (mayor a menor)
+            return valA - valB; // Ascendente (menor a mayor)
         });
     }
 
