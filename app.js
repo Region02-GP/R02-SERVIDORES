@@ -1333,7 +1333,7 @@ async function descargarRegistrosCSV() {
         return;
     }
 
-    mostrarCarga("Extrayendo registros detallados de las 3 hojas...");
+    mostrarCarga("Extrayendo registros...");
 
     const urlExportar = `${SCRIPT_ESTADISTICAS_PROPIO}?action=exportar&nombre=${encodeURIComponent(nombreFijoGafete)}`;
 
