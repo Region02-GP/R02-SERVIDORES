@@ -704,10 +704,10 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================================
 // BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y PEGA TU NUEVA URL:
-const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbySnCRupPX_wq3i-Pym-nJLlNfyOyqe1rlf0armWovKeuu4gi6DjBjmTL8e_D7WwPwiSw/exec";
+const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbxYOEm0X4ikmga7naCx4zQZXmGjwOcNU1HL1sGZhde-EWyjPNZqhh-VU11T8JXrSX6YIQ/exec";
 
 // 📊 NUEVA CONSTANTE: URL de la Web App del libro exclusivo de "Estadísticas" (Pestaña Etapa1)
-const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbySnCRupPX_wq3i-Pym-nJLlNfyOyqe1rlf0armWovKeuu4gi6DjBjmTL8e_D7WwPwiSw/exec";
+const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbxYOEm0X4ikmga7naCx4zQZXmGjwOcNU1HL1sGZhde-EWyjPNZqhh-VU11T8JXrSX6YIQ/exec";
 
 // BUSCA ESTAS LÍNEAS E INYECTA EL ID DE TU HOJA NUEVA PROPIA:
 const GOOGLE_SHEET_ID_PROPIA = "1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM";
@@ -1000,105 +1000,94 @@ if (btnRegresarP3) {
 // BLOQUE 2 (PANTALLA 6): CONSULTA REMOTA Y TABLA DE MUNICIPIOS (D:I)
 // ========================================================================
 
-async function cargarEstadisticasDirectas() {
-    mostrarCarga("Solicitando consolidación interna a tu Apps Script...");
-    
-    const rawNombre = document.getElementById('credCompleto')?.innerText || "";
-    const nombreFijoGafete = rawNombre.replace(/\s+/g, ' ').trim();
-    
-    if (!nombreFijoGafete || nombreFijoGafete === "-" || nombreFijoGafete.length < 5) {
-        ocultarCarga();
-        alert("⚠️ Identidad de brigadista no localizada. Por favor reingresa desde el módulo de acceso inicial.");
-        return;
-    }
-
-    // Inyectar el nombre del brigadista en el encabezado de la Pantalla 4
-    const lblNombreP4 = document.getElementById('p4_nombreBrigadista');
-    if (lblNombreP4) {
-        lblNombreP4.innerText = nombreFijoGafete.toUpperCase();
-    }
+async function cargarEstadisticasGenerales() {
+    mostrarCarga("Consolidando estadísticas regionales y por brigadista...");
 
     try {
-        const respuesta = await fetch(SCRIPT_ESTADISTICAS_PROPIO, {
+        const res = await fetch(SCRIPT_ESTADISTICAS_PROPIO, {
             method: 'POST',
             redirect: 'follow',
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify({
-                action: 'metricas',
-                nombre: nombreFijoGafete
-            })
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'estadisticas_generales' })
         });
 
-        if (!respuesta.ok) throw new Error("Fallo de comunicación con el Apps Script privado");
-        
-        const datosJSON = await respuesta.json();
-        
-        // 1. Extraer los 4 valores numéricos base de campo de forma segura
-        const vEtapa1 = Number(datosJSON.visitas_etapa1) || 0;
-        const vEtapa2 = Number(datosJSON.total) || 0;
-        const vDerecho = Number(datosJSON.conteo_derechohabientes) || 0;
-        const vActualiz = Number(datosJSON.conteo_actualizacion) || 0;
-        
-        // 2. Extraer el valor base de la AppSN
-        const vAppSN = Number(datosJSON.visitas_appsn) || 0;
+        if (!res.ok) throw new Error("Error al conectar con el servidor de estadísticas.");
+        const datos = await res.json();
 
-        // 3. Calcular la suma del grupo de campo
-        const sumaTotalCampo = vEtapa1 + vEtapa2 + vDerecho + vActualiz;
-
-        // 4. Calcular la resta (conservando tu lógica actual)
-        let restaDiferencia = sumaTotalCampo - vAppSN;
-        if (restaDiferencia < 0) {
-            restaDiferencia = 0;
+        if (datos.status !== "success") {
+            throw new Error(datos.message || "No se pudieron obtener las estadísticas generales.");
         }
 
-        // 5. Inyectar y renderizar de forma exacta cada elemento en el DOM
-        if (document.getElementById('p4_totalVisitasEtapa1')) {
-            document.getElementById('p4_totalVisitasEtapa1').innerText = vEtapa1;
-        }
-        if (document.getElementById('estTotal')) {
-            document.getElementById('estTotal').innerText = vEtapa2;
-        }
-        if (document.getElementById('p4_totalDerechohabientes')) {
-            document.getElementById('p4_totalDerechohabientes').innerText = vDerecho;
-        }
-        if (document.getElementById('p4_totalActualizacion')) {
-            document.getElementById('p4_totalActualizacion').innerText = vActualiz;
-        }
-        
-        // Inyectar cálculos dinámicos acumulados
-        if (document.getElementById('p4_sumaTotalCampo')) {
-            document.getElementById('p4_sumaTotalCampo').innerText = sumaTotalCampo;
-        }
-        if (document.getElementById('p4_totalVisitasAppSN')) {
-            document.getElementById('p4_totalVisitasAppSN').innerText = vAppSN;
-        }
-        if (document.getElementById('p4_restaDiferencia')) {
-            document.getElementById('p4_restaDiferencia').innerText = restaDiferencia;
+        // 1. Renderizar tabla municipal (Columnas D:I de AppSN)
+        renderizarTablaMunicipiosP6(datos.municipios || []);
+
+        // 2. Mostrar rango de fechas de Lunes a Sábado en el encabezado semanal
+        const lblRangoSem = document.getElementById('p6_rangoSemanaTexto');
+        if (lblRangoSem && datos.rango_semana) {
+            lblRangoSem.innerText = datos.rango_semana;
         }
 
-        // Renderizado del pie de resumen (si el contenedor existe)
-        const contenedor = document.getElementById('contenedorMunicipios');
-        if (contenedor) {
-            contenedor.innerHTML = `
-                <div style="text-align: center; padding: 1rem; color: var(--color-texto-mutado); font-family: sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
-                    📊 Balance Operativo Sincronizado
-                </div>
-            `;
+        // 3. Cruzar con listaBrigadistasGlobal para incluir a todos los del padrón aunque tengan 0
+        const mapaRemoto = {};
+        (datos.brigadistas || []).forEach(b => {
+            mapaRemoto[normalizarCadenaP6(b.nombre)] = b;
+        });
+
+        if (listaBrigadistasGlobal.length > 0) {
+            listaEstadisticasGeneralesGlobal = listaBrigadistasGlobal.map(bPadron => {
+                const norm = normalizarCadenaP6(bPadron.nombre);
+                const metrica = mapaRemoto[norm];
+                return {
+                    nombre: (bPadron.nombre || "").toUpperCase(),
+                    total_campo: metrica ? Number(metrica.total_campo) || 0 : 0,
+                    appsn: metrica ? Number(metrica.appsn) || 0 : 0,
+                    pendientes: metrica ? Number(metrica.pendientes) || 0 : 0,
+                    sem_estadisticas: metrica ? Number(metrica.sem_estadisticas) || 0 : 0,
+                    sem_derechohabientes: metrica ? Number(metrica.sem_derechohabientes) || 0 : 0,
+                    sem_actualizacion: metrica ? Number(metrica.sem_actualizacion) || 0 : 0,
+                    sem_total: metrica ? Number(metrica.sem_total) || 0 : 0,
+                    perfilCompleto: bPadron
+                };
+            });
+        } else {
+            listaEstadisticasGeneralesGlobal = (datos.brigadistas || []).map(b => ({
+                nombre: (b.nombre || "").toUpperCase(),
+                total_campo: Number(b.total_campo) || 0,
+                appsn: Number(b.appsn) || 0,
+                pendientes: Number(b.pendientes) || 0,
+                sem_estadisticas: Number(b.sem_estadisticas) || 0,
+                sem_derechohabientes: Number(b.sem_derechohabientes) || 0,
+                sem_actualizacion: Number(b.sem_actualizacion) || 0,
+                sem_total: Number(b.sem_total) || 0,
+                perfilCompleto: null
+            }));
         }
+
+        // 4. Limpiar buscadores y reiniciar ordenamientos de ambas tablas
+        const inputBuscadorP6 = document.getElementById('p6_buscador');
+        if (inputBuscadorP6) inputBuscadorP6.value = "";
+
+        const inputBuscadorSem = document.getElementById('p6_buscadorSemanal');
+        if (inputBuscadorSem) inputBuscadorSem.value = "";
+
+        ordenActualP6 = { columna: 'pendientes', direccion: 'desc' };
+        ordenSemanalP6 = { columna: 'sem_total', direccion: 'desc' };
+
+        actualizarIconosOrdenP6();
+        actualizarIconosOrdenSemanalP6();
+
+        aplicarFiltroYOrdenP6();
+        aplicarFiltroYOrdenSemanalP6();
 
         ocultarCarga();
-        irAPantalla(4);
+        irAPantalla(6);
 
     } catch (error) {
-        console.error("Error consultando el Apps Script propio:", error);
+        console.error("Error en Pantalla 6:", error);
         ocultarCarga();
-        irAPantalla(4);
-        alert("Se mostraron los datos locales. Algunas métricas remotas no se pudieron extraer en este momento.");
+        alert("⚠️ No se pudieron cargar las estadísticas generales. Verifica la implementación del Apps Script.");
     }
 }
-
 
 
 function renderizarTablaMunicipiosP6(filasMunicipios) {
