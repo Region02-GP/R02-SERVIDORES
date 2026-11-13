@@ -356,6 +356,84 @@
 
     <div class="footer-institucional-img"></div>
 </div>
+<!-- PANTALLA 6: ESTADÍSTICAS GENERALES (SUPERUSUARIO) -->
+<div id="pantalla6" class="tarjeta-control hidden" style="background-image: linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72)), url('https://postimg.cc'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 44rem; max-width: 34rem !important; margin: 1.5rem auto; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25); border: 1px solid #e2e8f0; border-radius: 1.25rem;">
+    
+    <div class="banner-institucional-img"></div>
+    
+    <div class="encabezado-institucional" style="background-color: transparent !important; border-bottom: none; position: relative; z-index: 10;">
+        <h1 class="titulo-principal" style="font-size: 1.4rem; font-weight: 800; margin: 0; color: var(--color-guinda); text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);">Estadísticas Generales</h1>
+        <p class="subtitulo-patria" style="margin: 4px 0 0 0; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: var(--color-texto-mutado);">Consolidado Regional R-02</p>
+    </div>
+
+    <div class="cuerpo-credencial" style="gap: 1.1rem; padding: 1rem 1.25rem; box-sizing: border-box; width: 100%; flex-grow: 1; display: flex; flex-direction: column;">
+        
+        <!-- BLOQUE 1: TABLA DE CAPTURA APPSN POR MUNICIPIO (COLS D:I) -->
+        <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.85rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <p style="margin: 0 0 0.5rem 0; font-size: 0.75rem; font-weight: 800; color: var(--color-guinda); text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 2px solid var(--color-dorado); padding-bottom: 4px;">
+                📍 Captura en AppSN por Municipio
+            </p>
+            <div style="overflow-x: auto; max-height: 13rem; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 0.4rem;">
+                <table id="p6_tablaMunicipios" style="width: 100%; border-collapse: collapse; font-size: 0.72rem; text-align: center;">
+                    <thead id="p6_theadMunicipios" style="background-color: var(--color-guinda); color: #ffffff; position: sticky; top: 0; z-index: 2;">
+                        <!-- Encabezados dinámicos D:I -->
+                    </thead>
+                    <tbody id="p6_tbodyMunicipios">
+                        <!-- Filas dinámicas D:I -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- BLOQUE 2: TABLA RÁPIDA INDIVIDUAL CON BUSCADOR Y ORDENAMIENTO -->
+        <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.85rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 0.6rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--color-dorado); padding-bottom: 4px;">
+                <p style="margin: 0; font-size: 0.75rem; font-weight: 800; color: var(--color-guinda); text-transform: uppercase; letter-spacing: 0.04em;">
+                    👥 Rendimiento por Brigadista
+                </p>
+                <span style="font-size: 0.7rem; font-weight: 700; color: var(--color-texto-mutado);">
+                    Total: <strong id="p6_contadorBrigadistas">0</strong>
+                </span>
+            </div>
+
+            <!-- Buscador por nombre -->
+            <input type="text" id="p6_buscador" class="campo-input" placeholder="🔍 Buscar brigadista por nombre..." style="margin-top: 0; padding: 0.6rem 0.75rem; font-size: 0.85rem;">
+            <p style="margin: -0.2rem 0 0 0; font-size: 0.66rem; color: var(--color-texto-mutado);">
+                💡 Toca los encabezados para ordenar o selecciona un nombre para abrir su credencial.
+            </p>
+
+            <!-- Tabla scrolleable con encabezados ordenables -->
+            <div style="overflow-x: auto; max-height: 20rem; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 0.4rem;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.73rem;">
+                    <thead style="background-color: var(--color-guinda); color: #ffffff; position: sticky; top: 0; z-index: 2;">
+                        <tr>
+                            <th data-col="nombre" class="p6-th-sort" style="padding: 0.55rem 0.4rem; text-align: left; cursor: pointer; user-select: none;">Nombre <span class="sort-icon">↕</span></th>
+                            <th data-col="total_campo" class="p6-th-sort" style="padding: 0.55rem 0.35rem; text-align: center; cursor: pointer; user-select: none;">Campo <span class="sort-icon">↕</span></th>
+                            <th data-col="appsn" class="p6-th-sort" style="padding: 0.55rem 0.35rem; text-align: center; cursor: pointer; user-select: none;">AppSN <span class="sort-icon">↕</span></th>
+                            <th data-col="pendientes" class="p6-th-sort" style="padding: 0.55rem 0.35rem; text-align: center; cursor: pointer; user-select: none;">Pend. <span class="sort-icon">↕</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="p6_tbodyBrigadistas">
+                        <!-- Filas dinámicas ordenables -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Barra inferior de navegación Pantalla 6 -->
+    <div style="width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.95); border-top: 2px solid var(--color-guinda); border-bottom: 1px solid #e5e7eb; box-sizing: border-box; z-index: 10; overflow: hidden; margin-top: auto; flex-shrink: 0;">
+        <button type="button" id="btnP6Volver" style="flex: 1; background: transparent !important; color: var(--color-guinda); border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.2rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+            <span style="font-size: 1.1rem;">🔙</span> Directorio
+        </button>
+        <button type="button" id="btnP6Salir" style="flex: 1; background: transparent !important; color: var(--color-guinda); border: none; padding: 0.85rem 0.2rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
+            <span style="font-size: 1.1rem;">❌</span> Cerrar Sesión
+        </button>
+    </div>
+
+    <div class="footer-institucional-img"></div>
+</div>
 
  <!-- VENTANA FLOTANTE PARA FIRMA (CORREGIDO ESPACIADO PARA BARRA DE NAVEGACIÓN ANDROID) -->
 <div id="modalFirmaPantallaCompleta" class="overlay-carga hidden" style="background-color: rgba(17, 24, 39, 0.98); z-index: 10005; padding: 1rem; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; align-items: center;">
