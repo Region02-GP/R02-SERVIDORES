@@ -725,7 +725,7 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 });
 
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Solicitando consolidación interna a tu Apps Script...");
+    mostrarCarga("Solicitando descarga de información...");
     
     const rawNombre = document.getElementById('credCompleto')?.innerText || "";
     const nombreFijoGafete = rawNombre.replace(/\s+/g, ' ').trim();
