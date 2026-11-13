@@ -1001,7 +1001,7 @@ if (btnRegresarP3) {
 // ========================================================================
 
 async function cargarEstadisticasGenerales() {
-    mostrarCarga("Consolidando estadísticas regionales y por brigadista...");
+    mostrarCarga("Descargando estadísticas regionales y por brigadista...");
 
     try {
         const res = await fetch(SCRIPT_ESTADISTICAS_PROPIO, {
