@@ -313,7 +313,7 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     e.preventDefault(); 
     
     if (!firmaBase64 || firmaBase64 === "") {
-        alert("⚠️ CAMPOS REQUERIDOS:\n\nEs obligatorio estampar tu firma en el recuadro blanco antes de guardar el registro.");
+        alert("⚠️ CAMPOS REQUERIDOS:\n\nEs obligatorio escribir tu firma en el recuadro blanco antes de guardar el registro.");
         return false;
     }
 
@@ -693,7 +693,7 @@ document.getElementById('btnVerMapaZona')?.addEventListener('click', () => {
 
 document.getElementById('btnAceptarFirma').addEventListener('click', () => {
     if (!firmaBase64 || firmaBase64 === "") {
-        alert("Por favor, estampe su firma antes de aceptar.");
+        alert("Por favor, escriba su firma antes de aceptar.");
         return;
     }
     document.getElementById('firmaAviso').classList.remove('hidden');
@@ -725,7 +725,7 @@ document.getElementById('btnEstSalir').addEventListener('click', () => {
 });
 
 async function cargarEstadisticasDirectas() {
-    mostrarCarga("Solicitando consolidación interna a tu Apps Script...");
+    mostrarCarga("Solicitando informacion interna...");
     
     const rawNombre = document.getElementById('credCompleto')?.innerText || "";
     const nombreFijoGafete = rawNombre.replace(/\s+/g, ' ').trim();
@@ -995,7 +995,7 @@ if (btnRegresarP3) {
 // ========================================================================
 
 async function cargarEstadisticasGenerales() {
-    mostrarCarga("Consolidando estadísticas regionales y por brigadista...");
+    mostrarCarga("Descargando estadísticas...");
 
     try {
         const res = await fetch(SCRIPT_ESTADISTICAS_PROPIO, {
