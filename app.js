@@ -1344,7 +1344,7 @@ async function descargarRegistrosCSV() {
         ocultarCarga();
 
         if (archivosDescargados === 0) {
-            alert("ℹ️ Este brigadista aún no cuenta con registros capturados en ninguna de las tres hojas.");
+            alert("ℹ️ Este brigadista aún no cuenta con registros capturados");
         } else {
             alert(`✅ Se están descargando ${archivosDescargados} archivo(s) .CSV con el desglose completo.`);
         }
