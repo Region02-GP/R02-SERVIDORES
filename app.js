@@ -704,10 +704,10 @@ document.getElementById('btnAceptarFirma').addEventListener('click', () => {
 // BLOQUE EXTRA: MÓDULO DE CONSULTA ESTADÍSTICA REAL (VCXC)
 // ========================================================================
 // BUSCA EL INICIO DE TU MÓDULO ESTADÍSTICO EN app.js Y PEGA TU NUEVA URL:
-const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbzh5SVF4HH61lnVSEHZ7ZK7ZlSlxAVT3koTSdV_cf-iHqSvJ1hasRzINo2lNRBNd_a2qA/exec";
+const SCRIPT_ESTADISTICAS_PROPIO = "https://script.google.com/macros/s/AKfycbySnCRupPX_wq3i-Pym-nJLlNfyOyqe1rlf0armWovKeuu4gi6DjBjmTL8e_D7WwPwiSw/exec";
 
 // 📊 NUEVA CONSTANTE: URL de la Web App del libro exclusivo de "Estadísticas" (Pestaña Etapa1)
-const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbzh5SVF4HH61lnVSEHZ7ZK7ZlSlxAVT3koTSdV_cf-iHqSvJ1hasRzINo2lNRBNd_a2qA/exec";
+const SCRIPT_ETAPA1_URL = "https://script.google.com/macros/s/AKfycbySnCRupPX_wq3i-Pym-nJLlNfyOyqe1rlf0armWovKeuu4gi6DjBjmTL8e_D7WwPwiSw/exec";
 
 // BUSCA ESTAS LÍNEAS E INYECTA EL ID DE TU HOJA NUEVA PROPIA:
 const GOOGLE_SHEET_ID_PROPIA = "1jkrUSWSOOawoOHz8L9-3A1AH7V0jdmdABEkSYM-GGqM";
@@ -1015,7 +1015,13 @@ async function cargarEstadisticasGenerales() {
         // 1. Renderizar tabla municipal (Columnas D:I de AppSN)
         renderizarTablaMunicipiosP6(datos.municipios || []);
 
-        // 2. Cruzar con listaBrigadistasGlobal para incluir a todos los del padrón aunque tengan 0
+        // 2. Mostrar rango de fechas de Lunes a Sábado en el encabezado semanal
+        const lblRangoSem = document.getElementById('p6_rangoSemanaTexto');
+        if (lblRangoSem && datos.rango_semana) {
+            lblRangoSem.innerText = datos.rango_semana;
+        }
+
+        // 3. Cruzar con listaBrigadistasGlobal para incluir a todos los del padrón aunque tengan 0
         const mapaRemoto = {};
         (datos.brigadistas || []).forEach(b => {
             mapaRemoto[normalizarCadenaP6(b.nombre)] = b;
@@ -1030,6 +1036,10 @@ async function cargarEstadisticasGenerales() {
                     total_campo: metrica ? Number(metrica.total_campo) || 0 : 0,
                     appsn: metrica ? Number(metrica.appsn) || 0 : 0,
                     pendientes: metrica ? Number(metrica.pendientes) || 0 : 0,
+                    sem_estadisticas: metrica ? Number(metrica.sem_estadisticas) || 0 : 0,
+                    sem_derechohabientes: metrica ? Number(metrica.sem_derechohabientes) || 0 : 0,
+                    sem_actualizacion: metrica ? Number(metrica.sem_actualizacion) || 0 : 0,
+                    sem_total: metrica ? Number(metrica.sem_total) || 0 : 0,
                     perfilCompleto: bPadron
                 };
             });
@@ -1039,14 +1049,29 @@ async function cargarEstadisticasGenerales() {
                 total_campo: Number(b.total_campo) || 0,
                 appsn: Number(b.appsn) || 0,
                 pendientes: Number(b.pendientes) || 0,
+                sem_estadisticas: Number(b.sem_estadisticas) || 0,
+                sem_derechohabientes: Number(b.sem_derechohabientes) || 0,
+                sem_actualizacion: Number(b.sem_actualizacion) || 0,
+                sem_total: Number(b.sem_total) || 0,
                 perfilCompleto: null
             }));
         }
 
-        document.getElementById('p6_buscador').value = "";
+        // 4. Limpiar buscadores y reiniciar ordenamientos de ambas tablas
+        const inputBuscadorP6 = document.getElementById('p6_buscador');
+        if (inputBuscadorP6) inputBuscadorP6.value = "";
+
+        const inputBuscadorSem = document.getElementById('p6_buscadorSemanal');
+        if (inputBuscadorSem) inputBuscadorSem.value = "";
+
         ordenActualP6 = { columna: 'pendientes', direccion: 'desc' };
+        ordenSemanalP6 = { columna: 'sem_total', direccion: 'desc' };
+
         actualizarIconosOrdenP6();
+        actualizarIconosOrdenSemanalP6();
+
         aplicarFiltroYOrdenP6();
+        aplicarFiltroYOrdenSemanalP6();
 
         ocultarCarga();
         irAPantalla(6);
@@ -1057,6 +1082,7 @@ async function cargarEstadisticasGenerales() {
         alert("⚠️ No se pudieron cargar las estadísticas generales. Verifica la implementación del Apps Script.");
     }
 }
+
 
 function renderizarTablaMunicipiosP6(filasMunicipios) {
     const thead = document.getElementById('p6_theadMunicipios');
@@ -1354,4 +1380,116 @@ async function descargarRegistrosCSV() {
         ocultarCarga();
         alert("❌ Ocurrió un error al descargar los registros. Verifica tu conexión e intenta de nuevo.");
     }
+}
+// ========================================================================
+// BLOQUE 4 (PANTALLA 6): TABLA DE VISITAS SEMANALES (LUNES A SÁBADO)
+// ========================================================================
+
+let ordenSemanalP6 = { columna: 'sem_total', direccion: 'desc' };
+
+function aplicarFiltroYOrdenSemanalP6() {
+    const termino = normalizarCadenaP6(document.getElementById('p6_buscadorSemanal')?.value || "");
+
+    let filtrados = listaEstadisticasGeneralesGlobal.filter(item =>
+        normalizarCadenaP6(item.nombre).includes(termino)
+    );
+
+    const { columna, direccion } = ordenSemanalP6;
+    const factor = direccion === 'asc' ? 1 : -1;
+
+    filtrados.sort((a, b) => {
+        if (columna === 'nombre') {
+            return a.nombre.localeCompare(b.nombre) * factor;
+        }
+        return ((a[columna] || 0) - (b[columna] || 0)) * factor;
+    });
+
+    renderizarTablaSemanalP6(filtrados);
+}
+
+function renderizarTablaSemanalP6(lista) {
+    const tbody = document.getElementById('p6_tbodySemanal');
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    if (lista.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="padding: 1rem; text-align: center; color: var(--color-texto-mutado);">No se encontraron coincidencias.</td></tr>`;
+        return;
+    }
+
+    lista.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.style.cssText = `background-color: ${index % 2 === 0 ? '#ffffff' : '#f9fafb'}; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background-color 0.15s;`;
+
+        tr.innerHTML = `
+            <td style="padding: 0.5rem 0.4rem; text-align: left; font-weight: 700; color: var(--color-guinda); text-decoration: underline;">
+                ${item.nombre}
+            </td>
+            <td style="padding: 0.5rem 0.3rem; text-align: center; font-family: monospace; font-weight: 700; color: var(--color-texto-oscuro);">
+                ${item.sem_estadisticas}
+            </td>
+            <td style="padding: 0.5rem 0.3rem; text-align: center; font-family: monospace; font-weight: 700; color: var(--color-texto-oscuro);">
+                ${item.sem_derechohabientes}
+            </td>
+            <td style="padding: 0.5rem 0.3rem; text-align: center; font-family: monospace; font-weight: 700; color: var(--color-texto-oscuro);">
+                ${item.sem_actualizacion}
+            </td>
+            <td style="padding: 0.5rem 0.3rem; text-align: center; font-family: monospace; font-weight: 800; color: ${item.sem_total > 0 ? '#059669' : '#6b7280'};">
+                ${item.sem_total}
+            </td>
+        `;
+
+        tr.addEventListener('click', () => {
+            pantallaOrigenSuperusuario = 6;
+            const perfil = item.perfilCompleto || listaBrigadistasGlobal.find(
+                b => normalizarCadenaP6(b.nombre) === normalizarCadenaP6(item.nombre)
+            );
+
+            if (perfil) {
+                abrirPerfilDesdeSuperusuario(perfil);
+            } else {
+                abrirPerfilDesdeSuperusuario({
+                    nombre: item.nombre,
+                    municipio: "SIN MUNICIPIO",
+                    zona: "SIN ZONA",
+                    curp: "-",
+                    telefono: "",
+                    foto_url: "",
+                    url_mapa_zona: ""
+                });
+            }
+        });
+
+        tbody.appendChild(tr);
+    });
+}
+
+document.getElementById('p6_buscadorSemanal')?.addEventListener('input', aplicarFiltroYOrdenSemanalP6);
+
+document.querySelectorAll('.p6-th-sem-sort').forEach(th => {
+    th.addEventListener('click', () => {
+        const col = th.getAttribute('data-col-sem');
+        if (ordenSemanalP6.columna === col) {
+            ordenSemanalP6.direccion = ordenSemanalP6.direccion === 'asc' ? 'desc' : 'asc';
+        } else {
+            ordenSemanalP6.columna = col;
+            ordenSemanalP6.direccion = col === 'nombre' ? 'asc' : 'desc';
+        }
+        actualizarIconosOrdenSemanalP6();
+        aplicarFiltroYOrdenSemanalP6();
+    });
+});
+
+function actualizarIconosOrdenSemanalP6() {
+    document.querySelectorAll('.p6-th-sem-sort').forEach(th => {
+        const col = th.getAttribute('data-col-sem');
+        const span = th.querySelector('.sort-icon-sem');
+        if (!span) return;
+        if (col === ordenSemanalP6.columna) {
+            span.innerText = ordenSemanalP6.direccion === 'asc' ? '▲' : '▼';
+        } else {
+            span.innerText = '↕';
+        }
+    });
 }
