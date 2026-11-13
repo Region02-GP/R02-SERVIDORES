@@ -23,9 +23,11 @@ function irAPantalla(num) {
     document.getElementById('pantalla3').classList.add('hidden');
     document.getElementById('pantalla4').classList.add('hidden');
     document.getElementById('pantalla5').classList.add('hidden');
+    document.getElementById('pantalla6')?.classList.add('hidden');
     
     document.getElementById('pantalla' + num).classList.remove('hidden');
 }
+
 
 
 // Muestra el overlay de procesamiento
