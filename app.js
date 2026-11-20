@@ -515,9 +515,9 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             // 1. Estampar plantilla de fondo completa
             ctx.drawImage(imgPlantillaFondo, 0, 0, 1276, 2020);
 
-                                   // 2. Encuadre exacto de la fotografía dentro del marco de la nueva plantilla
-            const targetX = 391, targetY = 448, targetW = 494, targetH = 624;
-            const fotoRadius = 36;
+                                             // 2. Encuadre exacto de la fotografía dentro del marco interno de la plantilla
+            const targetX = 407, targetY = 434, targetW = 478, targetH = 618;
+            const fotoRadius = 32;
 
 
             ctx.save(); 
