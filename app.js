@@ -126,12 +126,8 @@ if (btnMapaNav) {
             if (document.getElementById('zona')) document.getElementById('zona').value = zon;
             if (document.getElementById('correo')) document.getElementById('correo').value = cor;
 
-            let camposFaltantes = [];
-            if (!nom) camposFaltantes.push("Nombre Completo");
-            if (!mun) camposFaltantes.push("Municipio");
-            if (!pue) camposFaltantes.push("Puesto");
+                       let camposFaltantes = [];
             if (!tel) camposFaltantes.push("Teléfono");
-            if (!zon) camposFaltantes.push("Zona");
             if (!cor) camposFaltantes.push("Correo");
             
             if (!fotoUrlActual || fotoUrlActual.length < 50) {
@@ -158,11 +154,12 @@ if (btnMapaNav) {
                 return; 
             }
 
-            if (document.getElementById('credCompleto')) document.getElementById('credCompleto').innerText = nom.toUpperCase();
-            if (document.getElementById('credPuesto')) document.getElementById('credPuesto').innerText = mun.toUpperCase();
-            if (document.getElementById('credZona')) document.getElementById('credZona').innerText = zon.toUpperCase();
+            if (document.getElementById('credCompleto')) document.getElementById('credCompleto').innerText = (nom || "-").toUpperCase();
+            if (document.getElementById('credPuesto')) document.getElementById('credPuesto').innerText = (mun || "-").toUpperCase();
+            if (document.getElementById('credZona')) document.getElementById('credZona').innerText = (zon || "-").toUpperCase();
             if (document.getElementById('credIdentificacion')) document.getElementById('credIdentificacion').innerText = curp;
             if (document.getElementById('credFoto')) document.getElementById('credFoto').src = fotoUrlActual;
+
             
             if (document.getElementById('credTelefono')) {
                 document.getElementById('credTelefono').innerText = tel;
