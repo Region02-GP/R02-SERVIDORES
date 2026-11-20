@@ -550,36 +550,59 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.drawImage(imgFoto, srcX, srcY, srcW, srcH, targetX, targetY, targetW, targetH);
             ctx.restore(); 
 
-            // 3. Renderizado de Datos Nominativos e Impresión Centrada
-            ctx.textAlign = "center";   
+                       // 3. Renderizado de Datos Nominativos (Distribución alineada a la izquierda en dos columnas)
+            ctx.textAlign = "left";
+            const margenIzq = 140; // Alineación izquierda general
+            const colDerechaX = 720; // Segunda columna para Zona / Región
 
-            // NOMBRE COMPLETO: Encajado perfectamente en la barra guinda
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 44px sans-serif";
-            ctx.fillText(nombre, canvas.width / 2, 1152); 
+            // --- FILA 1: NOMBRE COMPLETO ---
+            // Etiqueta
+            ctx.fillStyle = "#6b7280";
+            ctx.font = "bold 24px sans-serif";
+            ctx.fillText("NOMBRE COMPLETO", margenIzq, 1110);
+            
+            // Valor (con ajuste automático de tamaño si el nombre es muy largo)
+            ctx.fillStyle = "#111827";
+            let tamanoNombre = 42;
+            ctx.font = `800 ${tamanoNombre}px sans-serif`;
+            const anchoMaximoNombre = canvas.width - (margenIzq * 2);
+            while (ctx.measureText(nombre).width > anchoMaximoNombre && tamanoNombre > 26) {
+                tamanoNombre -= 2;
+                ctx.font = `800 ${tamanoNombre}px sans-serif`;
+            }
+            ctx.fillText(nombre, margenIzq, 1162);
 
-            // DATOS DESCRIPTIVOS REORGANIZADOS Y SUBIDOS SIMÉTRICAMENTE
-            ctx.fillStyle = "#1f2937"; 
+            // --- FILA 2: MUNICIPIO (Columna 1) Y ZONA / REGIÓN (Columna 2) ---
+            // Etiquetas
+            ctx.fillStyle = "#6b7280";
+            ctx.font = "bold 24px sans-serif";
+            ctx.fillText("MUNICIPIO", margenIzq, 1245);
+            ctx.fillText("ZONA / REGIÓN", colDerechaX, 1245);
 
-            // Fila de Municipio (Elevada a coordenada Y: 1300)
-            ctx.font = "bold 34px sans-serif";
-            ctx.fillText(`MUNICIPIO: ${municipio}`, canvas.width / 2, 1300);
+            // Valores
+            ctx.fillStyle = "#1f2937";
+            ctx.font = "bold 36px sans-serif";
+            ctx.fillText(municipio, margenIzq, 1295);
+            ctx.fillText(zona, colDerechaX, 1295);
 
-            // Fila de Zona - CORREGIDO: Extrae de forma limpia la variable 'zona' independiente (Y: 1400)
-            ctx.font = "bold 34px sans-serif";
-            ctx.fillText(`ZONA: ${zona}`, canvas.width / 2, 1400);
+            // --- FILA 3: CURP OFICIAL ---
+            // Etiqueta
+            ctx.fillStyle = "#6b7280";
+            ctx.font = "bold 24px sans-serif";
+            ctx.fillText("CURP OFICIAL", margenIzq, 1380);
 
-            // Fila de CURP (Elevada a coordenada Y: 1500)
-            ctx.font = "bold 38px monospace";
-            ctx.fillText(curp, canvas.width / 2, 1500);
+            // Valor
+            ctx.fillStyle = "#111827";
+            ctx.font = "bold 36px monospace";
+            ctx.fillText(curp, margenIzq, 1430);
 
-            // Estampado de Firma Digital Autorizada - REACOMODADA MÁS ARRIBA (Y: 1600)
+            // Estampado de Firma Digital Autorizada (Centrada debajo de la CURP)
             if (firmaBase64 && firmaBase64.startsWith("data:image")) {
                 const firmaW = 320;
                 const firmaH = 130;
-                // Colocada de forma segura arriba del escudo base
-                ctx.drawImage(imgFirma, (canvas.width / 2) - (firmaW / 2), 1600, firmaW, firmaH);
+                ctx.drawImage(imgFirma, (canvas.width / 2) - (firmaW / 2), 1530, firmaW, firmaH);
             }
+
 
             // Disparador de descarga PNG
             const link = document.createElement('a');
