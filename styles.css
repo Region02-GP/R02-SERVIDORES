@@ -219,9 +219,9 @@ body {
    ======================================================== */
 .footer-institucional-img {
     width: 100%;
-    height: 64px;
-    background-image: url("https://i.postimg.cc/cCTzCnFp/image-3b088456.jpg");
-    background-size: 100% auto;
+    height: 85px;
+    background-image: url("https://postimg.cc");
+    background-size: contain;
     background-position: center bottom;
     background-repeat: no-repeat;
     background-color: transparent;
@@ -233,8 +233,9 @@ body {
 
 /* Ajuste proporcional para la Pantalla 6 que es más ancha (34rem) */
 #pantalla6 .footer-institucional-img {
-    height: 78px;
+    height: 104px;
 }
+
 
 
 /* Barra de acciones unificada (Pantallas 3, 4, 5 y 6) */
