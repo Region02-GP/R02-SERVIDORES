@@ -287,28 +287,37 @@ body {
     margin: 0.5rem 0 0 0;
 }
 
-/* Barras fijas al fondo de pantalla en Pantallas 5 y 6 */
+/* ========================================================
+   BARRAS DE NAVEGACIÓN INFERIORES FIJAS (PANTALLAS 5 Y 6)
+   ======================================================== */
 #pantalla5 .barra-acciones-credencial,
 #pantalla6 .barra-acciones-credencial {
-    position: fixed;
-    bottom: 0.75rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 2rem);
-    max-width: 26.5rem;
-    margin: 0;
-    z-index: 999;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+    position: fixed !important;
+    bottom: 0.75rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: min(calc(100% - 2rem), 28rem) !important;
+    margin: 0 !important;
+    z-index: 999 !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
 }
 
 #pantalla6 .barra-acciones-credencial {
-    max-width: 32.5rem;
+    width: min(calc(100% - 2rem), 34rem) !important;
 }
 
+/* Evita que la tarjeta 6 se salga horizontalmente en celulares */
+#pantalla6 {
+    width: 100% !important;
+    max-width: min(100%, 34rem) !important;
+}
+
+/* Espacio inferior suficiente para que al bajar se vean completos los botones CSV y el footer */
 #pantalla5,
 #pantalla6 {
-    padding-bottom: 5rem !important;
+    padding-bottom: 5.5rem !important;
 }
+
 
 .hidden { 
     display: none !important; 
