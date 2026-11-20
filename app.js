@@ -1640,3 +1640,50 @@ function actualizarIconosOrdenDiaP6() {
         }
     });
 }
+// ========================================================================
+// BLOQUE 6 (PANTALLA 6): DESCARGA DE TABLAS EN FORMATO CSV
+// ========================================================================
+
+function exportarTablaP6aCSV(tablaElemento, nombreArchivoBase) {
+    if (!tablaElemento) {
+        alert("⚠️ No se encontró la tabla para descargar.");
+        return;
+    }
+
+    const filasDOM = tablaElemento.querySelectorAll("tr");
+    if (filasDOM.length <= 1) {
+        alert("ℹ️ La tabla no contiene registros para exportar.");
+        return;
+    }
+
+    const matrizDatos = [];
+    filasDOM.forEach(tr => {
+        const celdas = tr.querySelectorAll("th, td");
+        const filaTexto = Array.from(celdas).map(celda =>
+            celda.innerText.replace(/[↕▲▼]/g, "").replace(/\s+/g, " ").trim()
+        );
+        if (filaTexto.length > 0) {
+            matrizDatos.push(filaTexto);
+        }
+    });
+
+    const hoyISO = new Date().toISOString().slice(0, 10);
+    const contenidoCSV = convertirMatrizACSV(matrizDatos);
+    dispararDescargaArchivoCSV(contenidoCSV, `${nombreArchivoBase}_${hoyISO}.csv`);
+}
+
+document.getElementById('btnP6DescMunicipios')?.addEventListener('click', () => {
+    exportarTablaP6aCSV(document.getElementById('p6_tablaMunicipios'), 'Captura_AppSN_Municipios');
+});
+
+document.getElementById('btnP6DescServidores')?.addEventListener('click', () => {
+    exportarTablaP6aCSV(document.getElementById('p6_tbodyBrigadistas')?.closest('table'), 'Visitas_Por_Servidor');
+});
+
+document.getElementById('btnP6DescSemanal')?.addEventListener('click', () => {
+    exportarTablaP6aCSV(document.getElementById('p6_tbodySemanal')?.closest('table'), 'Visitas_Semana');
+});
+
+document.getElementById('btnP6DescDia')?.addEventListener('click', () => {
+    exportarTablaP6aCSV(document.getElementById('p6_tbodyDia')?.closest('table'), 'Visitas_Del_Dia');
+});
