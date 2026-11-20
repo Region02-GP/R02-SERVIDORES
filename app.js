@@ -518,7 +518,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
                        // 2. Encuadre exacto y centrado de la fotografía dentro del marco guinda
             const targetX = 393, targetY = 432, targetW = 490, targetH = 622;
             const fotoRadius = 32;
-
+ 
             ctx.save(); 
             ctx.beginPath();
             ctx.moveTo(targetX + fotoRadius, targetY);
