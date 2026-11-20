@@ -308,8 +308,26 @@ document.getElementById('inputFoto').addEventListener('change', (e) => {
 // --- EVENTO SUBMIT DEL FORMULARIO (GUARDAR REGISTRO) ---
 document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     e.preventDefault(); 
+
+    const txtTelefono = document.getElementById('telefono')?.value.trim() || "";
+    const txtCorreo = document.getElementById('correo')?.value.trim() || "";
+
+    let fotoParaEnviar = fotoUrlActual;
+    if (fotoCompletaBase64) {
+        fotoParaEnviar = fotoCompletaBase64;
+    }
+
+    if (!txtTelefono || !txtCorreo) {
+        alert("⚠️ CAMPOS REQUERIDOS:\n\nEs obligatorio ingresar tu teléfono y correo electrónico.");
+        return false;
+    }
+
+    if (!fotoParaEnviar || fotoParaEnviar.length < 50) {
+        alert("⚠️ CAMPOS REQUERIDOS:\n\nEs obligatorio capturar o seleccionar tu fotografía oficial antes de guardar.");
+        return false;
+    }
     
-    if (!firmaBase64 || firmaBase64 === "") {
+    if (!firmaBase64 || firmaBase64.length < 50) {
         alert("⚠️ CAMPOS REQUERIDOS:\n\nEs obligatorio escribir tu firma en el recuadro blanco antes de guardar el registro.");
         return false;
     }
@@ -317,17 +335,11 @@ document.getElementById('perfilForm').addEventListener('submit', async (e) => {
     const curp = document.getElementById('nombre_curp').value;
     mostrarCarga("Sincronizando información de brigadista...");
 
-    let fotoParaEnviar = fotoUrlActual;
-    if (fotoCompletaBase64) {
-        fotoParaEnviar = fotoCompletaBase64;
-    }
-
     const txtNombre = document.getElementById('nombre')?.value || "";
     const txtMunicipio = document.getElementById('municipio')?.value || "";
     const txtPuesto = document.getElementById('puesto')?.value || "";
-    const txtTelefono = document.getElementById('telefono')?.value || "";
     const txtZona = document.getElementById('zona')?.value || "";
-    const txtCorreo = document.getElementById('correo')?.value || "";
+
 
     const payloadCompleto = {
         action: 'guardar',
