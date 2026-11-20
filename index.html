@@ -200,23 +200,18 @@
     <button type="button" id="btnRegresarSuperusuario" class="hidden">
         <span style="font-size: 1.1rem;">🔙</span> Regresar
     </button>
-
     <button type="button" id="btnDescargarPDF">
         <span style="font-size: 1.1rem;">💳</span> Descargar credencial
     </button>
-    
     <button type="button" id="btnEditarPerfil">
         <span style="font-size: 1.1rem;">👤</span> Modificar Perfil
     </button>
-
     <button type="button" id="btnVerMapaZona" style="display: none;">
         <span style="font-size: 1.1rem;">🗺️</span> Mapa de Zona
     </button>
-       
     <button type="button" id="btnVerEstadisticas">
         <span style="font-size: 1.1rem;">📈</span> Estadísticas CXC
     </button>
-
     <button type="button" id="btnCerrar">
         <span style="font-size: 1.1rem;">❌</span> Salir
     </button>
@@ -300,15 +295,15 @@
        
     </div>
 
-    <!-- BARRA DE NAVEGACIÓN INFERIOR UNIFICADA -->
-    <div style="width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.95); border-top: 2px solid var(--color-guinda); border-bottom: 1px solid #e5e7eb; box-sizing: border-box; z-index: 10; overflow: hidden; margin-top: auto; flex-shrink: 0;">
-        <button type="button" id="btnEstVolver" style="flex: 1; background: transparent !important; color: var(--color-guinda); border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-            <span style="font-size: 1.1rem;">🪪</span> Regresar
-        </button>
-        <button type="button" id="btnEstSalir" style="flex: 1; background: transparent !important; color: var(--color-guinda); border: none; padding: 0.85rem 0.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-            <span style="font-size: 1.1rem;">❌</span> Salir
-        </button>
-    </div>
+    <div class="barra-acciones-credencial">
+    <button type="button" id="btnEstVolver">
+        <span style="font-size: 1.1rem;">🪪</span> Regresar
+    </button>
+    <button type="button" id="btnEstSalir">
+        <span style="font-size: 1.1rem;">❌</span> Salir
+    </button>
+</div>
+
 
     <div class="footer-institucional-img"></div>
 </div>
@@ -343,15 +338,15 @@
 
     </div>
 
-            <!-- Barra inferior de navegación Pantalla 5 -->
-    <div style="width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.95); border-top: 2px solid var(--color-guinda); border-bottom: 1px solid #e5e7eb; box-sizing: border-box; z-index: 10; overflow: hidden; margin-top: auto; flex-shrink: 0;">
-        <button type="button" id="btnIrPantalla6" style="flex: 1; background: transparent !important; color: var(--color-guinda); border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.2rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-            <span style="font-size: 1.1rem;">📊</span> Estadísticas Generales
-        </button>
-        <button type="button" id="btnP5Salir" style="flex: 1; background: transparent !important; color: var(--color-guinda); border: none; padding: 0.85rem 0.2rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-            <span style="font-size: 1.1rem;">❌</span> Cerrar Sesión
-        </button>
-    </div>
+       <div class="barra-acciones-credencial">
+    <button type="button" id="btnIrPantalla6">
+        <span style="font-size: 1.1rem;">📊</span> Estadísticas Generales
+    </button>
+    <button type="button" id="btnP5Salir">
+        <span style="font-size: 1.1rem;">❌</span> Cerrar Sesión
+    </button>
+</div>
+
 
     <div class="footer-institucional-img"></div>
 </div>
@@ -508,15 +503,15 @@
         </div>
 
 </div>
-    <!-- Barra inferior de navegación Pantalla 6 -->
-    <div style="width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.95); border-top: 2px solid var(--color-guinda); border-bottom: 1px solid #e5e7eb; box-sizing: border-box; z-index: 10; overflow: hidden; margin-top: auto; flex-shrink: 0;">
-        <button type="button" id="btnP6Volver" style="flex: 1; background: transparent !important; color: var(--color-guinda); border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.2rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-            <span style="font-size: 1.1rem;">🔙</span> Regresar
-        </button>
-        <button type="button" id="btnP6Salir" style="flex: 1; background: transparent !important; color: var(--color-guinda); border: none; padding: 0.85rem 0.2rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-            <span style="font-size: 1.1rem;">❌</span> Cerrar Sesión
-        </button>
-    </div>
+   <div class="barra-acciones-credencial">
+    <button type="button" id="btnP6Volver">
+        <span style="font-size: 1.1rem;">🔙</span> Regresar
+    </button>
+    <button type="button" id="btnP6Salir">
+        <span style="font-size: 1.1rem;">❌</span> Cerrar Sesión
+    </button>
+</div>
+
 
     <div class="footer-institucional-img"></div>
 </div>
