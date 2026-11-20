@@ -1030,10 +1030,15 @@ async function cargarEstadisticasGenerales() {
         // 1. Renderizar tabla municipal (Columnas D:I de AppSN)
         renderizarTablaMunicipiosP6(datos.municipios || []);
 
-        // 2. Mostrar rango de fechas de Lunes a Sábado en el encabezado semanal
+        // 2. Mostrar rango de fechas semanal y fecha de hoy
         const lblRangoSem = document.getElementById('p6_rangoSemanaTexto');
         if (lblRangoSem && datos.rango_semana) {
             lblRangoSem.innerText = datos.rango_semana;
+        }
+
+        const lblFechaHoy = document.getElementById('p6_fechaHoyTexto');
+        if (lblFechaHoy && datos.fecha_hoy) {
+            lblFechaHoy.innerText = datos.fecha_hoy;
         }
 
         // 3. Cruzar con listaBrigadistasGlobal para incluir a todos los del padrón aunque tengan 0
@@ -1055,6 +1060,10 @@ async function cargarEstadisticasGenerales() {
                     sem_derechohabientes: metrica ? Number(metrica.sem_derechohabientes) || 0 : 0,
                     sem_actualizacion: metrica ? Number(metrica.sem_actualizacion) || 0 : 0,
                     sem_total: metrica ? Number(metrica.sem_total) || 0 : 0,
+                    dia_estadisticas: metrica ? Number(metrica.dia_estadisticas) || 0 : 0,
+                    dia_derechohabientes: metrica ? Number(metrica.dia_derechohabientes) || 0 : 0,
+                    dia_actualizacion: metrica ? Number(metrica.dia_actualizacion) || 0 : 0,
+                    dia_total: metrica ? Number(metrica.dia_total) || 0 : 0,
                     perfilCompleto: bPadron
                 };
             });
@@ -1068,25 +1077,35 @@ async function cargarEstadisticasGenerales() {
                 sem_derechohabientes: Number(b.sem_derechohabientes) || 0,
                 sem_actualizacion: Number(b.sem_actualizacion) || 0,
                 sem_total: Number(b.sem_total) || 0,
+                dia_estadisticas: Number(b.dia_estadisticas) || 0,
+                dia_derechohabientes: Number(b.dia_derechohabientes) || 0,
+                dia_actualizacion: Number(b.dia_actualizacion) || 0,
+                dia_total: Number(b.dia_total) || 0,
                 perfilCompleto: null
             }));
         }
 
-        // 4. Limpiar buscadores y reiniciar ordenamientos de ambas tablas
+        // 4. Limpiar buscadores y reiniciar ordenamientos de las tres tablas
         const inputBuscadorP6 = document.getElementById('p6_buscador');
         if (inputBuscadorP6) inputBuscadorP6.value = "";
 
         const inputBuscadorSem = document.getElementById('p6_buscadorSemanal');
         if (inputBuscadorSem) inputBuscadorSem.value = "";
 
+        const inputBuscadorDia = document.getElementById('p6_buscadorDia');
+        if (inputBuscadorDia) inputBuscadorDia.value = "";
+
         ordenActualP6 = { columna: 'pendientes', direccion: 'desc' };
         ordenSemanalP6 = { columna: 'sem_total', direccion: 'desc' };
+        ordenDiaP6 = { columna: 'dia_total', direccion: 'desc' };
 
         actualizarIconosOrdenP6();
         actualizarIconosOrdenSemanalP6();
+        actualizarIconosOrdenDiaP6();
 
         aplicarFiltroYOrdenP6();
         aplicarFiltroYOrdenSemanalP6();
+        aplicarFiltroYOrdenDiaP6();
 
         ocultarCarga();
         irAPantalla(6);
@@ -1097,6 +1116,7 @@ async function cargarEstadisticasGenerales() {
         alert("⚠️ No se pudieron cargar las estadísticas generales. Verifica la implementación del Apps Script.");
     }
 }
+
 
 
 function renderizarTablaMunicipiosP6(filasMunicipios) {
