@@ -1528,3 +1528,115 @@ function actualizarIconosOrdenSemanalP6() {
         }
     });
 }
+// ========================================================================
+// BLOQUE 5 (PANTALLA 6): TABLA DE VISITAS DEL DÍA
+// ========================================================================
+
+let ordenDiaP6 = { columna: 'dia_total', direccion: 'desc' };
+
+function aplicarFiltroYOrdenDiaP6() {
+    const termino = normalizarCadenaP6(document.getElementById('p6_buscadorDia')?.value || "");
+
+    let filtrados = listaEstadisticasGeneralesGlobal.filter(item =>
+        normalizarCadenaP6(item.nombre).includes(termino)
+    );
+
+    const { columna, direccion } = ordenDiaP6;
+    const factor = direccion === 'asc' ? 1 : -1;
+
+    filtrados.sort((a, b) => {
+        if (columna === 'nombre') {
+            return a.nombre.localeCompare(b.nombre) * factor;
+        }
+        return ((a[columna] || 0) - (b[columna] || 0)) * factor;
+    });
+
+    renderizarTablaDiaP6(filtrados);
+}
+
+function renderizarTablaDiaP6(lista) {
+    const tbody = document.getElementById('p6_tbodyDia');
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    if (lista.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="padding: 1rem; text-align: center; color: var(--color-texto-mutado);">No se encontraron coincidencias.</td></tr>`;
+        return;
+    }
+
+    lista.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.style.cssText = `background-color: ${index % 2 === 0 ? '#ffffff' : '#f9fafb'}; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background-color 0.15s;`;
+
+        tr.innerHTML = `
+            <td style="padding: 0.5rem 0.4rem; text-align: left; font-weight: 700; color: var(--color-guinda); text-decoration: underline;">
+                ${item.nombre}
+            </td>
+            <td style="padding: 0.5rem 0.3rem; text-align: center; font-family: monospace; font-weight: 700; color: var(--color-texto-oscuro);">
+                ${item.dia_estadisticas}
+            </td>
+            <td style="padding: 0.5rem 0.3rem; text-align: center; font-family: monospace; font-weight: 700; color: var(--color-texto-oscuro);">
+                ${item.dia_derechohabientes}
+            </td>
+            <td style="padding: 0.5rem 0.3rem; text-align: center; font-family: monospace; font-weight: 700; color: var(--color-texto-oscuro);">
+                ${item.dia_actualizacion}
+            </td>
+            <td style="padding: 0.5rem 0.3rem; text-align: center; font-family: monospace; font-weight: 800; color: ${item.dia_total > 0 ? '#059669' : '#6b7280'};">
+                ${item.dia_total}
+            </td>
+        `;
+
+        tr.addEventListener('click', () => {
+            pantallaOrigenSuperusuario = 6;
+            const perfil = item.perfilCompleto || listaBrigadistasGlobal.find(
+                b => normalizarCadenaP6(b.nombre) === normalizarCadenaP6(item.nombre)
+            );
+
+            if (perfil) {
+                abrirPerfilDesdeSuperusuario(perfil);
+            } else {
+                abrirPerfilDesdeSuperusuario({
+                    nombre: item.nombre,
+                    municipio: "SIN MUNICIPIO",
+                    zona: "SIN ZONA",
+                    curp: "-",
+                    telefono: "",
+                    foto_url: "",
+                    url_mapa_zona: ""
+                });
+            }
+        });
+
+        tbody.appendChild(tr);
+    });
+}
+
+document.getElementById('p6_buscadorDia')?.addEventListener('input', aplicarFiltroYOrdenDiaP6);
+
+document.querySelectorAll('.p6-th-dia-sort').forEach(th => {
+    th.addEventListener('click', () => {
+        const col = th.getAttribute('data-col-dia');
+        if (ordenDiaP6.columna === col) {
+            ordenDiaP6.direccion = ordenDiaP6.direccion === 'asc' ? 'desc' : 'asc';
+        } else {
+            ordenDiaP6.columna = col;
+            ordenDiaP6.direccion = col === 'nombre' ? 'asc' : 'desc';
+        }
+        actualizarIconosOrdenDiaP6();
+        aplicarFiltroYOrdenDiaP6();
+    });
+});
+
+function actualizarIconosOrdenDiaP6() {
+    document.querySelectorAll('.p6-th-dia-sort').forEach(th => {
+        const col = th.getAttribute('data-col-dia');
+        const span = th.querySelector('.sort-icon-dia');
+        if (!span) return;
+        if (col === ordenDiaP6.columna) {
+            span.innerText = ordenDiaP6.direccion === 'asc' ? '▲' : '▼';
+        } else {
+            span.innerText = '↕';
+        }
+    });
+}
