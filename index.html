@@ -459,6 +459,39 @@
                 </table>
             </div>
         </div>
+                <!-- BLOQUE 4: TABLA DE VISITAS DEL DÍA -->
+        <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.85rem; margin: 1.1rem 1.25rem 0 1.25rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 0.6rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--color-dorado); padding-bottom: 4px; flex-wrap: wrap; gap: 4px;">
+                <p style="margin: 0; font-size: 0.75rem; font-weight: 800; color: var(--color-guinda); text-transform: uppercase; letter-spacing: 0.04em;">
+                    📆 Visitas del día
+                </p>
+                <span id="p6_fechaHoyTexto" style="font-size: 0.68rem; font-weight: 700; color: var(--color-texto-mutado);">
+                    Hoy
+                </span>
+            </div>
+
+            <!-- Buscador rápido para tabla del día -->
+            <input type="text" id="p6_buscadorDia" class="campo-input" placeholder="🔍 Filtrar brigadista del día..." style="margin-top: 0; padding: 0.6rem 0.75rem; font-size: 0.85rem;">
+
+            <!-- Tabla scrolleable del día -->
+            <div style="overflow-x: auto; max-height: 20rem; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 0.4rem;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem;">
+                    <thead style="background-color: var(--color-guinda); color: #ffffff; position: sticky; top: 0; z-index: 2;">
+                        <tr>
+                            <th data-col-dia="nombre" class="p6-th-dia-sort" style="padding: 0.55rem 0.4rem; text-align: left; cursor: pointer; user-select: none;">Nombre <span class="sort-icon-dia">↕</span></th>
+                            <th data-col-dia="dia_estadisticas" class="p6-th-dia-sort" style="padding: 0.55rem 0.3rem; text-align: center; cursor: pointer; user-select: none;">Estadíst. <span class="sort-icon-dia">↕</span></th>
+                            <th data-col-dia="dia_derechohabientes" class="p6-th-dia-sort" style="padding: 0.55rem 0.3rem; text-align: center; cursor: pointer; user-select: none;">Visitas SS <span class="sort-icon-dia">↕</span></th>
+                            <th data-col-dia="dia_actualizacion" class="p6-th-dia-sort" style="padding: 0.55rem 0.3rem; text-align: center; cursor: pointer; user-select: none;">Act. Datos <span class="sort-icon-dia">↕</span></th>
+                            <th data-col-dia="dia_total" class="p6-th-dia-sort" style="padding: 0.55rem 0.3rem; text-align: center; cursor: pointer; user-select: none;">Total <span class="sort-icon-dia">▼</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="p6_tbodyDia">
+                        <!-- Filas dinámicas del día -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
 </div>
     <!-- Barra inferior de navegación Pantalla 6 -->
     <div style="width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.95); border-top: 2px solid var(--color-guinda); border-bottom: 1px solid #e5e7eb; box-sizing: border-box; z-index: 10; overflow: hidden; margin-top: auto; flex-shrink: 0;">
