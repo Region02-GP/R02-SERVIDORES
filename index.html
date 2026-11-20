@@ -195,38 +195,33 @@
 
         </div>
 
-              <!-- BARRA DE NAVEGACIÓN INFERIOR (REDISEÑADA PARA 4 OPCIONES SIMÉTRICAS) -->
-<div style="width: 100%; display: flex; background-color: rgba(255, 255, 255, 0.95); border-top: 2px solid #611232; border-bottom: 1px solid #e5e7eb; box-sizing: border-box; z-index: 10; overflow: hidden; margin-top: auto; flex-shrink: 0;">
-        <!-- Opción Superusuario: Regresar al Directorio (Pantalla 5) -->
-    <button type="button" id="btnRegresarSuperusuario" class="hidden" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-        <span style="font-size: 1.05rem;">🔙</span> Regresar
+              <!-- BARRA DE NAVEGACIÓN INFERIOR -->
+<div class="barra-acciones-credencial">
+    <button type="button" id="btnRegresarSuperusuario" class="hidden">
+        <span style="font-size: 1.1rem;">🔙</span> Regresar
     </button>
 
-    <!-- Opción 1: Guardar Credencial -->
-    <button type="button" id="btnDescargarPDF" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-        <span style="font-size: 1.05rem;">💳</span> Descargar credencial
+    <button type="button" id="btnDescargarPDF">
+        <span style="font-size: 1.1rem;">💳</span> Descargar credencial
     </button>
     
-    <!-- Opción 2: Modificar Datos -->
-    <button type="button" id="btnEditarPerfil" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-        <span style="font-size: 1.05rem;">👤</span> Modificar Perfil
+    <button type="button" id="btnEditarPerfil">
+        <span style="font-size: 1.1rem;">👤</span> Modificar Perfil
     </button>
 
-    <!-- 🗺️ Opción Nueva 3: Ver Mapa Zona (Condicionado dinámicamente) -->
-    <button type="button" id="btnVerMapaZona" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box; display: none;">
-        <span style="font-size: 1.05rem;">🗺️</span> Mapa de Zona de Trabajo
+    <button type="button" id="btnVerMapaZona" style="display: none;">
+        <span style="font-size: 1.1rem;">🗺️</span> Mapa de Zona
     </button>
        
-    <!-- Opción 4: Cargar Estadísticas Directas -->
-    <button type="button" id="btnVerEstadisticas" style="flex: 1; background: transparent !important; color: #611232; border: none; border-right: 1px solid rgba(97, 18, 50, 0.15); padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-        <span style="font-size: 1.05rem;">📈</span> Estadistica de Visitas CXC
+    <button type="button" id="btnVerEstadisticas">
+        <span style="font-size: 1.1rem;">📈</span> Estadísticas CXC
     </button>
 
-    <!-- Opción 5: Salir del Gafete -->
-    <button type="button" id="btnCerrar" style="flex: 1; background: transparent !important; color: #611232; border: none; padding: 0.85rem 0.1rem; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; box-sizing: border-box;">
-        <span style="font-size: 1.05rem;">❌</span> Salir
+    <button type="button" id="btnCerrar">
+        <span style="font-size: 1.1rem;">❌</span> Salir
     </button>
 </div>
+
     </div>
 
     <div class="footer-institucional-img"></div>
