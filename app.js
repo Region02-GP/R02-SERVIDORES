@@ -498,7 +498,7 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     imgFirma.crossOrigin = "anonymous";
 
     // Enlace de imagen procesado por puente CORS seguro
-    imgPlantillaFondo.src = "https://i.postimg.cc/269Fp7Df/Cartel-oficial-Servidores-de-la-Nacion.png";
+    imgPlantillaFondo.src = "https://i.postimg.cc/fRd3hj21/image-7a69b85c.jpg";
     
     // CORRECCIÓN CLAVE: Si la variable local fotoCompletaBase64 contiene la imagen, 
     // úsala prioritariamente para saltar el bloqueo de seguridad de internet (CORS).
