@@ -217,21 +217,92 @@ body {
 /* ========================================================
    BLOQUE 6: NUEVO CINTILLO GRÁFICO, OVERLAYS Y FIRMA
    ======================================================== */
+/* Footer institucional a ancho completo, alto proporcionado y fundido sobre el fondo crema */
 .footer-institucional-img {
     width: 100%;
-    height: 75px;
-    background-image: url("https://i.postimg.cc/gkSjht53/image-3c38c911.jpg");
-    background-size: contain;
-    background-position: center;
+    height: 95px;
+    background-image: url("https://postimg.cc");
+    background-size: 100% 100%;
+    background-position: center bottom;
     background-repeat: no-repeat;
     background-color: transparent;
     mix-blend-mode: multiply;
     border-top: none;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-top: auto;
     flex-shrink: 0;
 }
 
+/* Barra de acciones unificada (Pantallas 3, 4, 5 y 6) */
+.barra-acciones-credencial {
+    width: calc(100% - 2.5rem);
+    margin: 0.75rem auto;
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(221, 201, 163, 0.9);
+    border-radius: 0.85rem;
+    box-shadow: 0 4px 14px rgba(97, 18, 50, 0.12);
+    overflow: hidden;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    z-index: 20;
+}
+
+.barra-acciones-credencial button {
+    flex: 1;
+    background: transparent !important;
+    color: var(--color-guinda);
+    border: none;
+    border-right: 1px solid rgba(97, 18, 50, 0.12);
+    padding: 0.75rem 0.25rem;
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    transition: background-color 0.2s;
+}
+
+.barra-acciones-credencial button:last-child {
+    border-right: none;
+}
+
+.barra-acciones-credencial button:hover {
+    background-color: rgba(97, 18, 50, 0.06) !important;
+}
+
+/* Ajuste específico cuando la barra está dentro de .cuerpo-credencial en Pantalla 3 */
+#pantalla3 .barra-acciones-credencial {
+    width: 100%;
+    margin: 0.5rem 0 0 0;
+}
+
+/* Barras fijas al fondo de pantalla en Pantallas 5 y 6 */
+#pantalla5 .barra-acciones-credencial,
+#pantalla6 .barra-acciones-credencial {
+    position: fixed;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+    max-width: 26.5rem;
+    margin: 0;
+    z-index: 999;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+#pantalla6 .barra-acciones-credencial {
+    max-width: 32.5rem;
+}
+
+#pantalla5,
+#pantalla6 {
+    padding-bottom: 5rem !important;
+}
 
 .hidden { 
     display: none !important; 
@@ -310,76 +381,4 @@ body {
 }
 #pantalla3 .cuerpo-credencial {
     background-color: transparent !important;
-}
-/* ========================================================
-   BARRAS DE NAVEGACIÓN INFERIORES FIJAS (PANTALLAS 5 Y 6)
-   ======================================================== */
-
-/* Fija la barra inferior al borde de la pantalla sin tapar el footer */
-#pantalla5 > div[style*="border-top: 2px solid var(--color-guinda)"],
-#pantalla6 > div[style*="border-top: 2px solid var(--color-guinda)"] {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: 100% !important;
-    max-width: 28rem !important;
-    z-index: 999 !important;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.12) !important;
-    border-radius: 0 !important;
-}
-
-/* Ajusta el ancho máximo específico de la barra para Pantalla 6 */
-#pantalla6 > div[style*="border-top: 2px solid var(--color-guinda)"] {
-    max-width: 34rem !important;
-}
-
-/* Espacio inferior en las tarjetas 5 y 6 para que el footer y la lista no queden ocultos detrás de la barra fija */
-#pantalla5,
-#pantalla6 {
-    padding-bottom: 4.5rem !important;
-}
-.campo-input[readonly] {
-    background-color: #f3f4f6;
-    color: #4b5563;
-    cursor: not-allowed;
-}
-.barra-acciones-credencial {
-    width: 100%;
-    display: flex;
-    background-color: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(221, 201, 163, 0.8);
-    border-radius: 0.85rem;
-    box-shadow: 0 4px 12px rgba(97, 18, 50, 0.08);
-    overflow: hidden;
-    margin-top: 0.5rem;
-    box-sizing: border-box;
-}
-
-.barra-acciones-credencial button {
-    flex: 1;
-    background: transparent !important;
-    color: var(--color-guinda);
-    border: none;
-    border-right: 1px solid rgba(97, 18, 50, 0.12);
-    padding: 0.75rem 0.25rem;
-    font-size: 0.72rem;
-    font-weight: 700;
-    line-height: 1.2;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.3rem;
-    transition: background-color 0.2s, transform 0.15s;
-}
-
-.barra-acciones-credencial button:last-child {
-    border-right: none;
-}
-
-.barra-acciones-credencial button:hover {
-    background-color: rgba(97, 18, 50, 0.06) !important;
 }
