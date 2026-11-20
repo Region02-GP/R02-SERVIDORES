@@ -331,19 +331,20 @@
             Mostrando: <span id="p5_contador">0</span> Servidores...
         </div>
 
-        <!-- Lista scrolleable de brigadistas -->
+               <!-- Lista scrolleable de brigadistas -->
         <div id="p5_listaBrigadistas" style="flex-grow: 1; max-height: 24rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem; padding-right: 4px;">
             <!-- Los elementos se inyectan dinámicamente desde app.js -->
         </div>
 
-       <div class="barra-acciones-credencial">
-    <button type="button" id="btnIrPantalla6">
-        <span style="font-size: 1.1rem;">📊</span> Estadísticas Generales
-    </button>
-    <button type="button" id="btnP5Salir">
-        <span style="font-size: 1.1rem;">❌</span> Cerrar Sesión
-    </button>
-</div>
+    </div>
+
+    <div class="barra-acciones-credencial">
+        <button type="button" id="btnIrPantalla6">
+            <span style="font-size: 1.1rem;">📊</span> Estadísticas Generales
+        </button>
+        <button type="button" id="btnP5Salir">
+            <span style="font-size: 1.1rem;">❌</span> Cerrar Sesión
+        </button>
     </div>
 
     <div class="footer-institucional-img"></div>
@@ -497,21 +498,25 @@
                 <button type="button" id="btnP6DescDia" style="background-color: var(--color-guinda); color: #ffffff; border: 1px solid var(--color-dorado); border-radius: 0.5rem; padding: 0.65rem 0.5rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
                     📆 Visitas del Día
                 </button>
-            </div>
+                    <!-- BLOQUE 5: DESCARGA DE TABLAS EN CSV -->
+        <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.85rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 0.6rem;">
+            ...
         </div>
 
-   <div class="barra-acciones-credencial">
-    <button type="button" id="btnP6Volver">
-        <span style="font-size: 1.1rem;">🔙</span> Regresar
-    </button>
-    <button type="button" id="btnP6Salir">
-        <span style="font-size: 1.1rem;">❌</span> Cerrar Sesión
-    </button>
-</div>
-
     </div>
+
+    <div class="barra-acciones-credencial">
+        <button type="button" id="btnP6Volver">
+            <span style="font-size: 1.1rem;">🔙</span> Regresar
+        </button>
+        <button type="button" id="btnP6Salir">
+            <span style="font-size: 1.1rem;">❌</span> Cerrar Sesión
+        </button>
+    </div>
+
     <div class="footer-institucional-img"></div>
 </div>
+
 
  <!-- VENTANA FLOTANTE PARA FIRMA (CORREGIDO ESPACIADO PARA BARRA DE NAVEGACIÓN ANDROID) -->
 <div id="modalFirmaPantallaCompleta" class="overlay-carga hidden" style="background-color: rgba(17, 24, 39, 0.98); z-index: 10005; padding: 1rem; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; align-items: center;">
