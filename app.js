@@ -515,9 +515,9 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             // 1. Estampar plantilla de fondo completa
             ctx.drawImage(imgPlantillaFondo, 0, 0, 1276, 2020);
 
-            // 2. Encuadre exacto de la fotografía
-            const targetX = 394, targetY = 412, targetW = 490, targetH = 612;
-            const fotoRadius = 40; 
+                       // 2. Encuadre exacto de la fotografía dentro del marco gris de la nueva plantilla
+            const targetX = 381, targetY = 434, targetW = 514, targetH = 650;
+            const fotoRadius = 38; 
 
             ctx.save(); 
             ctx.beginPath();
@@ -550,66 +550,62 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
             ctx.drawImage(imgFoto, srcX, srcY, srcW, srcH, targetX, targetY, targetW, targetH);
             ctx.restore(); 
 
-                        // 3. Renderizado de Datos Nominativos (Alto contraste y tipografía uniforme)
-            const margenIzq = 145;
+            // 3. Renderizado de Datos Nominativos (Alineados a la nueva plantilla)
+            const margenIzq = 175;
             const colDerechaX = 720;
 
-            // --- FILA 1: NOMBRE COMPLETO (Dentro de la cinta guinda) ---
+            // --- FILA 1: NOMBRE COMPLETO (Centrado verticalmente dentro de la cinta guinda) ---
             ctx.textAlign = "left";
             
-            // Etiqueta en dorado institucional para contrastar con el fondo guinda
+            // Etiqueta en dorado dentro de la parte superior de la cinta guinda
             ctx.fillStyle = "#ddc9a3";
-            ctx.font = "bold 24px 'Segoe UI', Roboto, Arial, sans-serif";
-            ctx.fillText("NOMBRE COMPLETO", margenIzq, 1118);
+            ctx.font = "bold 23px 'Segoe UI', Roboto, Arial, sans-serif";
+            ctx.fillText("NOMBRE COMPLETO", margenIzq, 1148);
             
             // Nombre en blanco puro con autoajuste si es muy largo
             ctx.fillStyle = "#ffffff";
-            let tamanoNombre = 46;
+            let tamanoNombre = 44;
             ctx.font = `800 ${tamanoNombre}px 'Segoe UI', Roboto, Arial, sans-serif`;
             const anchoMaximoNombre = canvas.width - (margenIzq * 2);
-            while (ctx.measureText(nombre).width > anchoMaximoNombre && tamanoNombre > 28) {
+            while (ctx.measureText(nombre).width > anchoMaximoNombre && tamanoNombre > 26) {
                 tamanoNombre -= 2;
                 ctx.font = `800 ${tamanoNombre}px 'Segoe UI', Roboto, Arial, sans-serif`;
             }
-            ctx.fillText(nombre, margenIzq, 1175);
+            ctx.fillText(nombre, margenIzq, 1202);
 
             // --- FILA 2: MUNICIPIO (Columna 1) Y ZONA / REGIÓN (Columna 2) ---
-            // Etiquetas en guinda oscuro
             ctx.fillStyle = "#611232";
-            ctx.font = "bold 26px 'Segoe UI', Roboto, Arial, sans-serif";
-            ctx.fillText("MUNICIPIO", margenIzq, 1265);
-            ctx.fillText("ZONA / REGIÓN", colDerechaX, 1265);
+            ctx.font = "bold 25px 'Segoe UI', Roboto, Arial, sans-serif";
+            ctx.fillText("MUNICIPIO", margenIzq, 1292);
+            ctx.fillText("REGIÓN - ZONA", colDerechaX, 1292);
 
-            // Valores grandes y bien proporcionados
             ctx.fillStyle = "#111827";
-            ctx.font = "800 44px 'Segoe UI', Roboto, Arial, sans-serif";
-            ctx.fillText(municipio, margenIzq, 1320);
-            ctx.fillText(zona, colDerechaX, 1320);
+            ctx.font = "800 42px 'Segoe UI', Roboto, Arial, sans-serif";
+            ctx.fillText(municipio, margenIzq, 1344);
+            ctx.fillText(zona, colDerechaX, 1344);
 
             // Línea divisoria sutil entre filas
             ctx.strokeStyle = "rgba(97, 18, 50, 0.18)";
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(margenIzq, 1352);
-            ctx.lineTo(canvas.width - margenIzq, 1352);
+            ctx.moveTo(margenIzq, 1375);
+            ctx.lineTo(canvas.width - margenIzq, 1375);
             ctx.stroke();
 
             // --- FILA 3: CURP OFICIAL ---
-            // Etiqueta en guinda oscuro
             ctx.fillStyle = "#611232";
-            ctx.font = "bold 26px 'Segoe UI', Roboto, Arial, sans-serif";
-            ctx.fillText("CURP OFICIAL", margenIzq, 1400);
+            ctx.font = "bold 25px 'Segoe UI', Roboto, Arial, sans-serif";
+            ctx.fillText("CURP OFICIAL", margenIzq, 1422);
 
-            // Valor grande con la misma familia tipográfica (evita el efecto estirado/deforme)
             ctx.fillStyle = "#111827";
-            ctx.font = "800 44px 'Segoe UI', Roboto, Arial, sans-serif";
-            ctx.fillText(curp, margenIzq, 1455);
+            ctx.font = "800 42px 'Segoe UI', Roboto, Arial, sans-serif";
+            ctx.fillText(curp, margenIzq, 1474);
 
-            // Estampado de Firma Digital Autorizada (Centrada debajo de la CURP)
+            // Estampado de Firma Digital Autorizada (Centrada arriba del escudo de Gobierno de México)
             if (firmaBase64 && firmaBase64.startsWith("data:image")) {
                 const firmaW = 360;
                 const firmaH = 145;
-                ctx.drawImage(imgFirma, (canvas.width / 2) - (firmaW / 2), 1515, firmaW, firmaH);
+                ctx.drawImage(imgFirma, (canvas.width / 2) - (firmaW / 2), 1510, firmaW, firmaH);
             }
 
 
