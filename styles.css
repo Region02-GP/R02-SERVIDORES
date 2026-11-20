@@ -334,3 +334,8 @@ body {
 #pantalla6 {
     padding-bottom: 4.5rem !important;
 }
+.campo-input[readonly] {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    cursor: not-allowed;
+}
